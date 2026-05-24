@@ -1,0 +1,122 @@
+# Maths taxonomy for the 7-axis question identity system.
+#
+# This file is the working source of truth for which fingerprint values are valid
+# in the question bank. It informs the Prisma schema (Stage 2) — once that schema
+# exists, these enums will become either Postgres enums (rigid; require migrations
+# to extend) or lookup tables (flexible; extensible without migration). The doc's
+# rule "no miscellaneous tags — extend the taxonomy" arguably favours lookup tables.
+#
+# This file will grow as we fingerprint more sample problems and generate originals.
+# Adding a new value: pick a short code (~6 chars max), give it a one-line description,
+# update both this file and any affected `.yaml` problem files.
+
+schema_version: 1
+
+# -----------------------------------------------------------------------------
+# Axis 1 — TOPIC
+# -----------------------------------------------------------------------------
+topics:
+  ALG: Algebra (quadratic, polynomial, complex numbers, binomial)
+  PNC: Permutations and Combinations
+  PRB: Probability
+  MAT: Matrices and Determinants
+  TRG: Trigonometry
+  CAL: Calculus
+  COG: Coordinate Geometry (2D)
+  VEC: Vectors and 3D Geometry
+  SET: Sets, Relations, Functions
+  SOT: Sequences and Series
+  LOG: Logarithms (often subsumed under ALG)
+
+# -----------------------------------------------------------------------------
+# Axis 2 — SUBTOPIC (the chapter section, per topic)
+# -----------------------------------------------------------------------------
+subtopics:
+  MAT:
+    ALG: Matrix algebra (addition, multiplication, scalar multiplication)
+    DET: Determinants and properties
+    INV: Inverse, adjoint
+    SYS: Systems of linear equations
+    SPL: Special matrices (symmetric, orthogonal, permutation, idempotent, etc.)
+    TRN: Transformations and conjugation (similarity, P·A·P⁻¹)
+  CAL:
+    FUN: Functions
+    LIM: Limits
+    CON: Continuity
+    DIF: Differentiability
+    DER: Derivatives and applications
+    IND: Indefinite integration
+    DEF: Definite integration
+    ARE: Area under curves
+    ODE: Differential equations
+  # Other topics will be filled in as we fingerprint problems in those areas.
+
+# -----------------------------------------------------------------------------
+# Axis 3 — IDEA (the principle being tested; the MOST important axis)
+# Listed per (TOPIC.SUBTOPIC). Will grow organically.
+# -----------------------------------------------------------------------------
+ideas:
+  MAT.SPL:
+    ORBSUM: "Summing a quantity over a group orbit gives an orbit-invariant result. Key case: conjugation by all permutation matrices."
+
+# -----------------------------------------------------------------------------
+# Axis 4 — SUB-IDEA (the specific manoeuvre; ≤ 6 per idea)
+# Listed per (TOPIC.SUBTOPIC.IDEA).
+# -----------------------------------------------------------------------------
+sub_ideas:
+  MAT.SPL.ORBSUM:
+    CNJSP: "Conjugation P·M·Pᵀ by a permutation P permutes row AND column indices of M by the same σ ∈ S_n; this makes Σ over S_n of P·M·Pᵀ constant on orbits of S_n acting on index pairs."
+
+# -----------------------------------------------------------------------------
+# Axis 5 — ANSWER-TYPE (closed enumeration)
+# -----------------------------------------------------------------------------
+answer_types:
+  MCQ-SC: Multiple-choice, single correct
+  MCQ-MC: Multiple-choice, multiple correct (with partial marking)
+  NUM-INT: Numerical answer, integer
+  NUM-DEC: Numerical answer, decimal (to specified precision)
+  MAT-COL: Match-the-column / match-the-list
+
+# -----------------------------------------------------------------------------
+# Axis 6 — SURFACE (closed enumeration — cognitive load dressing, NOT the math)
+# -----------------------------------------------------------------------------
+surfaces:
+  SURF-PLAIN: Plain statement, minimal dressing
+  SURF-SET: Heavy set / index / summation notation
+  SURF-FUNC: Wrapped in function definitions
+  SURF-GEOM: Geometric figure or diagram
+  SURF-PARAM: Parameterized — letters as the real unknowns
+  SURF-PASS: Comprehension passage (long preamble)
+
+# -----------------------------------------------------------------------------
+# Axis 7 — TRAP (closed enumeration — the bait)
+# -----------------------------------------------------------------------------
+traps:
+  TRAP-NONE: No specific trap
+  TRAP-EIGEN: Tempts eigenvalue / spectral reasoning
+  TRAP-CAYLEY: Tempts Cayley-Hamilton invocation
+  TRAP-LHOP: Tempts L'Hopital where simpler manipulation works
+  TRAP-NCERT: Tests an NCERT edge case
+  TRAP-EDGE: Tests an edge case in domain / range / continuity
+  TRAP-PARTIAL: Multi-correct calibrated for partial-marking play
+  TRAP-LENGTH: Long-looking problem with short solution (or vice versa)
+
+# -----------------------------------------------------------------------------
+# Intrinsic difficulty (closed enumeration, fixed forever)
+# Anchored to a top-10-rank-level student in their last 4–5 months of preparation.
+# -----------------------------------------------------------------------------
+intrinsic_difficulties:
+  T1: Easy standard
+  T2: Standard medium
+  T3: Hard standard
+  T4: Hard non-standard
+  T5: Top-100 only
+
+# -----------------------------------------------------------------------------
+# Rounds (per-student preparation stage — NOT a problem axis)
+# -----------------------------------------------------------------------------
+rounds:
+  R1: First Prep — learning the idea; near-zero mastery
+  R2: First Revision — "seen it" → "can do it reliably"
+  R3: Second Revision — integration, two-concept fusion, speed, surface variation
+  R4: Final Round — exam simulation, strategy, retention

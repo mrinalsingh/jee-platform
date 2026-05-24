@@ -1,0 +1,95 @@
+schema_version: 1
+
+question_code: MAT.SPL.ORBSUM.CNJSP.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: ORBSUM
+  sub_idea: CNJSP
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-EIGEN
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 780   # ~13 min — first time seeing the orbit-sum idea, with 4×4 arithmetic
+  R2_seconds: 540   # ~9  min — idea recalled; arithmetic still slow
+  R3_seconds: 360   # ~6  min — fluent
+  R4_seconds: 210   # ~3.5 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: jeea-2019-p2-q1
+  parallel_form: true            # axes 1-4 match the inspiration → mastery-check variant, not variety
+  generator: claude
+  created_on: 2026-05-23
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $Q_1, Q_2, \ldots, Q_{24}$ denote all $24$ permutation matrices of order $4$ — i.e. the matrices obtained by permuting the rows of the $4 \times 4$ identity in every possible way. Let
+  $$
+  N = \begin{bmatrix}
+    1 & 2 & 3 & 4 \\
+    2 & 0 & 1 & 0 \\
+    3 & 1 & 0 & 2 \\
+    4 & 0 & 2 & 1
+  \end{bmatrix}
+  $$
+  and define $\displaystyle Y = \sum_{k=1}^{24} Q_k\, N\, Q_k^{T}$, where $Q_k^{T}$ denotes the transpose of $Q_k$.
+
+  Then which of the following is/are correct?
+
+  - (A) $Y \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} = 156 \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}$
+  - (B) $Y$ is a symmetric matrix
+  - (C) The sum of diagonal entries of $Y$ is $48$
+  - (D) $Y - 156\,I$ is an invertible matrix
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Each $Q_k$ is a permutation matrix, so $Q_k^{T} = Q_k^{-1}$. The map $N \mapsto Q_k N Q_k^{T}$ permutes the rows and columns of $N$ by the same permutation $\sigma_k \in S_4$. Summing over all of $S_4$ therefore averages $N$'s entries over the $S_4$-orbits in the index set, of which there are only two — the diagonal and the off-diagonal.
+
+  ### Working
+  Write $Y_{ij} = \displaystyle\sum_{\sigma \in S_4} N_{\sigma(i),\, \sigma(j)}$.
+
+  **Diagonal ($i = j$):** as $\sigma$ ranges over $S_4$, the value $\sigma(i)$ takes each of $1,2,3,4$ exactly $|S_4| / 4 = 6$ times. So
+  $$Y_{ii} = 6\,(N_{11} + N_{22} + N_{33} + N_{44}) = 6 \cdot (1 + 0 + 0 + 1) = 12.$$
+
+  **Off-diagonal ($i \ne j$):** as $\sigma$ ranges over $S_4$, the ordered pair $(\sigma(i), \sigma(j))$ takes each of the $4 \cdot 3 = 12$ ordered pairs $(a, b)$ with $a \ne b$ exactly $|S_4| / 12 = 2$ times. So
+  $$Y_{ij} = 2 \cdot \big(\text{sum of off-diagonal entries of } N\big) = 2 \cdot (2+3+4 + 2+1+0 + 3+1+2 + 4+0+2) = 2 \cdot 24 = 48.$$
+
+  Hence $Y$ has every diagonal entry equal to $12$ and every off-diagonal entry equal to $48$.
+
+  ### Verifying each option
+  - **(A)** $Y \cdot [1,1,1,1]^{T} = [12 + 3 \cdot 48,\,\ldots]^{T} = 156 \cdot [1,1,1,1]^{T}$. ✅
+  - **(B)** By construction $Y_{ij} = Y_{ji}$ (all diagonals equal, all off-diagonals equal). ✅
+  - **(C)** Trace $= 4 \cdot 12 = 48$. ✅
+  - **(D)** From (A), $(Y - 156\,I)\,[1,1,1,1]^{T} = 0$. A non-zero null-space vector ⇒ singular ⇒ not invertible. ❌
+
+  No machinery outside JEE syllabus was used.
+
+wrong_paths:
+  - path: "Forgets that the diagonal frequency depends on n. Uses '2 times' (from the n=3 case in JEE 2019 P2 Q1) instead of '6 times' for n=4. Arrives at Y_{ii} = 2·2 = 4 and from there at a wrong β, possibly also wrong trace."
+    landed_on_option: "Wrong on A and C; possibly still picks B."
+    diagnosis: "Failure to generalize the orbit-frequency counting from S_3 to S_n: the count is |S_n|/n = (n-1)! for diagonals, |S_n|/[n(n-1)] = (n-2)! for off-diagonals."
+
+  - path: "Reaches for eigenvalue decomposition or Cayley-Hamilton, thinking the permutation-matrix structure needs spectral analysis. Spends time on a 24-term sum or characteristic-polynomial expansion and runs out of time."
+    landed_on_option: "Abandons or guesses."
+    diagnosis: "TRAP-EIGEN — reaches outside JEE syllabus when the problem yields to elementary counting. Same trap as the inspiration problem (2019 P2 Q1)."
+
+  - path: "Computes Y by listing all 24 permutations explicitly and summing entry-by-entry. With careful arithmetic arrives at the correct answer, but slowly — takes 20+ minutes; cannot finish in exam conditions."
+    landed_on_option: "A, B, C (correct, but slow)."
+    diagnosis: "Got the right answer without seeing the IDEA. In R4 (exam pace) this approach fails on time alone."
+
+review_notes: |
+  - **Parallel-form variant** of JEE Advanced 2019 P2 Q1: axes 1–4 (TOPIC, SUBTOPIC, IDEA, SUB-IDEA) match exactly. Use for mastery checks, not variety practice.
+  - The next variant in this fingerprint should change axis 4 (SUB-IDEA) or axis 5 (ANSWER-TYPE) — e.g. a NUM-INT version asking "maximum value of (trace + off-diagonal sum)/24 over all N with entries in {0,1}" — to give students something genuinely different rather than a copy-with-bigger-numbers.
+  - Authored time R1 = 780s is a guess. The real check is whether a competent R1 student gets stuck on the n=4 frequency count (likely yes if shown only the n=3 case). Will be corrected empirically.

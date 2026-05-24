@@ -67,3 +67,6 @@ pids
 
 # Local content drafts (uncomment if /content stores work-in-progress files)
 # content/drafts/
+
+# Local HTML previews of generated questions (derivatives, not source-of-truth)
+docs/previews/
