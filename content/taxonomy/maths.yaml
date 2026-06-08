@@ -49,6 +49,14 @@ subtopics:
     DEF: Definite integration
     ARE: Area under curves
     ODE: Differential equations
+  PNC:
+    DGT: Digit-based counting (numbers with digit / multiplicity restrictions)
+    PER: Permutations (with / without repetition; circular; restricted)
+    COM: Combinations and selections (binomial identities; subset counts)
+    DST: Distribution problems (objects → boxes; partitions; surjections)
+    INC: Inclusion-exclusion–driven counting
+    REC: Recurrence- and lattice-path-based counting
+    BIJ: Bijection and pigeonhole arguments
   # Other topics will be filled in as we fingerprint problems in those areas.
 
 # -----------------------------------------------------------------------------
@@ -58,6 +66,8 @@ subtopics:
 ideas:
   MAT.SPL:
     ORBSUM: "Summing a quantity over a group orbit gives an orbit-invariant result. Key case: conjugation by all permutation matrices."
+  PNC.DGT:
+    EXMUL: "Exact-distinct-with-multiplicity counting: fix the multiset of value-multiplicities, sum multinomial coefficients over admissible compositions, then correct for placement edge cases (leading zero, etc.)."
 
 # -----------------------------------------------------------------------------
 # Axis 4 — SUB-IDEA (the specific manoeuvre; ≤ 6 per idea)
@@ -66,6 +76,8 @@ ideas:
 sub_ideas:
   MAT.SPL.ORBSUM:
     CNJSP: "Conjugation P·M·Pᵀ by a permutation P permutes row AND column indices of M by the same σ ∈ S_n; this makes Σ over S_n of P·M·Pᵀ constant on orbits of S_n acting on index pairs."
+  PNC.DGT.EXMUL:
+    LZINC: "Leading-zero edge correction via per-multiplicity-tuple inclusion-exclusion: for every (c_0, c_a, c_b, …) tuple where 0 has multiplicity c_0 ≥ 1, subtract 9!/((c_0−1)!·c_a!·c_b!·…) — the count of arrangements with 0 fixed in position 1."
 
 # -----------------------------------------------------------------------------
 # Axis 5 — ANSWER-TYPE (closed enumeration)

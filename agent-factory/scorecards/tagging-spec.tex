@@ -1,0 +1,444 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+
+% Custom colors
+\definecolor{codegray}{HTML}{F4F4F4}
+\definecolor{codetext}{HTML}{222222}
+\definecolor{headergray}{HTML}{333333}
+\definecolor{accent}{HTML}{1A4D7A}
+\definecolor{newhl}{HTML}{FFF7E6}
+\definecolor{rulegray}{HTML}{CCCCCC}
+
+% Compact code formatting
+\newcommand{\code}[1]{\colorbox{codegray}{\strut\texttt{\small #1}}}
+\newcommand{\cd}[1]{\texttt{\small #1}}
+\newcommand{\NEW}{\textcolor{accent}{\textbf{[NEW]}}}
+
+% Tighter lists
+\setlength{\parskip}{0.4em}
+\setlength{\parindent}{0pt}
+
+% Row colouring
+\usepackage{colortbl}
+\definecolor{altrow}{HTML}{FAFAFA}
+
+\title{\huge\bfseries JEE Platform --- Question Tagging Specification\vspace{0.1cm}}
+\author{}
+\date{Stage 1 PRD locked $\cdot$ v1.0 $\cdot$ 2026-06-06}
+
+\begin{document}
+\vspace*{-0.8in}
+\maketitle
+
+\noindent\hrulefill
+\vspace{0.3cm}
+
+\noindent
+This document lists every field that is tagged on a problem in the \texttt{jee\_platform} question bank.
+Fields marked \NEW{} were added by the Stage 1 PRD; everything else was locked in \texttt{docs/PROJECT~CONTEXT.md}.
+The total surface for a fully-tagged problem is approximately 35 fields, split across the 11 groups below.
+
+\section*{Index of groups}
+\begin{enumerate}\itemsep0em
+  \item The 7 problem-identity axes (existing) --- p.\,\pageref{sec:identity}
+  \item The 5 diagnostic / failure-mode axes \NEW{} --- p.\,\pageref{sec:diag}
+  \item Difficulty fields (existing + empirical) --- p.\,\pageref{sec:diff}
+  \item Time fields (existing + empirical) --- p.\,\pageref{sec:time}
+  \item The R1--R4 round model --- p.\,\pageref{sec:round}
+  \item Identifier fields --- p.\,\pageref{sec:id}
+  \item Content fields --- p.\,\pageref{sec:content}
+  \item Per-wrong-path subfields --- p.\,\pageref{sec:wrongpath}
+  \item Provenance \& lifecycle --- p.\,\pageref{sec:prov}
+  \item Derived / summary fields \NEW{} --- p.\,\pageref{sec:derived}
+  \item Per-attempt fields (live on \texttt{attempts}, not \texttt{problems}) --- p.\,\pageref{sec:attempt}
+\end{enumerate}
+
+\bigskip
+\hrule
+\bigskip
+
+% ============================================================
+\section{The 7 problem-identity axes (existing)}\label{sec:identity}
+
+These describe what \emph{kind} of problem this is. All seven are required at insert time and indexed individually. They form the question code: \cd{TOPIC.SUBTOPIC.IDEA.SUBIDEA.NNN}.
+
+\subsection*{1.1 \cd{TOPIC} --- broad subject family ($\sim$12 values)}
+
+\begin{tabular}{|p{1.3cm}|p{14cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Code}} & \textcolor{white}{\textbf{What it tags}} \\
+\hline
+ALG & Algebra (quadratic, polynomial, complex numbers, binomial) \\
+\rowcolor{altrow}PNC & Permutations \& Combinations \\
+PRB & Probability \\
+\rowcolor{altrow}MAT & Matrices \& Determinants \\
+TRG & Trigonometry \\
+\rowcolor{altrow}CAL & Calculus \\
+COG & Coordinate Geometry (2D) \\
+\rowcolor{altrow}VEC & Vectors \& 3D Geometry \\
+SET & Sets, Relations, Functions \\
+\rowcolor{altrow}SOT & Sequences \& Series \\
+LOG & Logarithms (often subsumed under ALG) \\
+\hline
+\end{tabular}
+
+\subsection*{1.2 \cd{SUBTOPIC} --- chapter section under the topic ($\sim$5--8 per topic)}
+
+Listed per topic in \cd{/content/taxonomy/maths.yaml}. Examples:
+\begin{itemize}\itemsep0em
+\item For \cd{MAT}: \cd{ALG} (matrix algebra), \cd{DET} (determinants), \cd{INV} (inverse/adjoint), \cd{SYS} (linear systems), \cd{SPL} (special: symmetric/orthogonal/permutation), \cd{TRN} (transformations/conjugation).
+\item For \cd{CAL}: \cd{FUN}, \cd{LIM}, \cd{CON}, \cd{DIF}, \cd{DER}, \cd{IND}, \cd{DEF}, \cd{ARE}, \cd{ODE}.
+\item For \cd{PNC}: \cd{DGT} (digit-based counting), \cd{PER}, \cd{COM}, \cd{DST}, \cd{INC}, \cd{REC}, \cd{BIJ}.
+\end{itemize}
+
+\subsection*{1.3 \cd{IDEA} --- the principle being tested (the MOST important axis)}
+
+The smallest insight such that --- with it, the problem is routine; without it, impossible regardless of computation skill. Per (TOPIC, SUBTOPIC). Grows organically. Examples: \cd{ORBSUM} (sum over a group orbit gives an orbit-invariant), \cd{EXMUL} (exact-distinct multiplicity counting).
+
+\subsection*{1.4 \cd{SUB-IDEA} --- the specific manoeuvre under the idea ($\leq$ 6 per idea)}
+
+The exact mechanical trick. Per (TOPIC, SUBTOPIC, IDEA). Examples: \cd{CNJSP} (conjugation by a permutation permutes row + col simultaneously), \cd{LZINC} (leading-zero inclusion-exclusion correction).
+
+\subsection*{1.5 \cd{ANSWER-TYPE} --- the format of the answer (5 closed values)}
+
+\begin{tabular}{|p{2.1cm}|p{13.3cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Code}} & \textcolor{white}{\textbf{Meaning}} \\
+\hline
+MCQ-SC & Multiple choice, single correct \\
+\rowcolor{altrow}MCQ-MC & Multiple choice, multi-correct (with partial marking) \\
+NUM-INT & Numerical answer, integer \\
+\rowcolor{altrow}NUM-DEC & Numerical answer, decimal (to specified precision) \\
+MAT-COL & Match-the-column / match-the-list \\
+\hline
+\end{tabular}
+
+\subsection*{1.6 \cd{SURFACE} --- cognitive-load dressing (NOT the math) (6 closed values)}
+
+\begin{tabular}{|p{2.5cm}|p{13.0cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Code}} & \textcolor{white}{\textbf{Meaning}} \\
+\hline
+SURF-PLAIN & Plain statement, minimal dressing \\
+\rowcolor{altrow}SURF-SET & Heavy set / index / summation notation \\
+SURF-FUNC & Wrapped in function definitions \\
+\rowcolor{altrow}SURF-GEOM & Geometric figure or diagram \\
+SURF-PARAM & Parameterized --- letters as the real unknowns \\
+\rowcolor{altrow}SURF-PASS & Comprehension passage (long preamble) \\
+\hline
+\end{tabular}
+
+\subsection*{1.7 \cd{TRAP} --- the bait the problem dangles (8 closed values)}
+
+\begin{tabular}{|p{2.5cm}|p{13.0cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Code}} & \textcolor{white}{\textbf{Meaning}} \\
+\hline
+TRAP-NONE & No specific trap \\
+\rowcolor{altrow}TRAP-EIGEN & Tempts eigenvalue / spectral reasoning \\
+TRAP-CAYLEY & Tempts Cayley--Hamilton invocation \\
+\rowcolor{altrow}TRAP-LHOP & Tempts L'H\^opital's rule where elementary manipulation works \\
+TRAP-NCERT & Tests an NCERT edge case \\
+\rowcolor{altrow}TRAP-EDGE & Tests an edge case in domain / range / continuity \\
+TRAP-PARTIAL & Multi-correct calibrated for partial-marking play \\
+\rowcolor{altrow}TRAP-LENGTH & Long-looking problem with short solution (or vice versa) \\
+\hline
+\end{tabular}
+
+\newpage
+% ============================================================
+\section{The 5 diagnostic / failure-mode axes \NEW{}}\label{sec:diag}
+
+These describe what \emph{kind of student error} the problem activates. Tagged on each \cd{wrong\_paths} entry, NOT on the problem row directly. 19 axis values total.
+
+\subsection*{2.1 \cd{ERR-READING} --- misread the statement (4 values)}
+
+\begin{tabular}{|p{3cm}|p{12.5cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Value}} & \textcolor{white}{\textbf{When to tag}} \\
+\hline
+ERR-READING-NONE & No reading mistake on this path. \\
+\rowcolor{altrow}ERR-READING-QUANTIFIER & Misread a quantifier (``exactly'', ``at least'', ``contains'', ``from each'', ``non-zero'', ``all''). \\
+ERR-READING-NUMRANGE & Misread a numeric bound or interval endpoint. \\
+\rowcolor{altrow}ERR-READING-VARDEF & Misread a variable's defining property or domain. \\
+\hline
+\end{tabular}
+
+\subsection*{2.2 \cd{ERR-CASE} --- case-handling failure (4 values)}
+
+\begin{tabular}{|p{3cm}|p{12.5cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Value}} & \textcolor{white}{\textbf{When to tag}} \\
+\hline
+ERR-CASE-NONE & No case-handling mistake. \\
+\rowcolor{altrow}ERR-CASE-EDGE & Boundary or degenerate case dropped or double-counted (leading-zero, $x=0$, equality of two parameters). \\
+ERR-CASE-MODINDEX & Wrong period / parity / cycle length on an iterated structure (recurrence, matrix power, modular). \\
+\rowcolor{altrow}ERR-CASE-PARTITION & Missing or duplicate sub-case in a case enumeration. \\
+\hline
+\end{tabular}
+
+\subsection*{2.3 \cd{ERR-COMP} --- computation slip (4 values)}
+
+\begin{tabular}{|p{3cm}|p{12.5cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Value}} & \textcolor{white}{\textbf{When to tag}} \\
+\hline
+ERR-COMP-NONE & No computation slip. \\
+\rowcolor{altrow}ERR-COMP-ARITH & Arithmetic slip (a number added / multiplied wrong). \\
+ERR-COMP-SIGN & Sign or orientation flipped (vector direction, negative of an integral, wrong root sign). \\
+\rowcolor{altrow}ERR-COMP-ALGEBRA & Algebraic manipulation slip (wrong identity applied, factoring error). \\
+\hline
+\end{tabular}
+
+\subsection*{2.4 \cd{ERR-STRATEGY} --- strategic / meta error (3 values)}
+
+\begin{tabular}{|p{3cm}|p{12.5cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Value}} & \textcolor{white}{\textbf{When to tag}} \\
+\hline
+ERR-STRAT-NONE & No strategy error. \\
+\rowcolor{altrow}ERR-STRAT-TRAP & Took the bait --- invoked trap machinery (eigen / Cayley / L'H\^opital / NCERT-edge / length-of-problem) when a simpler method exists. \\
+ERR-STRAT-PARTIAL & Multi-correct partial-marking miscalibration (picked too many or too few options for the marking scheme's expected-value math). \\
+\hline
+\end{tabular}
+
+\subsection*{2.5 \cd{ERR-PARSING} --- failure to map statement to math (4 values)}
+
+\begin{tabular}{|p{3cm}|p{12.5cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Value}} & \textcolor{white}{\textbf{When to tag}} \\
+\hline
+ERR-PARSE-NONE & Statement was parsed correctly. \\
+\rowcolor{altrow}ERR-PARSE-LISTMATCH & Wrong mapping in List-I / List-II match (each computation correct in isolation). \\
+ERR-PARSE-GEOM3D & Failed to form / hold the geometric or 3D figure correctly. \\
+\rowcolor{altrow}ERR-PARSE-PASSAGE & Misunderstood the comprehension passage / multi-paragraph setup. \\
+\hline
+\end{tabular}
+
+\subsection*{Special pattern: ``didn't see the IDEA''}
+
+The all-\cd{NONE} pattern across the 5 diagnostic axes signals a \emph{pure conceptual failure} on the existing IDEA / SUB-IDEA axes (Group 1). This is the only failure type the original 7-axis model isolates. The platform displays it as: \emph{``didn't see the IDEA: [idea\_label].''}
+
+\newpage
+% ============================================================
+\section{Difficulty fields}\label{sec:diff}
+
+\subsection*{3.1 \cd{authored\_difficulty} --- T1--T5 intrinsic rating (existing)}
+
+Fixed forever, anchored to a top-10-rank student in their last 4--5 months of preparation.
+
+\begin{tabular}{|p{1.5cm}|p{14.0cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Code}} & \textcolor{white}{\textbf{Meaning}} \\
+\hline
+T1 & Easy standard \\
+\rowcolor{altrow}T2 & Standard medium \\
+T3 & Hard standard \\
+\rowcolor{altrow}T4 & Hard non-standard \\
+T5 & Top-100 only \\
+\hline
+\end{tabular}
+
+\subsection*{3.2 \cd{empirical\_difficulty\_by\_round} --- nullable, computed from real attempts}
+
+JSON object, one entry per round (R1--R4). Computed by the nightly Python batch job once a problem has $\geq$ 30 attempts. Each value is the success rate among students at or above the problem's intended round. Null while \cd{status = provisional}.
+
+% ============================================================
+\section{Time fields}\label{sec:time}
+
+\subsection*{4.1 \cd{authored\_time\_by\_round} --- per-round expected time, in seconds (existing)}
+
+JSON object with 4 keys (\cd{R1\_seconds}, \cd{R2\_seconds}, \cd{R3\_seconds}, \cd{R4\_seconds}). The \emph{hypothesis} for how long a top-10-rank student takes per round. Example from \cd{MAT.SPL.ORBSUM.CNJSP.001}: $\{R_1: 780, R_2: 540, R_3: 360, R_4: 210\}$ seconds.
+
+\subsection*{4.2 \cd{empirical\_time\_by\_round} --- per-round actual median, in seconds (nullable)}
+
+JSON object, same shape as authored. Computed by the nightly batch job once $\geq$ 30 attempts exist. Each value is the \emph{median} time among students who answered correctly. The authored-vs-empirical gap is itself useful signal (it measures and improves authoring intuition).
+
+% ============================================================
+\section{The R1--R4 round model}\label{sec:round}
+
+A per-student, per-fingerprint attribute --- \textbf{NOT an 8th axis of problem identity}. Stored on the \cd{student\_fingerprint\_state} table.
+
+\begin{tabular}{|p{1.5cm}|p{14.0cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Code}} & \textcolor{white}{\textbf{Stage of preparation}} \\
+\hline
+R1 & First Prep --- learning the idea; near-zero mastery. \\
+\rowcolor{altrow}R2 & First Revision --- ``seen it'' $\to$ ``can do it reliably.'' \\
+R3 & Second Revision --- integration; two-concept fusion, speed, surface variation. \\
+\rowcolor{altrow}R4 & Final Round --- optimisation; exam simulation, strategy, retention. \\
+\hline
+\end{tabular}
+
+Four levers change per round (the problem itself stays the same): inclusion (which problems to show), time expectation (same problem, solved faster each round), expected role (teaches idea $\to$ speed $\to$ triage), pass/fail threshold (rises each round).
+
+% ============================================================
+\section{Identifier fields}\label{sec:id}
+
+\subsection*{6.1 \cd{question\_code} --- natural primary key}
+
+Unique string of the form \cd{TOPIC.SUBTOPIC.IDEA.SUB-IDEA.NNN}, e.g.\ \cd{MAT.SPL.ORBSUM.CNJSP.001}. Used as foreign key from \cd{tests} (which store ordered arrays of codes) and \cd{attempts} (one row per student-per-question-per-attempt).
+
+\subsection*{6.2 \cd{serial} --- the NNN sequence within the fingerprint}
+
+Integer $\geq$ 1. Sequence within (TOPIC, SUBTOPIC, IDEA, SUB-IDEA). Together with the 4 fingerprint codes it forms the natural uniqueness constraint.
+
+% ============================================================
+\section{Content fields}\label{sec:content}
+
+\subsection*{7.1 \cd{statement} --- the question text}
+
+Markdown + LaTeX (KaTeX / MathJax-compatible). Rendered to the student. The full surface they see.
+
+\subsection*{7.2 \cd{answer} --- the correct answer (shape depends on \cd{ANSWER-TYPE})}
+
+\begin{itemize}\itemsep0em
+\item For \cd{MCQ-SC} / \cd{MCQ-MC}: \cd{\{type, correct\_options: ["A", "B", "C"]\}}.
+\item For \cd{NUM-INT} / \cd{NUM-DEC}: \cd{\{type, value: <number>, precision: <int>\}} (the \cd{precision} field is being added in Stage 2 to support the equality contract for matching wrong paths).
+\item For \cd{MAT-COL}: \cd{\{type, list\_i\_to\_list\_ii: \{1: "P", 2: "Q,R", ...\}\}}.
+\end{itemize}
+
+\subsection*{7.3 \cd{solution} --- the canonical worked-out solution}
+
+Markdown + LaTeX. Must use JEE-syllabus methods only (no eigenvalue decomposition for matrix problems unless the syllabus permits, etc.). Verified to produce the answer in \cd{answer}.
+
+\subsection*{7.4 \cd{wrong\_paths} --- array of plausible student-mistake records}
+
+JSON array. Typically 2--4 entries per problem. Each entry is a structured sub-object (see Group 8 below). Provides the diagnostic signal for the 5 new failure-mode axes.
+
+% ============================================================
+\newpage
+\section{Per-wrong-path subfields}\label{sec:wrongpath}
+
+Each entry in the \cd{wrong\_paths} array is itself a structured record with these fields:
+
+\subsection*{8.1 \cd{path} --- natural-language description of the mistake}
+
+What the student did wrong, in 1--3 sentences. Example: \emph{``Forgets that the diagonal frequency depends on $n$. Uses `2 times' (from the $n=3$ case in JEE 2019 P2 Q1) instead of `6 times' for $n=4$.''}
+
+\subsection*{8.2 \cd{landed\_on\_option} --- the wrong answer this mistake produces}
+
+For MCQ: the letter(s), e.g.\ \cd{"D"} or \cd{"A and B"}. For NUM: the value the wrong path produces, e.g.\ \cd{"$\beta$ = 52"}. This is what the wrong-path matcher uses to identify which path a real student took.
+
+\subsection*{8.3 \cd{diagnosis} --- short why-they-failed explanation}
+
+1--2 sentence explanation of the underlying error. Example: \emph{``Failure to generalize the orbit-frequency counting from $S_3$ to $S_n$.''}
+
+\subsection*{8.4 \cd{diagnostic\_tags} \NEW{} --- the 5 axes from Group 2}
+
+Object with exactly 5 keys, one value per axis from Group 2:
+\begin{itemize}\itemsep0em
+\item \cd{err\_reading}: one of \cd{ERR-READING-\{NONE, QUANTIFIER, NUMRANGE, VARDEF\}}
+\item \cd{err\_case}: one of \cd{ERR-CASE-\{NONE, EDGE, MODINDEX, PARTITION\}}
+\item \cd{err\_comp}: one of \cd{ERR-COMP-\{NONE, ARITH, SIGN, ALGEBRA\}}
+\item \cd{err\_strategy}: one of \cd{ERR-STRAT-\{NONE, TRAP, PARTIAL\}}
+\item \cd{err\_parsing}: one of \cd{ERR-PARSE-\{NONE, LISTMATCH, GEOM3D, PASSAGE\}}
+\end{itemize}
+
+So tagging one wrong path = 5 picks, one per axis. Tagging a problem with 3 wrong paths = 15 picks total. This is the calibration tagging burden.
+
+% ============================================================
+\section{Provenance \& lifecycle}\label{sec:prov}
+
+\subsection*{9.1 \cd{status} --- where the problem is in its lifecycle (2 values)}
+
+\begin{tabular}{|p{2.5cm}|p{13.0cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Value}} & \textcolor{white}{\textbf{Meaning}} \\
+\hline
+provisional & No human approval yet AND/OR no empirical data ($<$ 30 attempts). Mutable. \\
+\rowcolor{altrow}calibrated & Human-approved AND has $\geq$ 30 empirical attempts. Immutable --- importer refuses to overwrite. \\
+\hline
+\end{tabular}
+
+\subsection*{9.2 \cd{source\_metadata} --- provenance object}
+
+JSON object. Sub-fields:
+\begin{itemize}\itemsep0em
+\item \cd{type}: \cd{generated} (Claude wrote it) or \cd{refined} (existed somewhere, polished here).
+\item \cd{inspired\_by}: the source identifier of the JEE Advanced question or coaching problem that anchored this one. E.g.\ \cd{jeea-2019-p2-q1} or \cd{case-based-questions-2-q1}.
+\item \cd{parallel\_form}: boolean. True if axes 1--4 (TOPIC, SUBTOPIC, IDEA, SUB-IDEA) match the inspiration --- a parallel-form mastery-check rather than variety practice.
+\item \cd{generator}: \cd{claude}, \cd{<human-author-name>}, or other.
+\item \cd{created\_on}: ISO date.
+\item \cd{human\_reviewer}: who approved this problem (null until approved).
+\item \cd{approved\_at}: ISO date of human approval (null until approved).
+\end{itemize}
+
+\subsection*{9.3 Timestamps --- \cd{created\_at}, \cd{updated\_at}}
+
+DB-managed. \cd{created\_at} is set on first insert; \cd{updated\_at} auto-updates on every row change.
+
+% ============================================================
+\section{Derived / summary fields \NEW{}}\label{sec:derived}
+
+At the problem level, computed deterministically from the \cd{wrong\_paths} array. The Stage 2 Architect picks the mechanism (Postgres generated column / trigger / view). Once landed, application code MUST NOT be able to write to them --- drift between summary and source is structurally impossible.
+
+\subsection*{10.1 \cd{failure\_modes\_seen} --- distinct non-NONE values used (array)}
+
+Array of strings. For each of the 5 diagnostic axes, the distinct non-\cd{NONE} values that appear across the problem's wrong paths. GIN-indexed for fast queries like \emph{``find all problems where \cd{ERR-PARSE-GEOM3D} fires.''}
+
+\subsection*{10.2 Other summary columns proposed by the Architect}
+
+The Stage 2 Architect may propose additional summary columns (e.g.\ per-axis activation count). All must satisfy the same drift-proof invariant.
+
+% ============================================================
+\newpage
+\section{Per-attempt fields (live on \cd{attempts}, not \cd{problems})}\label{sec:attempt}
+
+When a student makes an attempt on a problem, a row is appended to the \cd{attempts} table (append-only --- never UPDATE'd or DELETE'd). The attempt references the problem by \cd{question\_code}, and carries these fields:
+
+\begin{itemize}\itemsep0em
+\item \cd{student\_id} --- FK to \cd{students}.
+\item \cd{question\_code} --- FK to \cd{problems}.
+\item \cd{test\_id} --- FK to \cd{tests}; nullable (null means a standalone practice attempt).
+\item \cd{correct} --- boolean, did they get the right answer.
+\item \cd{time\_seconds} --- how long they spent on this question, measured silently by the test runtime.
+\item \cd{visit\_count} --- how many times they returned to this question (1 = single visit; 2+ = navigated away and came back).
+\item \cd{marked\_for\_review} --- boolean, did they tick the ``mark for review'' button.
+\item \cd{attempt\_order} --- 1st, 2nd, 3rd attempt by this student at this question across all time.
+\item \cd{round\_at\_time} --- which round (R1--R4) the student was in when they attempted this. Per the round model in Group 5.
+\item \cd{hints\_used} --- integer count of hints / tips revealed during the attempt.
+\item \cd{created\_at} --- timestamp.
+\end{itemize}
+
+These fields feed the nightly batch job that computes the \emph{empirical} versions of difficulty and time (Groups 3.2 and 4.2). They also drive the wrong-path matcher: given a student's wrong answer + their \cd{landed\_on\_option}, the system looks up the matching \cd{wrong\_paths} entry to identify which failure modes activated.
+
+% ============================================================
+\bigskip\hrule\bigskip
+
+\section*{Summary --- total tagging surface for one problem}
+
+\begin{tabular}{|p{6.5cm}|c|p{5.5cm}|}
+\hline
+\rowcolor{headergray}\textcolor{white}{\textbf{Group}} & \textcolor{white}{\textbf{Fields}} & \textcolor{white}{\textbf{Notes}} \\
+\hline
+1. Identity axes & 7 & All required, enums or strings \\
+\rowcolor{altrow}2. Diagnostic axes \NEW{} & 5 per wrong-path & 15 picks if 3 wrong paths \\
+3 + 4. Difficulty + Time & 4 & 2 authored, 2 empirical (nullable) \\
+\rowcolor{altrow}6. Identifier & 2 & question\_code + serial \\
+7. Content & 4 & Includes wrong\_paths array \\
+\rowcolor{altrow}8. Per-wrong-path subfields & 4 per entry & Including diagnostic\_tags \\
+9. Provenance & 8 sub-fields & status + source\_metadata + timestamps \\
+\rowcolor{altrow}10. Derived / summary \NEW{} & $\geq$ 1 & Auto-computed \\
+11. Per-attempt fields & 11 (on attempts) & Not on problems table \\
+\hline
+\rowcolor{newhl}\textbf{Total fields on a fully tagged problem} & $\sim$\textbf{35} & Most required at insert \\
+\hline
+\end{tabular}
+
+\bigskip
+\textbf{Net new burden added by Stage 1 PRD:} the 5 \cd{diagnostic\_tags} values per wrong-path entry. For a typical 3-wrong-path problem: 15 extra picks. At $\sim$4 min/problem steady state ($\sim$8--12 min during the first 30 questions of calibration warm-up). Total upfront calibration cost: $\sim$15 reviewer-hours.
+
+\bigskip\hrule\bigskip
+
+\noindent\small
+\textit{Source-of-truth files: \cd{agent-factory/scorecards/01-prd-final.md} for the Stage 1 PRD; \cd{docs/PROJECT CONTEXT.md} for the binding 7-axis spec; \cd{content/taxonomy/maths.yaml} for the working enum value catalogue.}
+
+\end{document}

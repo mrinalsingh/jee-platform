@@ -70,3 +70,6 @@ pids
 
 # Local HTML previews of generated questions (derivatives, not source-of-truth)
 docs/previews/
+
+# Source material — JEE PY papers (too large for git, copyrighted by IIT JEE)
+_JEE PY Papers/

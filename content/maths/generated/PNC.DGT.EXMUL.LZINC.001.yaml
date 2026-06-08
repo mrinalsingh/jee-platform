@@ -1,0 +1,115 @@
+schema_version: 1
+
+question_code: PNC.DGT.EXMUL.LZINC.001
+
+fingerprint:
+  topic: PNC
+  subtopic: DGT
+  idea: EXMUL
+  sub_idea: LZINC
+  answer_type: NUM-INT
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 1500   # 25 min — first encounter; case enumeration + leading-zero takes thought
+  R2_seconds: 900    # 15 min — idea recalled; careful execution
+  R3_seconds: 600    # 10 min — fluent
+  R4_seconds: 360    # 6 min  — exam pace, near-automatic
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: case-based-questions-2-q1   # source: 9-digit numbers from {5..9}, each appearing digit ≥3 times, N/5 = 4201
+  parallel_form: false                      # axes 1-2 shared with source; axes 3-4 differ — variety, not parallel-form
+  generator: claude
+  created_on: 2026-05-25
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $N$ denote the number of $10$-digit positive integers (no leading zero), all of whose digits are chosen from the set $\{0, 1, 2, 3, 4, 5\}$, satisfying both of the following:
+
+  (a) **exactly** $4$ distinct digits appear in the integer, and
+
+  (b) every digit that appears in the integer appears **at least twice**.
+
+  Find the value of $\dfrac{N}{1000}$.
+
+answer:
+  type: NUM-INT
+  value: 2835
+
+solution: |
+  ### The IDEA
+  Two layered choices: (i) which $4$ of the $6$ digits actually appear, and (ii) how many times each chosen digit appears. Each multiplicity is $\ge 2$ and they sum to $10$, so the unordered multiplicity multiset is either $\{4,2,2,2\}$ or $\{3,3,2,2\}$ — these are the only partitions of $10$ into $4$ parts each $\ge 2$. For each (digit-set, multiplicity-assignment) pair, count linear arrangements via the multinomial coefficient. Finally, subtract arrangements starting with $0$ (only relevant when $0$ is in the chosen 4-digit set).
+
+  ### Step 1 — total arrangements (ignoring leading-zero)
+
+  Choose the $4$-digit set: $\binom{6}{4} = 15$ ways.
+
+  For one fixed 4-digit set, sum the arrangements over the two multiplicity shapes:
+
+  - **Shape $\{4,2,2,2\}$**: pick which one of the $4$ digits gets count $4$ ($4$ ways). Arrangements per assignment: $\dfrac{10!}{4!\,2!\,2!\,2!} = 18\,900$. Subtotal $= 4 \times 18\,900 = 75\,600$.
+  - **Shape $\{3,3,2,2\}$**: pick which $2$ of the $4$ digits get count $3$ ($\binom{4}{2} = 6$ ways). Arrangements per assignment: $\dfrac{10!}{3!\,3!\,2!\,2!} = 25\,200$. Subtotal $= 6 \times 25\,200 = 151\,200$.
+
+  Per 4-digit set: $75\,600 + 151\,200 = 226\,800$. Across all $15$ sets:
+  $$
+  \text{Pre-correction total} = 15 \times 226\,800 = 3\,402\,000.
+  $$
+
+  ### Step 2 — leading-zero correction
+
+  Only the $\binom{5}{3} = 10$ four-digit sets that contain $0$ contribute. For each such set $\{0, a, b, c\}$, count arrangements with $0$ in position $1$: fix one $0$ there and arrange the remaining $9$ positions.
+
+  Sum the leading-zero count over all $10$ ordered multiplicity tuples $(c_0, c_a, c_b, c_c)$ with each $\ge 2$ and summing to $10$:
+
+  | Shape | $c_0$ value | # of tuples | LZ count per tuple | Subtotal |
+  |---|---|---|---|---|
+  | $\{4,2,2,2\}$ | $c_0 = 4$ | $1$ | $\dfrac{9!}{3!\,2!\,2!\,2!} = 7\,560$ | $7\,560$ |
+  | $\{4,2,2,2\}$ | $c_0 = 2$ | $3$ | $\dfrac{9!}{1!\,4!\,2!\,2!} = 3\,780$ | $11\,340$ |
+  | $\{3,3,2,2\}$ | $c_0 = 3$ | $3$ | $\dfrac{9!}{2!\,3!\,2!\,2!} = 7\,560$ | $22\,680$ |
+  | $\{3,3,2,2\}$ | $c_0 = 2$ | $3$ | $\dfrac{9!}{1!\,3!\,3!\,2!} = 5\,040$ | $15\,120$ |
+
+  Per set containing $0$: $7\,560 + 11\,340 + 22\,680 + 15\,120 = 56\,700$.
+
+  Total leading-zero subtraction: $10 \times 56\,700 = 567\,000$.
+
+  ### Step 3 — finish
+
+  $$
+  N \;=\; 3\,402\,000 \;-\; 567\,000 \;=\; 2\,835\,000.
+  $$
+
+  $$
+  \boxed{\ \dfrac{N}{1000} \;=\; 2835.\ }
+  $$
+
+  No machinery outside JEE syllabus — only the addition + multiplication principles, multinomial coefficients, and an inclusion-exclusion edge correction.
+
+wrong_paths:
+  - path: "Forgets the leading-zero correction entirely. Computes total = 3,402,000 and reports N/1000 = 3402."
+    landed_on_option: "3402"
+    diagnosis: "TRAP-EDGE. Problem explicitly says \"10-digit positive integer\" — a leading 0 makes it a 9-digit integer. The student must recognize that 0 ∈ the digit set forces a correction step. Classical JEE counting-with-digit-restrictions edge case."
+
+  - path: "Reads constraint (a) as \"at most 4 distinct digits appear\" instead of \"exactly 4\". Adds the (3-distinct), (2-distinct), (1-distinct) cases on top, overcounting significantly."
+    landed_on_option: "Larger value (depends on extent of overcount)"
+    diagnosis: "Reading-comprehension error. The word \"exactly\" is the lock — without it the problem opens up. JEE problems frequently use \"exactly\" vs \"at most\" / \"at least\" to control case structure."
+
+  - path: "Identifies only one of the two multiplicity partitions (e.g. only {3,3,2,2}, forgetting {4,2,2,2}) and reports roughly half the answer."
+    landed_on_option: "~1418 or ~1417 (depends on which shape was missed and whether LZ correction was applied)"
+    diagnosis: "Incomplete case enumeration. Four positive parts summing to 10 each ≥ 2 has TWO unordered shapes, not one. The student should systematically list partitions before counting."
+
+  - path: "Treats the multinomial choice of \"which digit gets the higher count\" as a single choice instead of separate per-shape ($4$ for {4,2,2,2}, $\\binom{4}{2}=6$ for {3,3,2,2})."
+    landed_on_option: "Lower value (e.g. 1419 if used 1 × 18900 + 1 × 25200 per 4-set)"
+    diagnosis: "Underweights the labeling step. Each ordered multiplicity assignment to specific digits is a distinct case in the arrangement count."
+
+review_notes: |
+  - **Inspired by** Q1 of "Case based questions 2" (handwritten PnC source bank): "9-digit numbers from {5..9} where every appearing digit repeats ≥3 times; find N/5." Source answer 4201.
+  - **Difficulty bump:** the source is a clean compositional-multinomial enumeration over one shape family. This generated variant adds (i) the **"exactly k distinct"** layer, (ii) **leading-zero correction** because 0 is now in the digit set, and (iii) length 10 vs 9 with a stricter multiplicity floor. The IDEA differs from the source's (source = pure composition-sum; this = composition-sum × subset-choice × edge-inclusion-exclusion).
+  - **T4** (hard non-standard). Honest expectation: a top-10-level student in R4 finishes in ~6 min; in R1 it's a 20–30 min struggle with multiple false starts (most likely forgetting either the leading-zero step or one of the multiplicity shapes).
+  - The answer $2835$ is round but not obviously memorable. If the human reviewer judges it too clean, a variant asking for $N \bmod 10000$ ($= 5000$) or $N$ in full ($2\,835\,000$) is straightforward.
+  - **Note on taxonomy:** this is the first PNC entry in the bank, so it extended `/content/taxonomy/maths.yaml` with the PNC subtopics, the IDEA `EXMUL`, and the sub-idea `LZINC`. Future PnC problems will reuse / extend this scaffold.
