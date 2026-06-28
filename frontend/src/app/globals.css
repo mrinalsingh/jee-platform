@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
+/*
+ * jee_platform — runtime design tokens
+ * Derived from PRD-16 §7 + design-lock 2026-06-26:
+ *   - Lock #1: accent #3754C5 (NotebookLM-aligned calm blue)
+ *   - Lock #2: Inter variable font (loaded via next/font/google in layout.tsx)
+ *   - Lock #3: hybrid palette intensity — `[data-palette=exam_muscle_memory]`
+ *              vs `[data-palette=calm]`; switched by RuntimeProvider from the
+ *              test session's target_exam.
+ *   - Lock #6: progressive anti-cheat ramp — amber / amber-red / red
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Neutrals (light) */
+  --surface-0: #ffffff;
+  --surface-1: #f7f7f5;
+  --surface-2: #eaeae6;
+  --border-subtle: #dedeD9;
+
+  /* Text */
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-tertiary: #9a9a9a;
+
+  /* Accent (calm blue — design-lock #1) */
+  --accent: #3754c5;
+  --accent-strong: #2a40a1;
+  --accent-subtle-bg: rgba(55, 84, 197, 0.04);
+  --accent-on: #ffffff;
+
+  /* Anti-cheat ramp (design-lock #6) */
+  --violation-1-bg: #f59e0b;
+  --violation-1-text: #1a1a1a;
+  --violation-2-bg: #f97316;
+  --violation-2-text: #ffffff;
+  --violation-3-bg: #dc2626;
+  --violation-3-text: #ffffff;
+
+  /* Calm palette (default, also exposed at :root for safety) */
+  --palette-not-visited-bg: #e5e7eb;
+  --palette-not-visited-fg: #1a1a1a;
+  --palette-visited-bg: #f59e0b;
+  --palette-visited-fg: #1a1a1a;
+  --palette-answered-bg: #10b981;
+  --palette-answered-fg: #ffffff;
+  --palette-marked-bg: #8b5cf6;
+  --palette-marked-fg: #ffffff;
+  --palette-marked-dot: #10b981;
+
+  /* Layout */
+  --topbar-height: 64px;
+  --palette-rail-width: 240px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-palette="calm"] {
+  --palette-not-visited-bg: #e5e7eb;
+  --palette-not-visited-fg: #1a1a1a;
+  --palette-visited-bg: #f59e0b;
+  --palette-visited-fg: #1a1a1a;
+  --palette-answered-bg: #10b981;
+  --palette-answered-fg: #ffffff;
+  --palette-marked-bg: #8b5cf6;
+  --palette-marked-fg: #ffffff;
+  --palette-marked-dot: #10b981;
+}
+
+[data-palette="exam_muscle_memory"] {
+  --palette-not-visited-bg: #9ca3af;
+  --palette-not-visited-fg: #ffffff;
+  --palette-visited-bg: #dc2626;
+  --palette-visited-fg: #ffffff;
+  --palette-answered-bg: #16a34a;
+  --palette-answered-fg: #ffffff;
+  --palette-marked-bg: #7c3aed;
+  --palette-marked-fg: #ffffff;
+  --palette-marked-dot: #16a34a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --surface-0: #0f0f11;
+    --surface-1: #16171a;
+    --surface-2: #202125;
+    --border-subtle: #2a2b30;
+    --text-primary: #f3f3f0;
+    --text-secondary: #a0a0a6;
+    --text-tertiary: #75757c;
+    --accent: #7e97f0;
+    --accent-strong: #9cb1f5;
+    --accent-subtle-bg: rgba(126, 151, 240, 0.06);
+    --accent-on: #0f0f11;
   }
 }
 
+@theme inline {
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-border-subtle: var(--border-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
+}
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* Focus rings — design-lock #1, WCAG 2.2 AA */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* No selection on question statement / option rows — anti-cheat (US-9) */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* KaTeX size bump per PRD §7.1 */
+.katex {
+  font-size: 1.05em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
 }
