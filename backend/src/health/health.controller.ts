@@ -11,11 +11,11 @@
 
 import { Controller, Get } from "@nestjs/common";
 import { Public } from "../auth/auth.guard";
-// Read the version statically from package.json so the value is bundled at
-// build time (nest build with tsconfig "resolveJsonModule": true). Falls back
-// to "unknown" if the import path is rewritten by the bundler.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pkg = require("../../package.json") as { version?: string };
+// npm sets npm_package_version when running scripts ("npm run start", etc.),
+// so the value is correct in both ts-node dev mode and the compiled dist.
+// Avoids the require("../../package.json") path being wrong after compilation
+// to dist/src/health/health.controller.js (one extra level deep).
+const VERSION = process.env.npm_package_version ?? "unknown";
 
 /** Process boot time — captured once at module load so uptime is monotonic. */
 const PROCESS_START_MS = Date.now();
@@ -45,7 +45,7 @@ export class HealthController {
     const now = Date.now();
     return {
       status: "ok",
-      version: pkg.version ?? "unknown",
+      version: VERSION,
       uptime: Math.floor((now - PROCESS_START_MS) / 1000),
       timestamp: new Date(now).toISOString(),
     };

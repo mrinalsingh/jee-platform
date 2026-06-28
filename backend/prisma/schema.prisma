@@ -26,8 +26,12 @@
 // All migrations reversible — see backend/prisma/migrations/NNNN_*/down.sql.
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  // Legacy CommonJS-compatible generator. The newer `prisma-client` generator
+  // emits ESM code (import.meta.url) that breaks under nest start + tsconfig
+  // module: nodenext when the package.json has no "type": "module". The legacy
+  // generator outputs to node_modules/@prisma/client by default and works with
+  // NestJS DI + Jest out of the box. Switched 2026-06-28 during demo bring-up.
+  provider = "prisma-client-js"
 }
 
 datasource db {

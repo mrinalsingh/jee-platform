@@ -9,18 +9,16 @@
 
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 
-// PrismaService is a thin proxy over the generated client that defers the
-// import to construction time. The generated client uses `import.meta.url`
-// which Jest's CommonJS runtime cannot evaluate at module-load — by deferring
-// the require, controller unit tests (which never instantiate this service —
-// they DI-override it with a mock) avoid loading the client at all.
+// PrismaService is a thin proxy over the legacy `@prisma/client` generator.
+// Switched from the new prisma-client (ESM, import.meta.url) on 2026-06-28
+// because the new generator broke nest start with module: nodenext and no
+// "type": "module" in package.json. The legacy client is CommonJS-compatible
+// and works with NestJS DI + Jest unchanged.
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
-  // Underlying Prisma client instance. Typed `any` so we don't pull the
-  // generated client's types into the spec compile graph — services that need
-  // typed access call `this.client` directly and TypeScript infers `any` for
-  // the `$queryRawUnsafe` overloads we use.
+  // Underlying Prisma client instance. Typed `any` so services using raw SQL
+  // (`$queryRawUnsafe` / `$executeRawUnsafe`) get the generic overload.
   private client: any;
 
   constructor() {
@@ -28,11 +26,11 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     if (!url) {
       throw new Error("DATABASE_URL is not set; see architecture §11.1");
     }
-    // Deferred require — see note above.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { PrismaClient } = require("../../generated/prisma/client");
+    const { PrismaClient } = require("@prisma/client");
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { PrismaPg } = require("@prisma/adapter-pg");
+    // Prisma 7.x requires a driver adapter — the engine is gone.
     const adapter = new PrismaPg({ connectionString: url });
     this.client = new PrismaClient({ adapter });
   }
