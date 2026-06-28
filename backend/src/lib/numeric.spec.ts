@@ -108,6 +108,60 @@ describe("normalizeNumDec — input validation", () => {
   });
 });
 
+/**
+ * Cross-side byte-equality probe (PRD-16 v2 Glossary `@jee/numeric-normalise`):
+ * "The same module is imported by (1) the YAML importer, (2) the runtime
+ * answer-compare on the server, and (3) the diagnostic-axis wrong-path
+ * matcher." This unit test reproduces the 20-row fixture the frontend tests
+ * with — except where the backend specifically COLLAPSES `-0`.
+ *
+ * Documented divergence (see numeric.ts §"Canonical output rule"):
+ *   - Backend collapses negative-zero outputs to "0" / "0.00"
+ *   - Frontend (frontend/src/lib/numeric.ts) does NOT collapse — `-0.5` at
+ *     p=0 emits the string "-0".
+ *
+ * For NUM-DEC answer compare this is safe because the BACKEND is the storage
+ * authority. But anyone authoring a wrong_paths entry whose canonical form is
+ * literally "-0" should be aware the importer normalises away the sign.
+ */
+describe("normalizeNumDec — cross-side byte-equality with frontend fixture", () => {
+  const FRONTEND_FIXTURE: Array<{
+    input: string;
+    precision: number;
+    expectedBackend: string;
+    note?: string;
+  }> = [
+    { input: "1.005", precision: 2, expectedBackend: "1.00" },
+    { input: "1.015", precision: 2, expectedBackend: "1.02" },
+    { input: "1.025", precision: 2, expectedBackend: "1.02" },
+    { input: "1.035", precision: 2, expectedBackend: "1.04" },
+    // DIVERGENT: frontend keeps "-0"; backend collapses to "0".
+    { input: "-0.5", precision: 0, expectedBackend: "0", note: "backend collapses -0" },
+    { input: "2.5", precision: 0, expectedBackend: "2" },
+    { input: "3.5", precision: 0, expectedBackend: "4" },
+    { input: "0.5", precision: 0, expectedBackend: "0" },
+    { input: "-2.5", precision: 0, expectedBackend: "-2" },
+    { input: "-3.5", precision: 0, expectedBackend: "-4" },
+    { input: "2.00", precision: 2, expectedBackend: "2.00" },
+    { input: "2", precision: 2, expectedBackend: "2.00" },
+    { input: "0", precision: 2, expectedBackend: "0.00" },
+    { input: "-0.50", precision: 2, expectedBackend: "-0.50" },
+    { input: "3.14159", precision: 2, expectedBackend: "3.14" },
+    { input: "3.14559", precision: 2, expectedBackend: "3.15" },
+    { input: "100", precision: 0, expectedBackend: "100" },
+    { input: "-1", precision: 1, expectedBackend: "-1.0" },
+    { input: "0.005", precision: 2, expectedBackend: "0.00" },
+    { input: "0.015", precision: 2, expectedBackend: "0.02" },
+  ];
+
+  for (const row of FRONTEND_FIXTURE) {
+    const tag = row.note ? ` [DIVERGENT — ${row.note}]` : "";
+    it(`${row.input} @ p=${row.precision} → "${row.expectedBackend}"${tag}`, () => {
+      expect(normalizeNumDec(row.input, row.precision)).toBe(row.expectedBackend);
+    });
+  }
+});
+
 describe("byteEqualNormalized", () => {
   it("matches equivalent values after rounding", () => {
     expect(byteEqualNormalized(2.5, "2.50", 0)).toBe(true); // 2.5 → 2 (even); 2.50 → 2

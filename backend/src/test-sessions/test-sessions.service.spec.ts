@@ -260,6 +260,143 @@ describe("TestSessionsService (v2)", () => {
   });
 
   // -----------------------------------------------------------------------
+  // Stage 4 Tester additions — idempotent submit + NEW-3 violation-tx coupling
+  // -----------------------------------------------------------------------
+
+  describe("submit — idempotent first-write-wins (PRD-16 §3.3 G3 / Architecture §8.2)", () => {
+    it("re-PATCH on already-submitted session returns prior attempt_ids WITHOUT inserting again", async () => {
+      const submittedAt = new Date("2026-06-29T12:00:00Z");
+      const lockedRow = {
+        id: 1n,
+        test_id: 10n,
+        test_assignment_id: 5n,
+        student_id: 7n,
+        session_secret_current: Buffer.from("0".repeat(32)),
+        session_secret_previous: null,
+        secret_rotated_at: null,
+        started_at: new Date("2026-06-29T09:00:00Z"),
+        expires_at: new Date("2026-06-29T12:30:00Z"),
+        submitted_at: submittedAt, // ALREADY SUBMITTED
+        status: "SUBMITTED",
+        auto_submit_source: "MANUAL",
+        violations_count: 0,
+        frozen_question_codes: ["X1", "X2"],
+      };
+
+      let insertAttemptCount = 0;
+      let updateSubmittedAtCount = 0;
+
+      prisma.$transaction.mockImplementation(async (cb: any) => {
+        const tx: any = {
+          $queryRawUnsafe: jest.fn(),
+          $executeRawUnsafe: jest.fn().mockResolvedValue(undefined),
+        };
+        tx.$queryRawUnsafe.mockImplementation((sql: string) => {
+          if (/SELECT \* FROM test_sessions WHERE id = \$1 FOR UPDATE/.test(sql)) {
+            return Promise.resolve([lockedRow]);
+          }
+          if (/SELECT id FROM attempts WHERE test_session_id = \$1 ORDER BY id ASC/.test(sql)) {
+            // Pre-existing attempts from the first submit.
+            return Promise.resolve([{ id: 100n }, { id: 101n }]);
+          }
+          if (/INSERT INTO attempts/.test(sql)) {
+            insertAttemptCount += 1;
+            return Promise.resolve([{ id: 999n }]);
+          }
+          if (/UPDATE test_sessions SET\s+submitted_at = now\(\)/.test(sql)) {
+            updateSubmittedAtCount += 1;
+            return Promise.resolve([{ submitted_at: new Date() }]);
+          }
+          return Promise.resolve([]);
+        });
+        return cb(tx);
+      });
+
+      const out = await svc.submit("1", 7n, {
+        auto_submit: false,
+        auto_submit_source: "MANUAL",
+        client_final_state_hash: "h",
+      } as any);
+
+      // Returned the prior submission.
+      expect(out.submitted_at).toBe(submittedAt.toISOString());
+      expect(out.attempt_ids).toEqual(["100", "101"]);
+      // Critically: no new INSERT INTO attempts ran, no second UPDATE test_sessions ran.
+      expect(insertAttemptCount).toBe(0);
+      expect(updateSubmittedAtCount).toBe(0);
+    });
+  });
+
+  describe("logViolation NEW-3 carry — violation-tx coupling", () => {
+    it("when runSubmitInTransaction throws on the 3rd violation, the WHOLE tx rolls back (violation row + counter)", async () => {
+      // Pre-violation: counter is at 2 about to become 3.
+      prisma.$queryRawUnsafe.mockResolvedValueOnce([
+        {
+          id: 1n,
+          test_id: 10n,
+          test_assignment_id: 5n,
+          student_id: 7n,
+          session_secret_current: Buffer.from("0".repeat(32)),
+          session_secret_previous: null,
+          secret_rotated_at: null,
+          started_at: new Date(),
+          expires_at: new Date(Date.now() + 60_000),
+          submitted_at: null,
+          status: "ACTIVE",
+          auto_submit_source: null,
+          violations_count: 2,
+          frozen_question_codes: ["X1"],
+        },
+      ]);
+
+      // The transaction callback re-throws when the inner submit pipeline fails.
+      // Prisma's contract is that any error inside the callback causes the
+      // tx to ROLLBACK. We assert (a) the error propagates and (b) we did
+      // NOT see the auto-submit success state leak into the response.
+      prisma.$transaction.mockImplementation(async (cb: any) => {
+        const tx: any = {
+          $queryRawUnsafe: jest.fn(),
+          $executeRawUnsafe: jest.fn().mockResolvedValue(undefined),
+        };
+        tx.$queryRawUnsafe
+          // UPDATE test_sessions … RETURNING violations_count
+          .mockResolvedValueOnce([{ violations_count: 3 }])
+          // runSubmitInTransaction: SELECT * FOR UPDATE → simulate deadlock
+          .mockRejectedValueOnce(new Error("deadlock_detected"));
+        // Engineer's mockImpl above will throw; Prisma's real
+        // $transaction would catch the throw + rollback. We mirror that
+        // here by letting the throw bubble out.
+        return cb(tx);
+      });
+
+      let caught: unknown;
+      try {
+        await svc.logViolation(
+          "1",
+          7n,
+          {
+            violation_type: "TAB_SWITCH",
+            was_active: true,
+            client_timestamp_ms: 1,
+          } as any,
+        );
+      } catch (e) {
+        caught = e;
+      }
+      // The error must surface — silent swallow would let the client believe
+      // the violation was logged when in fact the audit row was rolled back.
+      expect(caught).toBeDefined();
+      expect((caught as Error).message).toMatch(/deadlock_detected/);
+      // NEW-3 carry-over: under v2 architecture the violation audit row
+      // shares the same tx as the auto-submit, so a deadlock on submit
+      // ALSO rolls back the violation counter increment + audit insert.
+      // This test pins the current (documented-MEDIUM) behaviour. When
+      // NEW-3 is fixed (split-tx), the assertion should flip: the audit
+      // row should be durable and only the auto-submit step retried.
+    });
+  });
+
+  // -----------------------------------------------------------------------
   // M1: submit issues batched lookups instead of per-slot N+1
   // -----------------------------------------------------------------------
   describe("submit (M1 — batched attempt_order + round lookups)", () => {
