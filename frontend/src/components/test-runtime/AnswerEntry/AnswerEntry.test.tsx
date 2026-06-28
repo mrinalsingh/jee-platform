@@ -137,6 +137,51 @@ describe('MAT-COL', () => {
     );
     expect(screen.getAllByRole('combobox')).toHaveLength(3);
   });
+
+  // [UX Audit v1 loop-back HIGH-1] — List-II must render with KaTeX above
+  // the matching grid so LaTeX-heavy options are legible; the dropdowns
+  // are label-only pickers (native `<option>` cannot render math).
+  it('renders LaTeX List-II options as a KaTeX block above the matching grid', () => {
+    render(
+      <AnswerEntry
+        answerType="MAT-COL"
+        spec={{ type: 'MAT-COL', list_i_count: 2, list_ii_count: 3 }}
+        value={{ type: 'MAT-COL', pairs: {} }}
+        list_i={['Statement A', 'Statement B']}
+        list_ii={['$\\frac{1}{2}$', '$\\sin\\theta$', '$\\pi$']}
+        onChange={() => {}}
+        {...baseProps}
+      />,
+    );
+    // The labelled List-II block must exist and contain KaTeX markup.
+    const listIIBlock = screen.getByLabelText('List II options');
+    expect(listIIBlock).toBeInTheDocument();
+    expect(listIIBlock.querySelector('.katex')).not.toBeNull();
+  });
+
+  it('shows dropdown options as bare numeric labels (no LaTeX text inside <option>)', () => {
+    render(
+      <AnswerEntry
+        answerType="MAT-COL"
+        spec={{ type: 'MAT-COL', list_i_count: 2, list_ii_count: 3 }}
+        value={{ type: 'MAT-COL', pairs: {} }}
+        list_i={['Statement A', 'Statement B']}
+        list_ii={['$\\frac{1}{2}$', '$\\sin\\theta$', '$\\pi$']}
+        onChange={() => {}}
+        {...baseProps}
+      />,
+    );
+    const select = screen.getByLabelText(
+      'List II selection for row P',
+    ) as HTMLSelectElement;
+    // Options should be "— pick —", "(1)", "(2)", "(3)" — no LaTeX strings.
+    const optionTexts = Array.from(select.options).map((o) => o.textContent);
+    expect(optionTexts).toEqual(['— pick —', '(1)', '(2)', '(3)']);
+    // None of the option labels should contain a TeX-source fragment.
+    for (const t of optionTexts) {
+      expect(t).not.toMatch(/\\frac|\\sin|theta|\$/);
+    }
+  });
 });
 
 describe('unknown answer type', () => {

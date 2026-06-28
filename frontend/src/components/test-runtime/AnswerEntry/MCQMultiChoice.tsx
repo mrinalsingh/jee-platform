@@ -19,7 +19,7 @@ export function MCQMultiChoice(
     return (
       <div
         role="alert"
-        className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-800"
+        className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-bg)] p-4 text-[var(--danger-text)]"
       >
         This MCQ has an unsupported option count ({mcqSpec.option_count}).
         Please contact your teacher.

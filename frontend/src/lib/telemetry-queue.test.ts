@@ -228,6 +228,46 @@ describe('TelemetryQueue', () => {
     expect(q.pendingCount()).toBe(3);
   });
 
+  // [Stage 4 Tester — NEW-7 regression probe]
+  // The v3 Code Review flagged NEW-7 (LOW): drainAndWait does NOT early-exit
+  // when the queue is dormant. It instead spins in 200ms sleep increments
+  // until maxWaitMs elapses. This is functionally benign (tryDrainOnce returns
+  // immediately on each tick because of the dormant guard) but produces a
+  // user-visible UI delay before the AuthErrorBanner replaces the "draining"
+  // submit modal. This test PINS the current behaviour so a future fix
+  // (adding `if (this.dormant) return false;` inside the loop) is intentional.
+  it('NEW-7: drainAndWait does NOT early-exit when dormant (current LOW carry-over)', async () => {
+    const s = makeSender();
+    s.sender.postSnapshot = async () => {
+      throw new SessionAuthError('snapshot PATCH 401');
+    };
+    const q = new TelemetryQueue('Snew7', { sender: s.sender });
+    await q.hydrate();
+    await q.enqueueSnapshot(0, {
+      answer_payload: { type: 'MCQ-SC', selected_option: 0 },
+      marked_for_review: false,
+      time_seconds_delta: 0,
+      visit_count: 1,
+    });
+    // Allow the 401 to propagate and set dormant.
+    await new Promise((r) => setTimeout(r, 30));
+    expect(q.isDormant()).toBe(true);
+    expect(q.pendingCount()).toBe(1);
+
+    // drainAndWait with a small budget — should return false (timeout)
+    // rather than true, because pending stays > 0 in the dormant state.
+    const t0 = Date.now();
+    const ok = await q.drainAndWait(600);
+    const elapsed = Date.now() - t0;
+    expect(ok).toBe(false);
+    // Spent close to the budget (≥ ~400 ms — two 200-ms sleeps) — proves
+    // it polled rather than returning immediately. If NEW-7 is fixed to
+    // early-exit on dormant, elapsed should drop to ~0-1 ms and this
+    // assertion should be flipped.
+    expect(elapsed).toBeGreaterThanOrEqual(400);
+    expect(q.pendingCount()).toBe(1);
+  });
+
   // [UPDATED v3 — NEW-1]
   it('resume() after 401 re-arms the queue and drains pending items', async () => {
     const s = makeSender();

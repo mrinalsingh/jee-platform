@@ -145,7 +145,12 @@ describe('RuntimeProvider — NEW-1 auth-error path', () => {
     });
 
     expect(screen.getByRole('alertdialog')).toBeInTheDocument();
-    expect(screen.getByText(/your session ended/i)).toBeInTheDocument();
+    // [UX Audit v1 HIGH-2] — headline was rewritten from "Your session
+    // ended" (auditor flagged it as scary/ambiguous) to a reassurance:
+    // "Sign in to keep going — your test isn't over".
+    expect(
+      screen.getByText(/sign in to keep going/i),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /sign in/i }),
     ).toBeInTheDocument();

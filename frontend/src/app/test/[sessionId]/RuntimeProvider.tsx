@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { AnswerEntry } from '@/components/test-runtime/AnswerEntry';
@@ -152,6 +152,14 @@ export function RuntimeProvider(
   const [authError, setAuthError] = useState<'expired_session' | null>(null);
   const authErrorRef = useRef<'expired_session' | null>(null);
 
+  // [UX Audit v1 HIGH-2] — `syncConfirmed` flips true for ~3s once the
+  // queue drains successfully AFTER an auth-recovery cycle. It is the
+  // "your answers are now synced" toast the audit asked for. The ref
+  // `recoveredFromAuthErrorRef` arms the toast: it is set when the queue
+  // resume()s post-relogin, then cleared after the next successful drain.
+  const [syncConfirmed, setSyncConfirmed] = useState(false);
+  const recoveredFromAuthErrorRef = useRef(false);
+
   // -------- anti-cheat counter + banner --------
   const [violationsCount, setViolationsCount] = useState(
     session.violations_count ?? 0,
@@ -206,7 +214,19 @@ export function RuntimeProvider(
   // Clears connection-health degradation (it's not a network problem) and
   // suppresses the network-fallback path so the timer-expiry handler won't
   // autosubmit while the cookie is the real problem.
-  const handleAuthFailure = (): void => {
+  //
+  // [UX Audit v1 HIGH-2] — `handleAuthFailure` additionally tags
+  // sessionStorage so that, after the round-trip through `/login`, the
+  // freshly-mounted RuntimeProvider can arm the "answers synced" toast and
+  // fire it when the next drain succeeds. Without this hop the toast can't
+  // survive the re-mount.
+  //
+  // The flag key is computed inside the function (not closed over from the
+  // surrounding render) so the function's identity is stable for the
+  // surrounding `useEffect` deps — without that, the queue-init effect
+  // would either re-fire on every render or need `handleAuthFailure` in
+  // its dep array.
+  const handleAuthFailure = useCallback((): void => {
     if (authErrorRef.current) return;
     authErrorRef.current = 'expired_session';
     setAuthError('expired_session');
@@ -215,7 +235,30 @@ export function RuntimeProvider(
     // server isn't unreachable — it's just rejecting us.
     lastSuccessfulHeartbeatRef.current = Date.now();
     consecutiveSyncFailuresRef.current = 0;
-  };
+    try {
+      sessionStorage.setItem(
+        `runtime_auth_recovery:${session.session_id}`,
+        '1',
+      );
+    } catch {
+      // sessionStorage may be unavailable (private mode); the toast then
+      // just doesn't fire — non-blocking.
+    }
+  }, [session.session_id]);
+
+  // On mount, check whether we're returning from an auth-recovery
+  // round-trip; if so, arm the post-recovery sync toast.
+  useEffect(() => {
+    const key = `runtime_auth_recovery:${session.session_id}`;
+    try {
+      if (sessionStorage.getItem(key) === '1') {
+        recoveredFromAuthErrorRef.current = true;
+        sessionStorage.removeItem(key);
+      }
+    } catch {
+      // sessionStorage may be unavailable — non-blocking.
+    }
+  }, [session.session_id]);
 
   // -------- queue init + anti-cheat handlers --------
   useEffect(() => {
@@ -238,6 +281,14 @@ export function RuntimeProvider(
         consecutiveSyncFailuresRef.current = 0;
         lastSuccessfulHeartbeatRef.current = Date.now();
         setNetworkDegraded(false);
+        // [UX Audit v1 HIGH-2] — first successful drain after the auth
+        // recovery round-trip fires the "answers now synced" confirmation
+        // for ~3 seconds, then disarms. Subsequent successes are silent.
+        if (recoveredFromAuthErrorRef.current) {
+          recoveredFromAuthErrorRef.current = false;
+          setSyncConfirmed(true);
+          setTimeout(() => setSyncConfirmed(false), 3000);
+        }
       },
       // [UPDATED v3 — NEW-1] — server rejected the cookie. The queue has
       // stopped itself; pending items stay on disk; we route the user to
@@ -274,7 +325,7 @@ export function RuntimeProvider(
     return () => {
       dispose();
     };
-  }, [session.session_id]);
+  }, [session.session_id, handleAuthFailure]);
 
   // -------- heartbeat poll (B3) --------
   // [UPDATED v2 — B3]
@@ -342,7 +393,7 @@ export function RuntimeProvider(
       if (timer) clearInterval(timer);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [session.session_id]);
+  }, [session.session_id, handleAuthFailure]);
 
   // ---------- helpers (declared before callers so the React Compiler is happy) ----------
 
@@ -808,9 +859,16 @@ export function RuntimeProvider(
       />
 
       {/* [UPDATED v3 — NEW-1] — auth-error blocking card. Renders on top of
-         the runtime; the user's only sensible next action is to re-auth. */}
+         the runtime; the user's only sensible next action is to re-auth.
+         [UX Audit v1 HIGH-2] — pass the live remaining time so the banner
+         can show the student exactly how much clock they're losing while
+         they re-auth (the timer is server-anchored and does NOT pause).
+         `AuthErrorBannerLive` reads `expiresAtMs` and the offset ref via
+         its own `setInterval` so this render path stays ref-read-free. */}
       {authError === 'expired_session' && (
-        <AuthErrorBanner
+        <AuthErrorBannerLive
+          expiresAtMs={expiresAtMs}
+          serverClockOffsetRef={serverClockOffsetRef}
           onSignIn={() => {
             const returnTo = `/test/${session.session_id}`;
             router.push(
@@ -818,6 +876,20 @@ export function RuntimeProvider(
             );
           }}
         />
+      )}
+
+      {/* [UX Audit v1 HIGH-2] — post-recovery confirmation. When the auth
+         queue drains after re-login, briefly tell the student their answers
+         are now synced (otherwise they're left wondering whether Q1–Qn
+         actually made it back to the server). */}
+      {syncConfirmed && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-20 right-6 z-[55] px-4 py-2 rounded-lg bg-surface-0 border border-border-subtle shadow-md text-sm text-text-primary"
+        >
+          <span aria-hidden="true">✓</span> Your answers are now synced.
+        </div>
       )}
 
       {/* top bar */}
@@ -830,7 +902,7 @@ export function RuntimeProvider(
         <div className="flex items-center gap-4">
           {violationsCount > 0 && (
             <span
-              className="px-2 py-1 text-xs rounded-md bg-amber-50 text-amber-800 border border-amber-200"
+              className="px-2 py-1 text-xs rounded-md bg-[var(--warn-bg)] text-[var(--warn-text)] border border-[var(--warn-border)]"
               aria-label={`${violationsCount} violations of 3`}
             >
               Violations: {violationsCount}/3
@@ -847,7 +919,7 @@ export function RuntimeProvider(
           {/* [UPDATED v2 — B2] connectivity indicator */}
           {networkDegraded && (
             <span
-              className="px-2 py-1 text-xs rounded-md bg-amber-50 text-amber-800 border border-amber-200"
+              className="px-2 py-1 text-xs rounded-md bg-[var(--warn-bg)] text-[var(--warn-text)] border border-[var(--warn-border)]"
               role="status"
               aria-label="Network connection unreliable"
             >
@@ -873,7 +945,7 @@ export function RuntimeProvider(
       {syncError && (
         <div
           role="alert"
-          className="px-6 py-2 bg-red-50 text-red-800 text-sm border-b border-red-200"
+          className="px-6 py-2 bg-[var(--danger-bg)] text-[var(--danger-text)] text-sm border-b border-[var(--danger-border)]"
         >
           {syncError}
         </div>
@@ -883,14 +955,16 @@ export function RuntimeProvider(
       {localFallbackPosted && (
         <div
           role="alert"
-          className="px-6 py-3 bg-amber-50 text-amber-900 text-sm border-b border-amber-200"
+          className="px-6 py-3 bg-[var(--warn-bg)] text-[var(--warn-text)] text-sm border-b border-[var(--warn-border)]"
         >
           Submitted locally; will sync when you reconnect.
         </div>
       )}
 
-      {/* main two-pane layout */}
-      <div className="flex-1 grid grid-cols-[1fr_280px] gap-0">
+      {/* main two-pane layout — palette rail widened to 360 px so the PRD
+         §7.5 8-column / 4-px-gap grid (8×40 + 7×4 = 348 px content + 12 px
+         padding) fits without overflow. */}
+      <div className="flex-1 grid grid-cols-[1fr_360px] gap-0">
         <section className="relative p-6 overflow-y-auto">
           <QuestionPane
             slot={currentSlot}
@@ -1016,6 +1090,15 @@ export function RuntimeProvider(
         drainingPending={queueDepth}
         onCancel={() => setSubmitOpen(false)}
         onConfirm={() => void manualSubmit()}
+        chips={paletteSlots.map((s) => ({
+          slotIndex: s.slotIndex,
+          slotPosition: s.slotPosition,
+          status: s.status,
+        }))}
+        onJumpToSlot={(slotIndex) => {
+          setSubmitOpen(false);
+          jumpTo(slotIndex);
+        }}
       />
     </div>
   );
@@ -1033,4 +1116,43 @@ function formatRemaining(
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
+/**
+ * Live wrapper around `AuthErrorBanner`. Owns its own ticking state so the
+ * RuntimeProvider's render path doesn't have to read
+ * `serverClockOffsetRef.current` to feed `secondsRemaining` — that read
+ * would trigger the react-hooks/refs warning, which the engineer brief
+ * explicitly forbids introducing.
+ *
+ * The 1 Hz tick is independent of the main runtime Timer; both read the
+ * same server-anchored expiry so they stay coherent.
+ */
+function AuthErrorBannerLive(props: {
+  expiresAtMs: number;
+  serverClockOffsetRef: React.RefObject<number>;
+  onSignIn: () => void;
+}): React.ReactElement {
+  const { expiresAtMs, serverClockOffsetRef, onSignIn } = props;
+  // Initialise to the wall-clock estimate (offset = 0) so the first paint
+  // shows a sensible number; the effect below corrects within ~1 s using
+  // the server-anchored offset ref.
+  const [seconds, setSeconds] = useState<number>(() =>
+    Math.max(0, Math.floor((expiresAtMs - Date.now()) / 1000)),
+  );
+  useEffect(() => {
+    const tick = (): void => {
+      const next = Math.max(
+        0,
+        Math.floor(
+          (expiresAtMs - (Date.now() + serverClockOffsetRef.current)) / 1000,
+        ),
+      );
+      setSeconds(next);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [expiresAtMs, serverClockOffsetRef]);
+  return <AuthErrorBanner secondsRemaining={seconds} onSignIn={onSignIn} />;
 }

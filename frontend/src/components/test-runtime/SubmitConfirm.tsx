@@ -2,6 +2,8 @@
 
 import { useRef, useState } from 'react';
 
+import type { PerQuestionStatus } from '@/lib/runtime-types';
+
 export interface SubmitCounts {
   answered: number;
   marked: number;
@@ -9,6 +11,12 @@ export interface SubmitCounts {
   visited_not_answered: number;
   not_visited: number;
   total: number;
+}
+
+export interface SubmitChip {
+  slotIndex: number;
+  slotPosition: number;
+  status: PerQuestionStatus;
 }
 
 export interface SubmitConfirmProps {
@@ -19,6 +27,13 @@ export interface SubmitConfirmProps {
   drainingPending: number;
   onCancel: () => void;
   onConfirm: () => void;
+  /**
+   * [UX Audit v1 loop-back MED-1] — per-question chips for the step-1
+   * modal. When provided, clicking a chip closes the modal and jumps to
+   * that slot via `onJumpToSlot`. PRD US-6 AC.
+   */
+  chips?: SubmitChip[];
+  onJumpToSlot?: (slotIndex: number) => void;
 }
 
 /**
@@ -36,6 +51,8 @@ export function SubmitConfirm(props: SubmitConfirmProps): React.ReactElement | n
     drainingPending,
     onCancel,
     onConfirm,
+    chips,
+    onJumpToSlot,
   } = props;
   const [step, setStep] = useState<1 | 2>(1);
   const cancelRef = useRef<HTMLButtonElement | null>(null);
@@ -60,6 +77,7 @@ export function SubmitConfirm(props: SubmitConfirmProps): React.ReactElement | n
   }
 
   if (step === 1) {
+    const answeredTotal = counts.answered + counts.marked_and_answered;
     return (
       <Modal>
         <h2 className="text-xl font-medium mb-3">Submit your test?</h2>
@@ -74,13 +92,46 @@ export function SubmitConfirm(props: SubmitConfirmProps): React.ReactElement | n
           />
           <Row label="Not visited" value={counts.not_visited} warn />
         </dl>
-        <p className="text-sm text-text-secondary mb-4">
+        <p className="text-sm text-text-secondary mb-3">
           Time remaining: {timeRemainingLabel}
         </p>
+
+        {/* [UX Audit v1 loop-back MED-1] — PRD US-6 AC: per-question chip
+            grid + summary. Clicking a chip closes the modal and jumps to
+            that question. Colour matches the runtime palette: green for
+            answered, grey for unanswered, amber for marked-for-review. */}
+        {chips && chips.length > 0 && (
+          <div className="mb-4" data-testid="submit-chip-grid">
+            <p className="text-xs text-text-secondary mb-2">
+              {answeredTotal} answered, {counts.visited_not_answered + counts.not_visited}{' '}
+              unanswered, {counts.marked} marked for review
+            </p>
+            <div className="grid grid-cols-10 gap-1">
+              {chips.map((c) => (
+                <button
+                  type="button"
+                  key={c.slotIndex}
+                  onClick={() => {
+                    if (onJumpToSlot) onJumpToSlot(c.slotIndex);
+                    setStep(1);
+                    onCancel();
+                  }}
+                  className={`h-7 w-7 rounded-md text-xs font-medium border ${chipClass(c.status)}`}
+                  aria-label={`Question ${c.slotPosition}, ${c.status.toLowerCase().replace(/_/g, ' ')}. Click to jump.`}
+                  data-testid={`submit-chip-${c.slotIndex}`}
+                >
+                  {c.slotPosition}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {unanswered > 0 && (
-          <p className="text-sm bg-amber-50 text-amber-900 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-            ⚠ You have {unanswered} question{unanswered === 1 ? '' : 's'} you
-            haven&apos;t answered. Review before submitting?
+          <p className="text-sm bg-[var(--warn-bg)] text-[var(--warn-text)] border border-[var(--warn-border)] rounded-lg px-3 py-2 mb-4">
+            <span aria-hidden="true">⚠</span> You have {unanswered} question
+            {unanswered === 1 ? '' : 's'} you haven&apos;t answered. Review
+            before submitting?
           </p>
         )}
         <div className="flex justify-end gap-3">
@@ -152,12 +203,31 @@ function Row({
   return (
     <>
       <dt className="text-text-secondary">{label}</dt>
-      <dd className={`text-right ${warn && value > 0 ? 'text-amber-600' : ''}`}>
+      <dd
+        className={`text-right ${warn && value > 0 ? 'text-[var(--warn-fg)]' : ''}`}
+      >
         {value}
         {warn && value > 0 ? ' ⚠' : ''}
       </dd>
     </>
   );
+}
+
+function chipClass(status: PerQuestionStatus): string {
+  // Submit-modal chips reuse the palette-status semantics:
+  //   ANSWERED + ANSWERED_AND_MARKED → green (using --palette-answered-bg)
+  //   MARKED_FOR_REVIEW              → amber (--warn-bg) per PRD US-6
+  //   VISITED_NOT_ANSWERED / NOT_VISITED → neutral grey
+  switch (status) {
+    case 'ANSWERED':
+    case 'ANSWERED_AND_MARKED':
+      return 'bg-[var(--palette-answered-bg)] text-[var(--palette-answered-fg)] border-transparent';
+    case 'MARKED_FOR_REVIEW':
+      return 'bg-[var(--warn-bg-strong)] text-[var(--warn-text)] border-[var(--warn-border)]';
+    case 'VISITED_NOT_ANSWERED':
+    case 'NOT_VISITED':
+      return 'bg-surface-2 text-text-secondary border-border-subtle';
+  }
 }
 
 function Modal({ children }: { children: React.ReactNode }): React.ReactElement {

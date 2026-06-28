@@ -54,7 +54,8 @@ export function Palette(props: PaletteProps): React.ReactElement {
   const { slots, currentSlotIndex, onJump, onToggleMark } = props;
   return (
     <div className="space-y-3" role="grid" aria-label="Question palette">
-      <div className="grid grid-cols-5 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+      {/* PRD §7.5: 8-column grid with 4 px gap on desktop. */}
+      <div className="grid grid-cols-8 gap-1">
         {slots.map((s) => {
           const isCurrent = s.slotIndex === currentSlotIndex;
           const sym = symbolFor(s.status);

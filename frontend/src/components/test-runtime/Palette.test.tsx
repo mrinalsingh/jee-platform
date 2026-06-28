@@ -30,6 +30,19 @@ describe('Palette', () => {
     expect(screen.getAllByRole('gridcell')).toHaveLength(5);
   });
 
+  // PRD §7.5: 8-column grid on desktop with 4 px (Tailwind gap-1) gap.
+  it('lays out the grid in 8 columns with a 4 px gap', () => {
+    const { container } = render(
+      <Palette slots={slots} currentSlotIndex={0} onJump={() => {}} />,
+    );
+    const grid = container.querySelector(
+      'div[role="grid"] > div',
+    ) as HTMLElement | null;
+    expect(grid).not.toBeNull();
+    expect(grid!.className).toMatch(/grid-cols-8/);
+    expect(grid!.className).toMatch(/gap-1/);
+  });
+
   it('marks the current slot via aria-current', () => {
     render(
       <Palette slots={slots} currentSlotIndex={2} onJump={() => {}} />,

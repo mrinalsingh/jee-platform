@@ -97,7 +97,7 @@ export function AnswerEntry(props: AnswerEntryProps): React.ReactElement {
       return (
         <div
           role="alert"
-          className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-800"
+          className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-bg)] p-4 text-[var(--danger-text)]"
         >
           Unsupported question type. Please contact your teacher.
         </div>

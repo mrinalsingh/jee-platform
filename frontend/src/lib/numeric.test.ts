@@ -10,7 +10,10 @@ const FIXTURE: Array<{ input: string; precision: number; out: string }> = [
   { input: '1.015', precision: 2, out: '1.02' },
   { input: '1.025', precision: 2, out: '1.02' },
   { input: '1.035', precision: 2, out: '1.04' },
-  { input: '-0.5', precision: 0, out: '-0' },
+  // [UPDATED — UX Audit v1 loop-back] — `-0.5` at p=0 rounds to `0` (NOT
+  // `-0`) so the frontend display matches the backend storage authority.
+  // Tester report v1 documented the divergence; this row pins the fix.
+  { input: '-0.5', precision: 0, out: '0' },
   { input: '2.5', precision: 0, out: '2' },
   { input: '3.5', precision: 0, out: '4' },
   { input: '0.5', precision: 0, out: '0' },
@@ -34,6 +37,17 @@ describe('roundHalfToEven', () => {
       expect(roundHalfToEven(row.input, row.precision)).toBe(row.out);
     });
   }
+
+  // [UX Audit v1 loop-back] — negative-zero collapse must converge with
+  // the backend's behaviour at every precision, not just p=0. Without the
+  // collapse, decimal.js produces "-0.00" for `-0.001 @ p=2` which would
+  // diverge from the backend's stored "0.00".
+  it('collapses -0 at p=2 to "0.00"', () => {
+    expect(roundHalfToEven('-0.001', 2)).toBe('0.00');
+  });
+  it('collapses -0 at p=0 for small negative magnitudes', () => {
+    expect(roundHalfToEven('-0.4', 0)).toBe('0');
+  });
 });
 
 describe('numeric-input keystroke cap', () => {

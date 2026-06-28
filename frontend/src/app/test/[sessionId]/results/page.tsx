@@ -31,8 +31,8 @@ export default async function ResultsPage({
             role="alert"
             className={`rounded-lg p-4 ${
               data.auto_submit_source === 'VIOLATION_THRESHOLD'
-                ? 'bg-red-100 border border-red-300 text-red-900'
-                : 'bg-amber-50 border border-amber-200 text-amber-900'
+                ? 'bg-[var(--danger-bg-strong)] border border-[var(--danger-border)] text-[var(--danger-text)]'
+                : 'bg-[var(--warn-bg)] border border-[var(--warn-border)] text-[var(--warn-text)]'
             }`}
           >
             {autoSubmitNote}
@@ -107,18 +107,18 @@ export default async function ResultsPage({
                 )}
               </dl>
               {q.wrong_paths_match && (
-                <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm">
-                  <p className="font-medium text-amber-900 mb-1">
+                <div className="rounded-lg bg-[var(--warn-bg)] border border-[var(--warn-border)] p-3 text-sm">
+                  <p className="font-medium text-[var(--warn-text)] mb-1">
                     Diagnostic
                   </p>
-                  <p className="text-amber-900">
+                  <p className="text-[var(--warn-text)]">
                     {q.wrong_paths_match.one_line_label}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {q.wrong_paths_match.failure_modes.map((mode) => (
                       <span
                         key={mode}
-                        className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-900 border border-amber-300"
+                        className="px-2 py-0.5 text-xs rounded-full bg-[var(--warn-bg-strong)] text-[var(--warn-text)] border border-[var(--warn-border)]"
                       >
                         {mode}
                       </span>
@@ -176,14 +176,16 @@ function StatusChip({
   status: 'CORRECT' | 'WRONG' | 'UNANSWERED' | 'SLOW_BUT_CORRECT';
   delta: number;
 }): React.ReactElement {
+  // [UX Audit v1 MED-3] — design-token chips. SLOW_BUT_CORRECT gets the
+  // info-blue (progress, not penalty) per the auditor's note on Flow F.
   const cls =
     status === 'CORRECT'
-      ? 'bg-emerald-100 text-emerald-900 border-emerald-200'
+      ? 'bg-[var(--status-open-bg)] text-[var(--status-open-text)] border-transparent'
       : status === 'SLOW_BUT_CORRECT'
-        ? 'bg-yellow-50 text-yellow-900 border-yellow-200'
+        ? 'bg-[var(--info-bg)] text-[var(--info-text)] border-[var(--info-border)]'
         : status === 'WRONG'
-          ? 'bg-red-100 text-red-900 border-red-200'
-          : 'bg-gray-100 text-gray-800 border-gray-200';
+          ? 'bg-[var(--danger-bg-strong)] text-[var(--danger-text)] border-[var(--danger-border)]'
+          : 'bg-surface-2 text-text-secondary border-border-subtle';
   const label =
     status === 'SLOW_BUT_CORRECT' ? 'right answer, slow path' : status;
   const sign = delta > 0 ? '+' : '';

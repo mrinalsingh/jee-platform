@@ -68,7 +68,7 @@ export function HintCard(props: HintCardProps): React.ReactElement | null {
       ))}
 
       {error && (
-        <p className="text-sm text-red-600 mb-2" role="alert">
+        <p className="text-sm text-[var(--danger-fg)] mb-2" role="alert">
           {error}
         </p>
       )}

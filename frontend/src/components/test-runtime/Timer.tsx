@@ -44,10 +44,13 @@ export function Timer(props: TimerProps): React.ReactElement {
 
   const urgent = remaining < 60;
   const warn = remaining < 300;
+  // [UX Audit v1 loop-back MED-3] — replace ad-hoc Tailwind palette with
+  // design-lock anti-cheat ramp tokens. Urgent uses the violation-3 red
+  // (`#dc2626`) defined by design-lock #6 so the colour-source matches.
   const color = urgent
-    ? 'text-red-600 animate-pulse'
+    ? 'text-[var(--violation-3-bg)] animate-pulse'
     : warn
-      ? 'text-amber-600'
+      ? 'text-[var(--warn-fg)]'
       : 'text-[var(--accent)]';
 
   return (

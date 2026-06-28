@@ -37,6 +37,39 @@
   --violation-3-bg: #dc2626;
   --violation-3-text: #ffffff;
 
+  /* [UX Audit v1 loop-back] — semantic token ramp used by SubmitConfirm,
+     the dashboard status badges, runtime status chips, and any caller that
+     needs warn / info / danger surfaces. Replaces ad-hoc Tailwind
+     amber-* / blue-* / red-* / green-* classes per design-lock #1
+     (single-accent rule + no second JEE-saturated palette). */
+  --warn-bg: #fef3c7;          /* amber-50 ish */
+  --warn-bg-strong: #fde68a;   /* amber-100 ish */
+  --warn-text: #78350f;         /* amber-900 ish */
+  --warn-border: #fcd34d;       /* amber-200 ish */
+  --warn-fg: #b45309;           /* amber-700 ish (for inline text) */
+
+  --info-bg: #eef2ff;           /* tinted off-accent */
+  --info-text: #1e3a8a;
+  --info-border: #c7d2fe;
+
+  --danger-bg: #fee2e2;         /* red-50 ish */
+  --danger-bg-strong: #fecaca;  /* red-100 ish */
+  --danger-text: #7f1d1d;       /* red-900 ish */
+  --danger-border: #fca5a5;     /* red-200 ish */
+  --danger-fg: #b91c1c;         /* red-700 ish */
+
+  --success-fg: #047857;        /* emerald-700 ish */
+
+  /* Dashboard status badges (calm palette only — design-lock #3). */
+  --status-open-bg: #ecfdf5;
+  --status-open-text: #065f46;
+  --status-upcoming-bg: #eef2ff;
+  --status-upcoming-text: #1e3a8a;
+  --status-submitted-bg: #f3f4f6;
+  --status-submitted-text: #374151;
+  --status-expired-bg: #fef2f2;
+  --status-expired-text: #991b1b;
+
   /* Calm palette (default, also exposed at :root for safety) */
   --palette-not-visited-bg: #e5e7eb;
   --palette-not-visited-fg: #1a1a1a;
@@ -90,6 +123,34 @@
     --accent-strong: #9cb1f5;
     --accent-subtle-bg: rgba(126, 151, 240, 0.06);
     --accent-on: #0f0f11;
+
+    /* Dark variants for the semantic ramp — keep contrast ≥ 4.5:1. */
+    --warn-bg: #2a200d;
+    --warn-bg-strong: #3b2e0f;
+    --warn-text: #fde68a;
+    --warn-border: #5a4416;
+    --warn-fg: #fcd34d;
+
+    --info-bg: #1a1f3a;
+    --info-text: #c7d2fe;
+    --info-border: #2e3a6e;
+
+    --danger-bg: #2b1010;
+    --danger-bg-strong: #3a1414;
+    --danger-text: #fecaca;
+    --danger-border: #5a1818;
+    --danger-fg: #fca5a5;
+
+    --success-fg: #34d399;
+
+    --status-open-bg: #0d2a1e;
+    --status-open-text: #6ee7b7;
+    --status-upcoming-bg: #1a1f3a;
+    --status-upcoming-text: #c7d2fe;
+    --status-submitted-bg: #1f2126;
+    --status-submitted-text: #d1d5db;
+    --status-expired-bg: #2b1010;
+    --status-expired-text: #fca5a5;
   }
 }
 

@@ -82,7 +82,7 @@ export function LoginForm({
             className="mt-1 block w-full h-10 px-3 rounded-lg border border-border-subtle bg-surface-0"
           />
         </label>
-        {error && <p className="text-sm text-red-700">{error}</p>}
+        {error && <p className="text-sm text-[var(--danger-fg)]">{error}</p>}
         <button
           type="submit"
           disabled={submitting}

@@ -96,7 +96,7 @@ export function NumericInputBase(
       <div className="flex items-center justify-between">
         <p className="text-caption text-text-secondary text-sm">{helperText}</p>
         {ghost && (
-          <p className="text-caption text-sm text-amber-600 transition-opacity">
+          <p className="text-caption text-sm text-[var(--warn-fg)] transition-opacity">
             {ghost}
           </p>
         )}

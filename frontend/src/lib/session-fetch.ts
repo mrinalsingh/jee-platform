@@ -90,6 +90,46 @@ export async function fetchResults(
   return (await res.json()) as SessionResultsPayload;
 }
 
+/**
+ * [UX Audit v1 loop-back, HIGH-3] — minimal dashboard read used by the
+ * `/dashboard` stub. Calls the backend's existing assigned-tests endpoint
+ * (architecture §5.2 endpoint 2). Returns `null` on any non-2xx so the
+ * page can render the empty state rather than crashing.
+ *
+ * No new backend endpoint is introduced here — the dashboard PRD is a
+ * separate spec loop; for v1 we want a working landing page that doesn't
+ * 404 on every "happy path" exit from the runtime.
+ */
+export interface DashboardAssignedTest {
+  test_assignment_id: string;
+  test_id: string;
+  title: string;
+  duration_seconds: number;
+  window_start_at: string;
+  window_end_at: string;
+  status: 'UPCOMING' | 'OPEN' | 'IN_PROGRESS' | 'SUBMITTED' | 'EXPIRED';
+  session_id: string | null;
+  scope: 'cohort' | 'individual';
+}
+
+export async function fetchAssignedTests(): Promise<
+  DashboardAssignedTest[] | null
+> {
+  const cookieHeader = await forwardCookie();
+  try {
+    const res = await fetch(`${API_BASE}/api/dashboard/assigned-tests`, {
+      cache: 'no-store',
+      headers: cookieHeader ? { Cookie: cookieHeader } : {},
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { tests: DashboardAssignedTest[] };
+    return body.tests ?? [];
+  } catch {
+    return null;
+  }
+}
+
 /** Used by the instructions page to detect whether a session has been STARTed. */
 export async function readSessionStatus(
   sessionId: string,

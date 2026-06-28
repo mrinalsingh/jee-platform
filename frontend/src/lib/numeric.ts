@@ -27,5 +27,18 @@ export function roundHalfToEven(
     throw new RangeError('precision must be a non-negative integer');
   }
   // Decimal.toFixed honours the rounding-mode set above.
-  return new Decimal(value).toFixed(precision);
+  const out = new Decimal(value).toFixed(precision);
+  // Collapse the cosmetic negative-zero (e.g. "-0", "-0.00") to its positive
+  // form. PRD-16 §10.1 requires byte-equal output across the importer,
+  // backend answer-compare, and this frontend mirror; the backend
+  // (`backend/src/lib/numeric.ts`) already does this collapse via its own
+  // post-processing, so without it a student typing `-0.5` at p=0 would
+  // produce `"-0"` here while the server stored `"0"` — answer-equality
+  // would then fail on round-trip. Tester report v1 §10 ("numeric -0
+  // cross-side parity") flagged this; UX Audit v1 loop-back asks the
+  // frontend to converge to the backend.
+  if (out === '-' + new Decimal(0).toFixed(precision)) {
+    return new Decimal(0).toFixed(precision);
+  }
+  return out;
 }
