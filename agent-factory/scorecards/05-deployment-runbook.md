@@ -1,7 +1,7 @@
 # jee_platform — Deployment Runbook (Stage 5)
 
 **Owner:** Integrator (Stage 5)
-**Status:** GATED — see "Ship verdict" in `05-integration-final.md`. Do NOT execute the steps below until the three CRITICAL/HIGH blockers in that report are fixed.
+**Status:** CLEARED FOR DEPLOY (v2). All 7 v1 blockers verified fixed on 2026-06-28. See `05-integration-final-v2.md` for the re-verification report and `§7 Post-fix verification` below for the audit summary.
 **Target stack:** Neon (Postgres 16) + Render (NestJS backend) + Vercel (Next.js 16 frontend) + GitHub Actions (CI/CD for migrations).
 
 ---
@@ -23,29 +23,32 @@ Locally installed:
 
 ---
 
-## 1. Blocking gates before deploy
+## 1. Blocking gates before deploy — RESOLVED in v2
 
-These MUST be resolved (full detail in `05-integration-final.md`):
+All 7 v1 gates have shipped fixes and were re-verified by the Integrator on 2026-06-28. Each item below summarizes the fix that landed; the audit is in `05-integration-final-v2.md`.
 
-1. **Migration ordering** — the on-disk migration sequence cannot succeed against a fresh database:
-   - `20260524093545_init` sorts AFTER `0002_roles_and_extensions` alphabetically, but `0002` references tables created by `_init`.
-   - Migration `0006_diagnostic_summaries` creates a trigger on `problems.hints`, but the `hints` column is not added until `0008_hints_calibration_mismatch`.
-   - Fix: rename `20260524093545_init` to `0001_init`; reorder so `hints` column is added before the diagnostic-summary trigger references it (move trigger creation into 0008+ or move the hints column ADD into a pre-0006 migration). Verify with: drop a fresh DB, `prisma migrate deploy`, expect zero errors.
+1. **Migration ordering — FIXED.**
+   - `20260524093545_init` was renamed to `0001_init` so it sorts before the rest of the chain.
+   - `0006_diagnostic_summaries/migration.sql` now `ADD COLUMN hints` at line 23, well before the `BEFORE INSERT OR UPDATE OF wrong_paths, hints` trigger at line 127.
+   - `0008_calibration_mismatch/migration.sql` no longer touches `hints` (only the calibration-mismatch columns) — a header comment explains the move.
+   - New `backend/prisma/migrations/README.md` documents the lexicographic-ordering and cumulative-state rules so future migrations don't reintroduce the bug.
+   - Verified by `prisma migrate deploy` against a fresh DB (`jee_platform_stage5_v2_smoke`): "All migrations have been successfully applied."
 
-2. **Health endpoint** — Render needs `/api/health` (or any 200 OK) for zero-downtime deploys + UptimeRobot. Currently no health controller exists.
-   - Fix: add `HealthController` (`@Get('api/health')`) returning `{ ok: true, version }`; mark `@Public()` so AuthGuard skips it.
+2. **Health endpoint — FIXED.** `backend/src/health/health.controller.ts` exposes `GET /api/health` (`@Public()` so AuthGuard skips it) returning `{ status, version, uptime, timestamp }`. Wired via `HealthModule` in `backend/src/app.module.ts`. Render's health-check path is `/api/health` (see §2 step 5).
 
-3. **Cross-origin posture for separate Vercel + Render domains** — the architecture says "CORS off, same-origin"; the client uses `credentials: 'same-origin'`. With `app.example.com` (Vercel) + `api.example.com` (Render), cookies will NOT cross. Two valid options:
-   - **(Preferred)** Next.js rewrite: in `frontend/next.config.ts`, add `rewrites()` so `/api/*` on the Vercel domain transparently proxies to the Render backend. Same-origin posture preserved end-to-end. Lowest-risk change.
-   - **(Alternative)** Enable CORS in `backend/src/main.ts` with `origin: process.env.FRONTEND_ORIGIN`, `credentials: true`, set the auth cookie with `SameSite=None`. Requires HTTPS in dev too.
+3. **Cross-origin posture — FIXED (Option A, the preferred Next.js rewrite).** `frontend/next.config.ts` exports `async rewrites()` that proxies `/api/:path*` → `${BACKEND_API_BASE}/api/:path*` when `BACKEND_API_BASE` is set, and falls back to an empty array otherwise (graceful dev default). `frontend/README.md` §"Required environment variables on Vercel" documents that `BACKEND_API_BASE` is REQUIRED on Vercel.
 
-4. **Pin Node version** — no `engines` field or `.nvmrc`. Add `"engines": { "node": ">=22 <23" }` to both `backend/package.json` and `frontend/package.json`, plus `.nvmrc` at repo root with `22`.
+4. **Node version pinning — FIXED.** `.nvmrc` at repo root pins `v26.0.0`; `engines.node ">=22.0.0"` set in both `backend/package.json` and `frontend/package.json`. The CI workflow uses `node-version-file: .nvmrc` on every job.
 
-5. **Backend build must regenerate Prisma client** — `generated/prisma/` is gitignored; current backend `build` script is just `nest build`. Add `"postinstall": "prisma generate"` (or change `build` to `prisma generate && nest build`) in `backend/package.json`. Without this, Render's deploy will boot with a stale or missing Prisma client and crash on first DB call.
+5. **Backend build regenerates Prisma client — FIXED.** `backend/package.json` now has `"postinstall": "prisma generate"` AND `"build": "prisma generate && nest build"` (belt-and-braces). Verified by `npm run build` → "Generated Prisma Client (7.8.0) to ./generated/prisma".
 
-6. **GitHub Actions workflow** — `.github/workflows/deploy.yml` does NOT exist. The architecture's two-step pipeline (migrate as `migration_user`, then deploy backend running as `app_user_login`) is required to honour the structural append-only invariant. Without it, migrations would either not run, or run with the runtime role (which lacks DDL privileges).
+6. **GitHub Actions workflow — FIXED.** `.github/workflows/deploy.yml` exists with three jobs:
+   - `backend-ci` — lint + test + build (Node from `.nvmrc`).
+   - `frontend-ci` — lint + test + build + bundle-check (in parallel with backend-ci).
+   - `migrate-deploy` — gated on `push` to `main` + `needs: backend-ci`; runs `npx prisma migrate deploy` with `DATABASE_URL=${{ secrets.MIGRATION_DATABASE_URL }}`; concurrency-locked under `prisma-migrate-deploy` so two pushes cannot race a migration.
+   The workflow's header documents that the ONLY GitHub secret needed is `MIGRATION_DATABASE_URL`. Render-only / Vercel-only secrets stay on those platforms.
 
-7. **Real-DB privilege test (Stage-4 carry-over HIGH)** — `backend/test/integration/db-privilege.spec.ts` is missing. Without it, a future migration that mistakenly grants UPDATE/DELETE on `attempts` or `test_session_audit` to `app_user` will not be caught. Add the spec described in architecture §3.2.
+7. **Real-DB privilege test (carry-over HIGH) — FIXED.** `backend/test/integration/db-privilege.spec.ts` covers the 5 negative cases (UPDATE/DELETE on `attempts`; UPDATE/DELETE on `test_session_audit`) plus a positive control (INSERT into `attempts` should be allowed at the privilege layer). Runs only when `INTEGRATION=true` so the default `npm test` runner never trips on it. Invoke with `npm run test:integration` from `backend/` against a DB seeded by migrations and a `TEST_DATABASE_URL` authenticating as `app_user_login`.
 
 ---
 
@@ -67,9 +70,10 @@ These MUST be resolved (full detail in `05-integration-final.md`):
    - `openssl rand -hex 32` → store as `HMAC_PEPPER` (Render + Vercel env vars; same value on both).
 
 4. **Run migrations from CI (NOT from your laptop).**
-   - Push the fixed branch to GitHub.
-   - GitHub Actions workflow `deploy.yml` runs `npx prisma migrate deploy` with `DATABASE_URL=${{ secrets.MIGRATION_DATABASE_URL }}`.
-   - Confirm Actions log shows all 13 migrations applied (or the renumbered count after the ordering fix).
+   - In GitHub → Settings → Secrets and variables → Actions, set `MIGRATION_DATABASE_URL` to the `migration_user` connection string from step 2. This is the **only** GitHub Actions secret the project needs.
+   - Push to `main`. The `deploy.yml` workflow's `migrate-deploy` job (gated on `backend-ci` passing, concurrency-locked under `prisma-migrate-deploy`) runs `npx prisma migrate deploy`.
+   - Confirm the Actions log shows all 13 migrations applied: `0001_init` through `0013_calibration_mismatch_columns`.
+   - No more manual `npx prisma migrate deploy` from a laptop — the workflow is now the only path that touches prod schema.
 
 5. **Deploy Render backend.**
    - New Web Service → connect to GitHub repo → root directory `backend/`.
@@ -82,7 +86,7 @@ These MUST be resolved (full detail in `05-integration-final.md`):
      - `HMAC_PEPPER` = generated value.
      - `SENTRY_DSN` (optional).
      - **Do NOT set `MIGRATION_DATABASE_URL` here.** That secret stays in GitHub.
-   - Health check path: `/api/health` (requires gate #2 fixed first).
+   - **Health check path: `/api/health`** — returns `{ status: "ok", version, uptime, timestamp }`. Marked `@Public()` so AuthGuard does not challenge Render's probe.
 
 6. **Deploy Vercel frontend.**
    - New Project → import GitHub repo → root directory `frontend/`.
@@ -198,6 +202,45 @@ These were accepted at gate-pass time. Surface them so on-call knows what's expe
 10. **LOW** — Dashboard is an acknowledged stub. The proper dashboard PRD is a separate spec loop.
 11. **LOW** — Lighthouse-CI not wired; PRD-16 NFR §5.1 p50/p95 TTFP/TTI targets are unverified.
 12. **LOW** — A11y for ViolationBanner `aria-live="assertive"` plumbing is not asserted by tests.
+
+---
+
+## 7. Post-fix verification (Stage 5 v2)
+
+On 2026-06-28 the Integrator re-verified each of the 7 v1 blockers and ran the
+full build/test sweep. Summary:
+
+- **Migration ordering** — re-ran `prisma migrate deploy` against a fresh DB
+  (`jee_platform_stage5_v2_smoke`). Output: "All migrations have been
+  successfully applied." Old `20260524093545_init` directory is gone; new
+  `0001_init/migration.sql` is in place; `0006_diagnostic_summaries/migration.sql`
+  ADDs the `hints` column at line 23, well before the trigger at line 127;
+  `0008_calibration_mismatch/migration.sql` no longer references `hints`.
+  `backend/prisma/migrations/README.md` documents the rules going forward.
+- **Health endpoint** — `backend/src/health/health.controller.ts` + `health.module.ts`
+  exist; `@Public()` decorator applied; registered in `app.module.ts`; one
+  passing spec (`health.controller.spec.ts`, 3 cases).
+- **Same-origin proxy** — `frontend/next.config.ts` rewrites `/api/:path*` to
+  `${BACKEND_API_BASE}/api/:path*`; documented in `frontend/README.md`.
+- **Node pinning** — `.nvmrc` (`v26.0.0`) + `engines.node ">=22.0.0"` in both
+  package.json files.
+- **Prisma generate in build** — `postinstall: prisma generate` AND
+  `build: prisma generate && nest build`.
+- **CI workflow** — `.github/workflows/deploy.yml` parses clean
+  (`python3 -c "import yaml; yaml.safe_load(...)"` → OK); jobs `backend-ci` +
+  `frontend-ci` + `migrate-deploy` + `notify` present; `migrate-deploy` is
+  gated, needs `backend-ci`, and concurrency-locked.
+- **Integration test** — `backend/test/integration/db-privilege.spec.ts` exists;
+  `npm run test:integration` script wired; `npm test` (default) skips it
+  (`describeIf` gated on `INTEGRATION=true`).
+
+Suite counts re-confirmed:
+- Backend tests: 109/109 (was 106 in v1 — +3 from the new health spec)
+- Frontend tests: 94/94 (unchanged)
+- Backend build: green
+- Frontend build: green; bundle 168.1 KB gz (31.9 KB headroom under 200 KB cap)
+
+Ship verdict in v2: **SHIP.**
 
 ---
 
