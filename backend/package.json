@@ -5,8 +5,14 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
-    "build": "nest build",
+    "build": "prisma generate && nest build",
+    "postinstall": "prisma generate",
+    "prisma:generate": "prisma generate",
+    "test:integration": "INTEGRATION=true jest --config ./test/jest-integration.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

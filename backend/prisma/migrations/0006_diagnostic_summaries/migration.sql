@@ -7,7 +7,11 @@
 -- search-path injection on SECURITY DEFINER.
 
 -- ---------------------------------------------------------------------------
--- 1. Add the 5 summary columns + hint_count.
+-- 1. Add the 5 summary columns + hint_count + the hints JSONB column that the
+--    trigger below reads from. The `hints` column itself is functionally a
+--    Req G column (relocated here from 0008 to satisfy migration ordering:
+--    the trigger created in step 5 declares `UPDATE OF wrong_paths, hints`
+--    and so the column must exist when this migration runs).
 -- ---------------------------------------------------------------------------
 ALTER TABLE public.problems
   ADD COLUMN IF NOT EXISTS err_reading_tags  TEXT[] NOT NULL DEFAULT '{}',
@@ -15,7 +19,8 @@ ALTER TABLE public.problems
   ADD COLUMN IF NOT EXISTS err_comp_tags     TEXT[] NOT NULL DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS err_strategy_tags TEXT[] NOT NULL DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS err_parsing_tags  TEXT[] NOT NULL DEFAULT '{}',
-  ADD COLUMN IF NOT EXISTS hint_count        INTEGER NOT NULL DEFAULT 0;
+  ADD COLUMN IF NOT EXISTS hint_count        INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS hints             JSONB NOT NULL DEFAULT '[]'::jsonb;
 
 -- ---------------------------------------------------------------------------
 -- 2. GIN indexes on the 5 summary arrays — covers ? and ?| operators used

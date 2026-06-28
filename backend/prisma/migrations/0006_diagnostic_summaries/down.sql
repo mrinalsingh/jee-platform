@@ -19,6 +19,7 @@ DROP INDEX IF EXISTS public.problems_err_strategy_tags_gin;
 DROP INDEX IF EXISTS public.problems_err_parsing_tags_gin;
 
 ALTER TABLE public.problems
+  DROP COLUMN IF EXISTS hints,
   DROP COLUMN IF EXISTS hint_count,
   DROP COLUMN IF EXISTS err_parsing_tags,
   DROP COLUMN IF EXISTS err_strategy_tags,

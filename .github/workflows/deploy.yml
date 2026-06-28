@@ -1,0 +1,176 @@
+# =====================================================================
+# jee_platform CI/CD — single workflow, multiple jobs.
+#
+# Pipeline shape (matches agent-factory/scorecards/05-deployment-runbook.md §3):
+#   1. backend-ci   — lint + test + build the NestJS API
+#   2. frontend-ci  — lint + test + build + bundle-check the Next.js app
+#                     (runs in parallel with backend-ci)
+#   3. migrate-deploy — runs ONLY on push to main, AFTER backend-ci passes;
+#                       runs `prisma migrate deploy` as the migration role
+#   4. notify       — placeholder for Slack/Discord webhook (v1: just echo)
+#
+# Render auto-deploys the backend on every push to main from its dashboard
+# wiring. Vercel auto-deploys the frontend on every push to main from its
+# Git integration. Migrations are gated on backend-ci so the schema only
+# advances when the API code that depends on it has passed tests.
+#
+# ---------------------------------------------------------------------
+# Required GitHub repository secrets (Settings → Secrets and variables → Actions):
+#
+#   MIGRATION_DATABASE_URL
+#     Postgres connection string as the `migration_user` role (NOT the
+#     runtime `app_user_login` — see architecture §3.2). Used by the
+#     migrate-deploy job only. Example:
+#       postgresql://migration_user:<pwd>@<neon-host>/<db>?sslmode=require
+#
+# Secrets that DO NOT live in GitHub (set on Render / Vercel directly):
+#   - DATABASE_URL          → Render only (app_user_login)
+#   - HMAC_PEPPER           → Render + Vercel (same value)
+#   - NEXTAUTH_SECRET       → Vercel only
+#   - SMTP_* / S3_*         → Render only
+#
+# Render is responsible for deploying the backend on push to main; Vercel
+# is responsible for deploying the frontend. This workflow only owns CI
+# and the migration step.
+# =====================================================================
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs on the same ref when a new push arrives.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-ci:
+    name: Backend CI (lint + test + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        # Tolerate a missing lint script for now — log a warning and continue.
+        run: |
+          if npm run | grep -qE '^\s*lint\s*$'; then
+            npm run lint
+          else
+            echo "::warning::backend has no 'lint' script — skipping"
+          fi
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  frontend-ci:
+    name: Frontend CI (lint + test + build + bundle-check)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: |
+          if npm run | grep -qE '^\s*lint\s*$'; then
+            npm run lint
+          else
+            echo "::warning::frontend has no 'lint' script — skipping"
+          fi
+
+      - name: Test
+        run: npx vitest --run
+
+      - name: Build
+        run: npm run build
+
+      - name: Bundle size check
+        run: npm run bundle-check
+
+  migrate-deploy:
+    name: Apply Prisma migrations (production)
+    # Only run when changes hit main; never on PRs.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: backend-ci
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    # Lock concurrency so two pushes can't race a `prisma migrate deploy`.
+    concurrency:
+      group: prisma-migrate-deploy
+      cancel-in-progress: false
+    env:
+      # Prisma's `migrate deploy` reads DATABASE_URL by default; the secret
+      # is the migration role's URL, NOT the runtime app role's URL.
+      DATABASE_URL: ${{ secrets.MIGRATION_DATABASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Verify migration secret is present
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::MIGRATION_DATABASE_URL secret is not set"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+
+  notify:
+    name: Notify (placeholder)
+    # Run regardless of upstream job results so we can surface failures too.
+    if: always()
+    needs: [backend-ci, frontend-ci, migrate-deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarize
+        run: |
+          echo "backend-ci:     ${{ needs.backend-ci.result }}"
+          echo "frontend-ci:    ${{ needs.frontend-ci.result }}"
+          echo "migrate-deploy: ${{ needs.migrate-deploy.result }}"
+          echo "TODO: wire Slack/Discord webhook here."
