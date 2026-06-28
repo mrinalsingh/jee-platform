@@ -1,0 +1,97 @@
+schema_version: 1
+
+question_code: MAT.DET.EULFOUR.QUATNORM.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: EULFOUR
+  sub_idea: QUATNORM
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $N=(9^2+2^2+3^2+4^2)(5^2+6^2+7^2+8^2)$. Use the identities
+  $$\det\!\begin{bmatrix} a+ib & c+id\\ -c+id & a-ib\end{bmatrix}=a^2+b^2+c^2+d^2,\qquad \det(PQ)=\det P\,\det Q.$$
+  Which of the following are correct?
+
+  - (A) $N=19140$ and $N$ is a sum of four squares.
+  - (B) $N$ is a sum of two squares.
+  - (C) $\det\!\begin{bmatrix} 9+2i & 3+4i\\ -3+4i & 9-2i\end{bmatrix}=110$.
+  - (D) The cross term $A=9\cdot5+2\cdot6+3\cdot7+4\cdot8$ must equal $0$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  The $2\times2$ complex matrix $\begin{bmatrix} a+ib & c+id\\ -c+id & a-ib\end{bmatrix}$ has determinant
+  $a^2+b^2+c^2+d^2$ (the quaternion norm). Combining this with the multiplicativity
+  $\det(PQ)=\det P\det Q$ converts the product of two four-square sums into another four-square sum
+  — that is Euler's four-square identity. Whether the product is also expressible as a sum of *two*
+  squares is governed by Fermat's two-square theorem, not by the determinant identity.
+
+  ### Working
+  Compute the first factor as a determinant:
+  $$\det\!\begin{bmatrix} 9+2i & 3+4i\\ -3+4i & 9-2i\end{bmatrix}=(9+2i)(9-2i)-(3+4i)(-3+4i)=85-(-25)=110,$$
+  matching $9^2+2^2+3^2+4^2=110$. (Its imaginary part is $0$.) This gives **(C)**.
+
+  Similarly the second factor is $5^2+6^2+7^2+8^2=174$, so $N=110\cdot 174=19140$. By multiplicativity,
+  $N$ is the determinant of the product matrix, which has the same quaternion-norm shape, hence
+  $N=A^2+B^2+C^2+D^2$ where
+  $$A=9\cdot5+2\cdot6+3\cdot7+4\cdot8=110,\quad B=40,\quad C=56,\quad D=48,$$
+  and indeed $110^2+40^2+56^2+48^2=12100+1600+3136+2304=19140$. So **(A)** is correct.
+
+  For **(B)**: Fermat's two-square theorem says $n$ is a sum of two squares iff every prime
+  $p\equiv 3\pmod 4$ appears to an even power in $n$. Factor $19140=2^2\cdot 3\cdot 5\cdot 11\cdot 29$.
+  The prime $3\equiv 3\pmod 4$ occurs to an *odd* power, so $N$ is **not** a sum of two squares.
+  Hence **(B)** is false.
+
+  For **(D)**: the cross term $A$ from the product matrix equals $110$, which is nonzero. So **(D)** is false.
+
+  Correct: **(A), (C)**.
+
+wrong_paths:
+  - path: "Student computes $N=110\\cdot 174=19140$ and concludes that since both factors are sums of two squares (each is a sum of *four* squares but the student conflates this), $N$ must also be a sum of two squares — forgetting Fermat's $p\\equiv 3\\pmod 4$ criterion."
+    landed_on_option: "B (incorrectly marked true)"
+    diagnosis: "Conflates Euler's four-square identity with Brahmagupta–Fibonacci's two-square identity. A four-square sum need not be a two-square sum; the prime $3$ at odd power in $19140$ kills the two-square representation (TRAP-PARTIAL: partially correct heuristic)."
+  - path: "Student misreads the identity and thinks the cross term $A=\\sum a_i b_i$ must vanish (as in an orthogonality argument), so marks (D) true and skips checking (A)."
+    landed_on_option: "D (incorrectly marked true), possibly omitting A"
+    diagnosis: "Euler's identity does not require any orthogonality between the two 4-tuples; the cross term is one of the four squares, not zero. TRAP-PARTIAL — partial recall of a related (Lagrange/orthogonal) fact."
+  - path: "Student expands $\\det\\!\\begin{bmatrix} 9+2i & 3+4i\\\\ -3+4i & 9-2i\\end{bmatrix}$ using $(3+4i)(3-4i)=25$ instead of the actual off-diagonal product $(3+4i)(-3+4i)=-(3+4i)(3-4i)=-25$, getting $85-25=60$ and marking (C) false."
+    landed_on_option: "Drops C"
+    diagnosis: "Sign error on the off-diagonal product; $(-3+4i)$ is $-(3-4i)\\cdot\\overline{\\cdots}$-type miscount, missing the conjugation pattern that makes the determinant real."
+  - path: "Student computes $9^2+2^2+3^2+4^2=81+4+9+16=110$ but adds $5^2+6^2+7^2+8^2=25+36+49+64=164$ (slip on $64$), then $N=110\\cdot 164=18040\\neq 19140$, marking (A) false."
+    landed_on_option: "Drops A"
+    diagnosis: "Arithmetic slip on $8^2$. Calibration error, not conceptual; TRAP-EDGE."
+
+review_notes: |
+  Multi-correct (MCQ-MC). Key from source: (A), (C). Topic MAT/DET; the IDEA is Euler's four-square
+  identity realized via determinant multiplicativity on the quaternion-norm 2x2 complex matrix.
+  Proposed NEW codes: idea EULFOUR (Euler four-square via det), sub_idea QUATNORM (quaternion-norm
+  2x2 complex determinant identity). The taxonomy file must be extended before import. Trap TRAP-PARTIAL
+  captures the common conflation of "sum of four squares" with "sum of two squares" (option B).
+  Difficulty T3: standard JEE-Advanced multi-correct, but requires recall of Fermat's two-square
+  criterion which is at the edge of syllabus (treated as well-known number-theoretic fact in the
+  solution). Time budget reflects three sub-claims to verify independently.

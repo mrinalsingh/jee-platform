@@ -1,0 +1,70 @@
+schema_version: 1
+
+question_code: LOG.EQN.LOGRED.LOGBC.005
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: LOGRED
+  sub_idea: LOGBC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 120
+  R3_seconds: 90
+  R4_seconds: 70
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\log_b a = 3$ and $\log_b c = -4$. Suppose $x$ satisfies $a^{3x} = c^{x-1}$ and $y$ satisfies $(ac)^y = b$. Which of the following are correct?
+
+  - (A) $a^{3x} = c^{x-1}$ is quadratic in $x$.
+  - (B) $y > 0$.
+  - (C) $x = \dfrac{4}{13}$.
+  - (D) $x - y = \dfrac{17}{13}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  Take $\log_b$ of both sides of $a^{3x} = c^{x-1}$:
+  $$3x \cdot \log_b a = (x-1) \log_b c \implies 3x(3) = (x-1)(-4) \implies 9x = -4(x-1) \implies 13x = 4 \implies x = \tfrac{4}{13}.$$
+  So **(C) is true**. The equation after taking one logarithm is *linear* in $x$ (no $x^2$ term ever appears), so **(A) is false**.
+
+  For $y$, take $\log_b$ of $(ac)^y = b$:
+  $$y(\log_b a + \log_b c) = 1 \implies y(3 + (-4)) = 1 \implies -y = 1 \implies y = -1 < 0.$$
+  So **(B) is false**.
+
+  Finally, $x - y = \tfrac{4}{13} - (-1) = \tfrac{17}{13}$, so **(D) is true**.
+
+  Correct: **(C), (D)**.
+
+wrong_paths:
+  - path: "Sees variable exponents on both sides and assumes that exponential equations with $x$ in two places must be 'quadratic-like' without taking logs to verify the degree."
+    landed_on_option: "A"
+    diagnosis: "Surface-feature misclassification of equation type (linear vs quadratic after log)."
+  - path: "Computes $y(\\log_b a + \\log_b c) = 1$ but mis-signs $\\log_b c = -4$ as $+4$, getting $7y = 1 > 0$ and concluding $y > 0$."
+    landed_on_option: "B"
+    diagnosis: "Sign error on negative logarithm value."
+  - path: "Correctly finds $x = 4/13$ and $y = -1$ but computes $x - y = 4/13 - 1 = -9/13$ by treating $-(-1)$ as $-1$."
+    landed_on_option: "C only (misses D)"
+    diagnosis: "Sign error in subtracting a negative quantity."
+
+review_notes: |
+  Multi-correct (MCQ-MC) with key (C), (D). Classic log-reduction problem: substitute given $\log_b a$ and $\log_b c$ values to linearize and solve. Trap (A) tests whether students confuse 'variable in exponent on both sides' with 'quadratic'. Trap (B) tests careful sign-tracking when sum of logs is negative. T2 calibration (under-2-min for trained student). Idea LOGRED / sub-idea LOGBC fits exactly: reduce given exponential equation by taking $\log_b$ and substitute base-$b$ log values.

@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: CAL.CON.DENSEAGR.QIRRPW.001
+
+fingerprint:
+  topic: CAL
+  subtopic: CON
+  idea: DENSEAGR
+  sub_idea: QIRRPW
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 480   # ~8 min — first time meeting Q/irrational piecewise + continuity-by-density
+  R2_seconds: 300   # ~5 min — idea recalled; algebra still nontrivial
+  R3_seconds: 180   # ~3 min — fluent
+  R4_seconds: 120   # ~2 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let
+  $$
+  f(x) = \begin{cases} x^{2} + ax + 1, & x \in \mathbb{Q}, \\ a x^{2} + 2x + b, & x \in \mathbb{R} \setminus \mathbb{Q}. \end{cases}
+  $$
+  Suppose $f$ is continuous at $x = 1$ and at $x = e$. Then which of the following is/are correct?
+
+  - (A) $a = 1 + \dfrac{1}{e},\ b = 0$
+  - (B) $a = 1 - \dfrac{1}{e},\ b = 0$
+  - (C) $a = 1 - \dfrac{1}{e},\ b = 1$
+  - (D) no real $a, b$ exist
+
+answer:
+  type: MCQ-MC
+  correct_options: [B]
+
+solution: |
+  ### The IDEA
+  Continuity of $f$ at any point $c$ forces the two branches to agree at $c$: every neighbourhood of $c$ contains both rationals and irrationals (density), so the limit from rational $x$ must equal the limit from irrational $x$, which (by continuity of each polynomial branch) means
+  $$\text{(rational branch at }c) = \text{(irrational branch at }c).$$
+
+  ### Working
+  **At $c = 1 \in \mathbb{Q}$:** rational branch gives $1 + a + 1 = a + 2$; irrational branch gives $a(1)^2 + 2(1) + b = a + 2 + b$. Equating:
+  $$a + 2 = a + 2 + b \quad\Longrightarrow\quad b = 0.$$
+
+  **At $c = e \notin \mathbb{Q}$ with $b = 0$:** rational branch gives $e^{2} + a e + 1$; irrational branch gives $a e^{2} + 2 e$. Equating:
+  $$e^{2} + a e + 1 = a e^{2} + 2 e \;\Longrightarrow\; a(e - e^{2}) = 2e - 1 - e^{2}.$$
+  The right side is $-(e^2 - 2e + 1) = -(e-1)^{2}$, and the left coefficient is $e - e^{2} = -e(e-1)$. So
+  $$a = \frac{-(e-1)^{2}}{-e(e-1)} = \frac{(e-1)^{2}}{e(e-1)} = \frac{e-1}{e} = 1 - \frac{1}{e}.$$
+
+  Hence $(a, b) = \big(1 - \tfrac{1}{e},\ 0\big)$, matching only option **(B)**.
+
+wrong_paths:
+  - path: "Solves the $c = e$ equation but mishandles the sign of the numerator: writes $2e - 1 - e^2 = (e-1)^2$ instead of $-(e-1)^2$, getting $a = -(1-1/e) = 1/e - 1$ and then 'fixing' the sign to $a = 1 + 1/e$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL — algebra slip on the sign of $-(e-1)^2$; arithmetic-error trap that distractor (A) is built to catch."
+  - path: "Correctly gets $a = 1 - 1/e$ from $c = e$ but forgets that $c = 1$ already pinned $b = 0$, and picks the option with the right $a$ but $b = 1$."
+    landed_on_option: "C"
+    diagnosis: "Skips or forgets the easy $c = 1$ constraint and reads off $b$ from a half-finished system — the classic 'right $a$, wrong $b$' partial-solve trap."
+  - path: "Reasons that '$x \\in \\mathbb{Q}$ and $x \\in \\mathbb{R}\\setminus\\mathbb{Q}$ are disjoint, so the two branches are independent and continuity at one rational + one irrational point cannot constrain both $a$ and $b$ simultaneously'. Concludes no $(a,b)$ works."
+    landed_on_option: "D"
+    diagnosis: "Misunderstands density: forgets that every neighbourhood of $c$ contains BOTH rationals and irrationals, so the two branches must agree at $c$. This is the conceptual trap the problem is built around."
+
+review_notes: |
+  - New IDEA code **DENSEAGR** (Dense-branch Agreement for continuity of a piecewise function defined on $\mathbb{Q}$ vs $\mathbb{R}\setminus\mathbb{Q}$) and new SUB-IDEA **QIRRPW** (rational vs irrational piecewise polynomial). Both proposed because no existing CAL.CON code captures the density-forces-agreement principle being tested. Flag for taxonomy extension.
+  - This is an "or more correct" question with only one correct option (B); kept as MCQ-MC per source format. Reviewer may consider reclassifying as MCQ-SC.
+  - The crucial conceptual step is the density argument; the algebra is straightforward once both equations are written down. T3 reflects the "trap if you've never seen it" character: students who haven't met this archetype often pick (D).

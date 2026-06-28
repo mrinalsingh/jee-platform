@@ -1,0 +1,74 @@
+schema_version: 1
+
+question_code: MAT.INV.CHARPOLY.CHINV.001
+
+fingerprint:
+  topic: MAT
+  subtopic: INV
+  idea: CHARPOLY
+  sub_idea: CHINV
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-CAYLEY
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A=\begin{pmatrix}1&0&0\\0&1&1\\0&-2&4\end{pmatrix}$, and suppose $A^{-1}=\tfrac16(A^{2}+cA+dI)$ for scalars $c,d$. Then
+
+  - (A) $(c,d)=(-6,6)$
+  - (B) $d=\det A=6$
+  - (C) $(c,d)=(-6,11)$, $c+d=5$
+  - (D) $d=11=1\cdot 2+2\cdot 3+3\cdot 1$ (the sum of pairwise products of $1,2,3$)
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  For a $3\times 3$ matrix the Cayley--Hamilton theorem expresses $A^{-1}$ as a quadratic polynomial in $A$ whose coefficients are the elementary symmetric functions $e_1=\mathrm{tr}\,A$, $e_2$, $e_3=\det A$ of the eigenvalues. Reading those eigenvalues off the block-triangular form gives $c$ and $d$ directly.
+
+  ### Working
+  The first row of $A$ shows $1$ is an eigenvalue. The remaining $2\times 2$ block
+  $$\begin{pmatrix}1&1\\-2&4\end{pmatrix}$$
+  has characteristic equation $\det\!\begin{pmatrix}1-\lambda&1\\-2&4-\lambda\end{pmatrix}=\lambda^{2}-5\lambda+6=(\lambda-2)(\lambda-3)$, so the eigenvalues of $A$ are $1,2,3$. Hence
+  $$e_1=1+2+3=6,\qquad e_2=1\cdot 2+2\cdot 3+3\cdot 1=11,\qquad e_3=1\cdot 2\cdot 3=6=\det A.$$
+  The characteristic polynomial is $\lambda^{3}-6\lambda^{2}+11\lambda-6$, and Cayley--Hamilton gives
+  $$A^{3}-6A^{2}+11A-6I=O.$$
+  Multiplying by $A^{-1}$ and dividing by $6$:
+  $$A^{-1}=\tfrac16(A^{2}-6A+11I).$$
+  Therefore $(c,d)=(-6,11)$ with $c+d=5$ (option C), and the constant $d=11$ is precisely the symmetric function $e_2=1\cdot 2+2\cdot 3+3\cdot 1$ (option D).
+
+  Option (A) misidentifies the constant as $\det A=6$; a direct check shows $\tfrac16(A^{2}-6A+6I)$ is not $A^{-1}$. Option (B) confuses $e_2$ (which is the correct constant $d=11$) with $e_3=\det A=6$.
+
+wrong_paths:
+  - path: "Student remembers the cubic Cayley--Hamilton form $A^{3}-(\\mathrm{tr})A^{2}+(?)A-(\\det)I=O$ but takes the constant term in the inverse formula to be $\\det A=6$ instead of the second symmetric function $e_2=11$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-CAYLEY: confusing the roles of $e_2$ and $e_3$ in the characteristic polynomial. The coefficient of $A^{0}=I$ in $A^{-1}$ comes from the $\\lambda$-coefficient ($e_2$), not the constant term ($e_3=\\det A$)."
+  - path: "Student computes $\\det A=6$ correctly but identifies it as the constant $d$ in the given inversion formula."
+    landed_on_option: "B"
+    diagnosis: "TRAP-CAYLEY: same confusion as (A) — $\\det A$ enters the characteristic polynomial as the absolute term, but after multiplying by $A^{-1}$ and rearranging, the coefficient of $I$ in the formula for $A^{-1}$ is $e_2$, not $e_3$."
+  - path: "Student tries to compute $A^{-1}$ by row reduction or adjoint, then $A^{2}$, then solves a linear system in $c,d$ from corresponding entries — gets $c=-6,d=11$ correctly but never connects $d=11$ to the pairwise-product symmetric function."
+    landed_on_option: "C only (misses D)"
+    diagnosis: "Partial-credit slip (TRAP-PARTIAL): the student gets the numeric answer but does not recognise the structural identity $d=e_2$, so they reject (D) as 'a coincidence'."
+
+review_notes: |
+  New axis-3 IDEA `CHARPOLY` (characteristic-polynomial / Cayley--Hamilton inversion) and axis-4 SUB-IDEA `CHINV` (inverse from Cayley--Hamilton in terms of elementary symmetric functions of eigenvalues) introduced under MAT.INV. Trap is TRAP-CAYLEY (canonical Cayley--Hamilton-coefficient confusion). Eigenvalues are read off block-triangular structure — no characteristic polynomial expansion of a full $3\times 3$ needed. Two correct options test the same fact from two angles (numeric and symbolic), which is JEE-canonical multi-correct design.

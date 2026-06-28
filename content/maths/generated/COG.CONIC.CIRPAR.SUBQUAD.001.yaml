@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: COG.CONIC.CIRPAR.SUBQUAD.001
+
+fingerprint:
+  topic: COG
+  subtopic: CONIC
+  idea: CIRPAR
+  sub_idea: SUBQUAD
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $N(c)$ denote the number of common points of the circle $x^{2}+y^{2}=1$ and the parabola $y=x^{2}+c$. Which of the following statement(s) is/are correct?
+
+  - (A) $c=0$: the two curves meet in $4$ points
+  - (B) $c=-1$: the two curves meet in exactly $3$ points
+  - (C) $c=\tfrac{3}{2}$: the two curves meet in $2$ points
+  - (D) the two curves have at least one common point iff $-\tfrac{5}{4}\le c\le 1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  Substitute $x^{2}=y-c$ (from the parabola) into the circle to reduce the system to a quadratic in $y$. Each admissible $y$ (one with $y-c\ge 0$ and $|y|\le 1$) generally yields two points $(x,y)=(\pm\sqrt{y-c},y)$, except when $y=c$ (the parabola's vertex), which yields a single touching point.
+
+  ### Working
+  From $y=x^{2}+c$ we get $x^{2}=y-c$. Substituting into $x^{2}+y^{2}=1$:
+  $$y^{2}+y-(1+c)=0 \implies y=\frac{-1\pm\sqrt{5+4c}}{2}.$$
+  A value of $y$ contributes points only if it satisfies $|y|\le 1$ and $y\ge c$ (so that $x^{2}=y-c\ge 0$). It contributes $2$ points if $y>c$, and exactly $1$ point if $y=c$ (vertex touch).
+
+  **(A) $c=0$:** $y=\tfrac{-1\pm\sqrt{5}}{2}$. The root $\tfrac{-1-\sqrt5}{2}\approx-1.618$ violates $|y|\le 1$. The root $\tfrac{-1+\sqrt5}{2}\approx0.618$ is admissible and $>0=c$, giving $2$ points. So $N(0)=2$, not $4$. **(A) is false.**
+
+  **(B) $c=-1$:** $y=\tfrac{-1\pm 1}{2}\in\{0,-1\}$. For $y=0$: $x^{2}=1$, giving $2$ points $(\pm1,0)$. For $y=-1=c$ (vertex touch): $x^{2}=0$, giving $1$ point $(0,-1)$. Total $N(-1)=3$. **(B) is true.**
+
+  **(C) $c=\tfrac{3}{2}$:** $5+4c=11$, so $y=\tfrac{-1\pm\sqrt{11}}{2}$. The larger root $\approx 1.158>1$ violates $|y|\le 1$; the smaller root $\approx -2.158<c=1.5$, so $x^{2}<0$. Neither admissible: $N(\tfrac{3}{2})=0$. **(C) is false.**
+
+  **(D)** A common point exists iff at least one root $y=\tfrac{-1\pm\sqrt{5+4c}}{2}$ satisfies $|y|\le 1$ and $y\ge c$. Requires $5+4c\ge 0$, i.e. $c\ge -\tfrac{5}{4}$. The endpoints: at $c=-\tfrac{5}{4}$ the double root is $y=-\tfrac12$, $x^{2}=\tfrac34$, so two points (boundary); the lowest the parabola can sit while still meeting is governed by the circle's bottom $y=-1$ giving $c=-\tfrac54$ via discriminant. At $c=1$: parabola vertex $(0,1)$ touches the top of the circle, and no other admissible roots; this is the highest $c$ for which they meet. For $c>1$ the parabola sits strictly above the circle. So the meeting range is exactly $-\tfrac{5}{4}\le c\le 1$. **(D) is true.**
+
+  Final answer: **(B), (D)**.
+
+wrong_paths:
+  - path: "Equates the four candidate $(x,y)$ pairs (two $y$-roots times $\\pm x$) without checking $|y|\\le 1$ and $y\\ge c$, concluding $4$ intersection points for $c=0$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL: ignoring admissibility constraints from the substitution. Only one of the two $y$-roots lies in $[-1,1]$ when $c=0$."
+  - path: "For $c=\\tfrac32$ student takes the root $y=\\tfrac{-1+\\sqrt{11}}{2}\\approx 1.16$ and forgets the circle constraint $|y|\\le 1$, computing $x^{2}=y-c\\approx -0.34$ but mis-records two solutions, or naively counts the two $y$-roots as $2$ points."
+    landed_on_option: "C"
+    diagnosis: "TRAP-EDGE on $|y|\\le 1$ boundary; student treats algebraic roots as geometric intersections."
+  - path: "Determines existence range from $5+4c\\ge 0$ alone, giving $c\\ge -\\tfrac{5}{4}$ with no upper bound; declares (D) false."
+    landed_on_option: "Rejects D"
+    diagnosis: "Misses the upper bound from the geometric constraint that the parabola's vertex must lie at or below the top of the circle, i.e. $c\\le 1$."
+  - path: "For $c=-1$ counts only the two points $(\\pm 1,0)$, missing the vertex tangency at $(0,-1)$ where the parabola's vertex sits on the circle (a $1$-point contact, not $2$)."
+    landed_on_option: "Rejects B"
+    diagnosis: "Vertex-touch case is a single point, not zero and not two; student either drops it or double-counts. The $y=c$ root collapses the two symmetric $x$-values into one."
+
+review_notes: |
+  COG.CONIC is a new subtopic axis. New IDEA `CIRPAR` (circle-parabola intersection via $y$-quadratic substitution) and SUB-IDEA `SUBQUAD` (admissibility-constrained substitution quadratic). The trap is TRAP-EDGE: the boundary cases $|y|=1$ and $y=c$ (vertex touch) drive the option set. Difficulty T3 — standard JEE setup but multi-correct with several edge cases (vertex touch, admissibility, parameter range) so the student must reason cleanly on all four.

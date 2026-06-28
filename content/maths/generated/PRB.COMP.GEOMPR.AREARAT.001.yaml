@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: PRB.COMP.GEOMPR.AREARAT.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: GEOMPR
+  sub_idea: AREARAT
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608b_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  $(p,q)$ is chosen uniformly on $[0,3]\times[0,1]$ and $f(t)=t^{2}-pt+q$. Let $P=\Pr(f\text{ has 2 distinct real roots})$ and $Q=\Pr(f\text{ has 2 distinct roots in }(0,1))$. Which of the following are correct?
+
+  - (A) $P=\tfrac{3}{4}$
+  - (B) $P=\tfrac{5}{9}$
+  - (C) $Q=\tfrac{2}{9}$
+  - (D) $P-Q=\tfrac{1}{2}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  When $(p,q)$ is uniform on a rectangle, any probability of the form $\Pr(\text{event})$ equals (favourable area)/(total area). Translate each algebraic condition on the roots of $f(t)=t^{2}-pt+q$ into a planar region in the $(p,q)$ plane and compute its area.
+
+  ### Working
+  Total area of the sample space is $3\times 1=3$.
+
+  **Computing $P$.** Two distinct real roots $\iff p^{2}-4q>0 \iff q<\dfrac{p^{2}}{4}$. The parabola $q=p^{2}/4$ meets $q=1$ at $p=2$. So the favourable region inside $[0,3]\times[0,1]$ is
+  $$\text{Area}=\int_{0}^{2}\frac{p^{2}}{4}\,dp+\int_{2}^{3}1\,dp=\frac{2}{3}+1=\frac{5}{3}.$$
+  Hence $P=\dfrac{5/3}{3}=\dfrac{5}{9}$. So **(B)** is true and **(A)** is false.
+
+  **Computing $Q$.** Both roots lie in $(0,1)$ iff
+  $$f(0)>0,\quad f(1)>0,\quad 0<\tfrac{p}{2}<1,\quad p^{2}-4q>0,$$
+  i.e. $q>0,\ 1-p+q>0,\ 0<p<2,\ q<\tfrac{p^{2}}{4}$. For $0\le p\le 1$ the binding upper bound on $q$ is $q<p^{2}/4$ (and $1-p+q>0$ is automatic since $q\ge 0$ would still need check, but $q\ge 0$ and $p\le 1$ gives $1-p+q\ge 0$; the strict region in $0<q<p^{2}/4$ satisfies all). For $1\le p\le 2$ the binding lower bound becomes $q>p-1$, with upper bound $q<p^{2}/4$. The favourable area is
+  $$\int_{0}^{1}\frac{p^{2}}{4}\,dp+\int_{1}^{2}\!\Bigl(\frac{p^{2}}{4}-(p-1)\Bigr)dp=\frac{1}{12}+\int_{1}^{2}\frac{(p-2)^{2}}{4}\,dp=\frac{1}{12}+\frac{1}{12}=\frac{1}{6}.$$
+  Hence $Q=\dfrac{1/6}{3}=\dfrac{1}{18}\neq\dfrac{2}{9}$. So **(C)** is false.
+
+  **Computing $P-Q$.** $P-Q=\dfrac{5}{9}-\dfrac{1}{18}=\dfrac{10-1}{18}=\dfrac{1}{2}$. So **(D)** is true.
+
+  Correct options: **(B), (D)**.
+
+wrong_paths:
+  - path: "Computes the favourable area for $P$ by integrating the parabola all the way to $p=3$, ignoring that $q$ is capped at $1$: $\\int_{0}^{3}p^{2}/4\\,dp=9/4$, giving $P=9/4\\div 3=3/4$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-EDGE — fails to clip the region by $q\\le 1$ where the parabola exits the strip at $p=2$. Classic boundary-omission slip in geometric probability."
+  - path: "For $Q$ uses only the discriminant condition $q<p^{2}/4$ on $p\\in(0,2)$ and forgets $f(0)>0,\\ f(1)>0$, giving area $\\int_{0}^{2}p^{2}/4\\,dp=2/3$, so $Q=2/9$."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL — uses only one of the three necessary conditions (sign of $f$ at the endpoints, vertex location, positive discriminant) for both roots to lie in an interval."
+  - path: "Mis-symmetrises and writes the favourable region for $Q$ as $\\int_{0}^{2}\\tfrac{p^{2}}{4}dp-\\int_{1}^{2}(p-1)dp = 2/3-1/2 = 1/6$ accidentally landing on the right $Q$ but reports $P-Q$ using the wrong $P=3/4$: $3/4-1/18=23/36\\neq 1/2$, so rejects (D)."
+    landed_on_option: "rejects D"
+    diagnosis: "Compound error: correct $Q$ paired with the (A)-style wrong $P$. Demonstrates how the trap on (A) propagates to dismissing (D)."
+
+review_notes: |
+  Multi-correct geometric probability on a quadratic's roots — a JEE-Advanced staple where each option targets a different region/condition.
+  Created two new taxonomy codes: idea=GEOMPR (geometric/continuous probability via area ratio) and sub_idea=AREARAT (root-location regions in coefficient plane). Trap TRAP-PARTIAL flags the incomplete root-location condition set; TRAP-EDGE also active for option (A) via missed $q\le1$ clip.

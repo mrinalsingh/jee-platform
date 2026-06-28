@@ -1,0 +1,70 @@
+schema_version: 1
+
+question_code: ALG.POL.RECINV.CONSTRM.001
+
+fingerprint:
+  topic: ALG
+  subtopic: POL
+  idea: RECINV
+  sub_idea: CONSTRM
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $P_1(x)=(x-2)^2$ and $P_{k+1}(x)=\bigl(P_k(x)-2\bigr)^2$ for $k\ge 1$. Which of the following are TRUE?
+
+  - (A) The constant term of $P_k$ equals $4$ for every $k\ge 1$.
+  - (B) $P_k(1)=0$ for every $k\ge 1$.
+  - (C) $\deg P_k = 2k$ for every $k\ge 1$.
+  - (D) The coefficient of $x$ in $P_k$ equals $(-1)^k\,4^k$ for every $k\ge 1$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A]
+
+solution: |
+  Expand $P_2(x)=(P_1(x)-2)^2=\bigl((x-2)^2-2\bigr)^2=(x^2-4x+2)^2=x^4-8x^3+20x^2-16x+4$. The four statements can now be tested by tracking one invariant at a time.
+
+  **(A) Constant term.** The constant term of $P_{k+1}$ equals $(P_k(0)-2)^2$. From $P_1(0)=(0-2)^2=4$, induction gives $P_{k+1}(0)=(4-2)^2=4$. So $P_k(0)=4$ for every $k$. **True.**
+
+  **(B) Value at $1$.** $P_1(1)=(1-2)^2=1$, and inductively $P_{k+1}(1)=(P_k(1)-2)^2=(1-2)^2=1\ne 0$. So $P_k(1)=1$ for every $k$, never $0$. **False.**
+
+  **(C) Degree.** Squaring doubles the degree: $\deg P_{k+1}=2\deg P_k$. With $\deg P_1=2$ this gives $\deg P_k=2^k$, not $2k$. **False** (matches at $k=1,2$ only).
+
+  **(D) Coefficient of $x$.** Writing $P_k(x)=4+a_k x+\cdots$ and using $P_{k+1}(x)=(P_k(x)-2)^2$, the linear coefficient of $P_{k+1}$ equals $2(P_k(0)-2)\cdot a_k=2\cdot 2\cdot a_k=4a_k$. With $a_1=-4$ this gives $a_k=-4^k$. The proposed $(-1)^k 4^k$ alternates in sign ($-4,+16,-64,\ldots$), whereas the true sequence is $-4,-16,-64,-256,\ldots$ (always negative). **False** (sign trap).
+
+  Only (A) holds for all $k$.
+
+wrong_paths:
+  - path: "Notes that $P_1(1)=(1-2)^2=1$ and squares-of-(value-minus-two) eventually 'settle'; jumps to claim $P_k(1)=0$ without iterating the recursion."
+    landed_on_option: "B"
+    diagnosis: "Fixed-point confusion: takes $1$ as a fixed point of $y\\mapsto(y-2)^2$, but the actual fixed point at $y=1$ gives $(1-2)^2=1$, not $0$."
+  - path: "Reads $\\deg P_1=2$, $\\deg P_2=4$ and linearly extrapolates to $\\deg P_k=2k$ instead of recognising the doubling $\\deg P_{k+1}=2\\deg P_k$."
+    landed_on_option: "C"
+    diagnosis: "Arithmetic-vs-geometric growth confusion; squaring doubles degree, giving $2^k$ not $2k$."
+  - path: "Computes the linear coefficient for $k=1,2$ ($-4,-16$) and forces an alternating sign to match $(-1)^k$, ignoring that both signs are negative."
+    landed_on_option: "D"
+    diagnosis: "Sign trap on geometric coefficient; the magnitude $4^k$ is correct but the sign factor $(-1)^k$ is spurious."
+
+review_notes: |
+  Multi-correct stem with only (A) true — a deliberate 'trap-heavy' design where each distractor probes a distinct failure mode (fixed-point, degree-growth, sign-tracking). Topic/subtopic = ALG/POL (polynomial). Idea/sub-idea proposed as new: RECINV (recursive invariants under iterated polynomial composition) and CONSTRM (tracking constant-/linear-term invariants). If MAT or CAL framings of iterated maps already have a similar code in the live taxonomy, consider reusing those; otherwise extend ALG.POL with RECINV / CONSTRM. Surface SURF-PLAIN (direct polynomial recursion, no geometric/parametric dressing). Trap TRAP-PARTIAL because option (D) is a sign-trap distractor designed to look correct by magnitude match.

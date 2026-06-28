@@ -1,0 +1,84 @@
+schema_version: 1
+
+question_code: COG.HYP.TANCFG.BRNCH.001
+
+fingerprint:
+  topic: COG
+  subtopic: HYP
+  idea: TANCFG
+  sub_idea: BRNCH
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-EDGE
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{H}:\dfrac{x^{2}}{9}-\dfrac{y^{2}}{16}=1$, with asymptotes meeting at the origin $O$. From an external point $P$, two tangents to $\mathcal{H}$ touch the hyperbola at $T_{1},T_{2}$. Which of the following statements is/are correct?
+
+  - (A) If $P=(0,k)$ with $k\ne 0$, the two tangents touch opposite branches of $\mathcal{H}$.
+  - (B) If $P=(h,0)$ with $0<h<3$, both tangents touch the right branch.
+  - (C) Any tangent to $\mathcal{H}$ meets the asymptotes at $A,B$ (with the contact being the midpoint of $AB$), and $[\triangle OAB]=12$ always.
+  - (D) If $P=(h,0)$ with $h>3$, exactly two real tangents to $\mathcal{H}$ exist from $P$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  For a hyperbola $\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}=1$, tangents from an external point $(h,k)$ have slopes $m$ satisfying $(h^{2}-a^{2})m^{2}-2kh\,m+(k^{2}+b^{2})=0$, and the abscissa of contact is $x_{0}=-a^{2}m/k$ (for $k\ne 0$). The sign of $x_0$ (or equivalently the branch) is governed by the sign of $m/k$. Separately, any tangent cuts the asymptotes at $A,B$ with the contact the midpoint of $AB$, and the triangle $OAB$ has constant area $ab$.
+
+  ### Working
+  Here $a=3,\ b=4$, so $ab=12$.
+
+  **Option (A):** $P=(0,k)$, $k\ne 0$. The slope equation becomes $-9m^{2}+k^{2}+16=0$, so $m=\pm\sqrt{k^{2}+16}/3$. Then $x_{0}=-9m/k=\mp 3\sqrt{k^{2}+16}/k$. The two contacts have $x_0$ of opposite signs, hence lie on opposite branches. **Correct.**
+
+  **Option (B):** $P=(h,0)$ with $0<h<3$. Now $k=0$, so use the tangent line $y=mx+c$ with $c^{2}=9m^{2}-16$; passing through $(h,0)$ gives $mh=-c$, i.e. $m^{2}h^{2}=9m^{2}-16$, hence $m^{2}=\dfrac{16}{9-h^{2}}>0$ (valid since $h<3$). The chord of contact from $(h,0)$ is $\dfrac{hx}{9}=1$, i.e. $x=9/h>3>0$. Both contacts therefore have positive abscissa $9/h$, both on the **right** branch. **Correct.**
+
+  **Option (C):** The tangent at $(x_0,y_0)$ is $\dfrac{xx_0}{9}-\dfrac{yy_0}{16}=1$. Meeting $y=\tfrac{4}{3}x$: $x\bigl(\tfrac{x_0}{9}-\tfrac{y_0}{12}\bigr)=1$, giving $x_A=\dfrac{36}{4x_0-3y_0}$. Meeting $y=-\tfrac{4}{3}x$: $x_B=\dfrac{36}{4x_0+3y_0}$. One checks $\tfrac12(x_A+x_B)=x_0$ (contact is the midpoint). The area $[\triangle OAB]=\tfrac12|x_A y_B-x_B y_A|=ab=12$, independent of the contact point. **Correct.**
+
+  **Option (D):** $P=(h,0)$ with $h>3$. The slope quadratic $(h^{2}-9)m^{2}+16=0$ has $m^{2}=-\dfrac{16}{h^{2}-9}<0$: **no** real tangent. Geometrically, a point on the transverse axis between the vertex and infinity lies "inside" the concavity of the right branch, where no tangent line through it can touch $\mathcal{H}$. **Incorrect.**
+
+  Hence the correct options are **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student treats $P=(h,0)$ with $h>3$ as 'clearly external to the closed conic' and concludes two tangents exist (analogy with the ellipse)."
+    landed_on_option: "(D)"
+    diagnosis: "Hyperbola tangent existence is not governed by being 'outside the curve' in the ellipse sense — the relevant test is the sign of the slope-quadratic discriminant. Points on the transverse axis beyond the vertex give no real tangent. This is TRAP-EDGE (boundary configuration on the axis)."
+  - path: "Student finds $m=\\pm\\sqrt{k^{2}+16}/3$ for $P=(0,k)$ but ignores the sign coupling in $x_{0}=-9m/k$, concluding both contacts lie on the same branch."
+    landed_on_option: "Misses (A)"
+    diagnosis: "Failure to track the signed contact abscissa loses the opposite-branch conclusion. A common slip is to compute $|x_0|=5$ and stop."
+  - path: "For (C), student computes the triangle area at one specific contact (say the vertex $(3,0)$ where the tangent is $x=3$) and concludes the area depends on the contact, missing the invariance."
+    landed_on_option: "Misses (C)"
+    diagnosis: "Vertex is a degenerate case; the general computation gives constant $ab$. Students often don't carry the algebra through symbolically."
+  - path: "For (B), student writes the chord of contact from $(h,0)$ as $\\dfrac{hx}{9}=1$, gets $x=9/h$, but then mistakenly thinks one tangent touches the left branch by symmetry of $P$ on the $x$-axis."
+    landed_on_option: "Misses (B)"
+    diagnosis: "Symmetry of $P$ about the $y$-axis does not imply contacts split across branches; the chord-of-contact line is vertical and meets only the right branch when $0<h<3$."
+
+review_notes: |
+  Multi-correct hyperbola tangent-configuration problem. Tests: (i) signed contact-abscissa analysis for tangents from a point on the conjugate axis, (ii) chord-of-contact branch identification for a point inside the transverse-axis segment, (iii) the classical asymptote-triangle invariant $[\triangle OAB]=ab$, and (iv) the non-obvious fact that points on the transverse axis with $|x|>a$ admit no real tangents.
+
+  Taxonomy extension proposed:
+  - AXIS 2 (COG subtopic): new code "HYP" (hyperbola).
+  - AXIS 3 (COG.HYP idea): new code "TANCFG" (tangent configuration / tangents-from-external-point).
+  - AXIS 4 (COG.HYP.TANCFG sub-idea): new code "BRNCH" (branch identification of contacts + asymptote-triangle invariant).
+  Surface = SURF-GEOM. Trap = TRAP-EDGE (the false (D) is the canonical edge/inside-branch trap).
+  Difficulty T4 — non-standard combination of branch-sign tracking, asymptote-triangle invariant, and the inside-branch tangent-existence trap.

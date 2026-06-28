@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: PNC.DST.MULTERM.STARSB.001
+
+fingerprint:
+  topic: PNC
+  subtopic: DST
+  idea: MULTERM
+  sub_idea: STARSB
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $n$ denote the number of distinct terms in the expansion of $(x+y+z)^{12}$, and consider the quadratic $t^{2}-n\,t+m=0$ with $m\in\mathbb{Z}^{+}$. Which of the following statement(s) is/are correct?
+
+  - (A) $n=91$
+  - (B) The number of distinct terms in $(x+y+z+w)^{12}$ equals $364$
+  - (C) There are exactly $45$ values of $m$ for which the quadratic has two distinct positive integer roots
+  - (D) The sum of the coefficients of $(x+y+z)^{12}$ equals $2^{12}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  The number of distinct monomials in $(x_{1}+\cdots+x_{r})^{N}$ equals the number of non-negative integer solutions of $i_{1}+\cdots+i_{r}=N$, which by stars-and-bars is $\binom{N+r-1}{r-1}$. The sum of all coefficients of any polynomial $P(x_{1},\ldots,x_{r})$ is $P(1,1,\ldots,1)$.
+
+  ### Working
+  Distinct terms of $(x+y+z)^{12}$ correspond to monomials $x^{i}y^{j}z^{k}$ with $i+j+k=12$, $i,j,k\ge 0$. By stars-and-bars the count is
+  $$n=\binom{12+2}{2}=\binom{14}{2}=91,$$
+  so **(A)** holds.
+
+  For $(x+y+z+w)^{12}$ the count is $\binom{12+3}{3}=\binom{15}{3}=455\ne 364$ (the value $364=\binom{14}{3}$ comes from an off-by-one slip in the stars-and-bars formula), so **(B)** is false.
+
+  For $t^{2}-91t+m=0$ to have two distinct positive integer roots $p,q$, we need $p+q=91$ and $pq=m$ with $p\ne q$. Since $91$ is odd, $p=q$ is impossible. Taking $p\in\{1,2,\ldots,45\}$ gives the $45$ unordered pairs $\{p,91-p\}$, and the products $p(91-p)$ are strictly increasing on this range, hence all $45$ values of $m$ are distinct. So **(C)** holds.
+
+  The sum of all coefficients equals $(1+1+1)^{12}=3^{12}\ne 2^{12}$, so **(D)** is false.
+
+  Correct options: **(A), (C)**.
+
+wrong_paths:
+  - path: "Uses $\\binom{N+r-1}{r}$ instead of $\\binom{N+r-1}{r-1}$ for the count in $(x+y+z+w)^{12}$, getting $\\binom{15}{4}$ or equivalently slips to $\\binom{14}{3}=364$."
+    landed_on_option: "B"
+    diagnosis: "Classic off-by-one in the stars-and-bars formula — confusing the number of variables with the number of bars. TRAP-PARTIAL: option B is a plausible-looking near-miss."
+  - path: "Computes sum of coefficients by setting each variable to $1$ but mis-remembers there being $2$ variables (binomial reflex), getting $2^{12}$."
+    landed_on_option: "D"
+    diagnosis: "Reflexive carry-over from $(x+y)^{n}$ where the coefficient sum is $2^{n}$; the student forgets to count the actual number of variables, which here is $3$."
+  - path: "For the quadratic, counts ordered pairs $(p,q)$ with $p+q=91$ and gets $90$, or includes $p=q$ illegally."
+    landed_on_option: "Neither A/C only — student rejects C"
+    diagnosis: "Misses that $\\{p,q\\}$ and $\\{q,p\\}$ give the same $m$, doubling the count, or forgets the distinctness constraint."
+  - path: "Treats $(x+y+z)^{12}$ as if monomials with the same total degree but different exponents could coincide, undercounting."
+    landed_on_option: "Rejects A"
+    diagnosis: "Misunderstanding of 'distinct terms' — student conflates value with formal monomial identity."
+
+review_notes: |
+  Multi-correct stars-and-bars + sum-of-coefficients + integer-root counting fusion. Standard JEE-level, T2. The (B) distractor $364=\binom{14}{3}$ is engineered to catch the off-by-one slip. New taxonomy codes proposed: IDEA=MULTERM (multinomial term count), SUB-IDEA=STARSB (stars-and-bars). If a closer existing match is preferred, PNC.DST with a new IDEA may need to be confirmed by the maintainer.

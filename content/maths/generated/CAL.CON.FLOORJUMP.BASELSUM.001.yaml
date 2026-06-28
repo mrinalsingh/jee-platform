@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: CAL.CON.FLOORJUMP.BASELSUM.001
+
+fingerprint:
+  topic: CAL
+  subtopic: CON
+  idea: FLOORJUMP
+  sub_idea: BASELSUM
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f:\mathbb{R}\to\mathbb{R}$ be defined by
+  $$f(x)=\begin{cases} x^{2}\left\lfloor \dfrac{1}{x}\right\rfloor, & x>0,\\[4pt] 0, & x\le 0,\end{cases}$$
+  and for each $n\in\mathbb{N}$ let $J_{n}=\left|f\!\left(\tfrac{1}{n}^{-}\right)-f\!\left(\tfrac{1}{n}^{+}\right)\right|$ be the magnitude of the jump of $f$ at $x=\tfrac{1}{n}$. Which of the following are correct?
+
+  - (A) $f$ is continuous at $x=0$.
+  - (B) The set of discontinuities of $f$ in $(0,\infty)$ is exactly $\{1/n:n\in\mathbb{N}\}$.
+  - (C) $\displaystyle\sum_{n=1}^{\infty}J_{n}=\dfrac{\pi^{2}}{6}$.
+  - (D) $f$ is differentiable at $x=0$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  For $x>0$, $\lfloor 1/x\rfloor$ is locally constant on each interval $\left(\tfrac{1}{n+1},\tfrac{1}{n}\right]$, so $f(x)=x^{2}\lfloor 1/x\rfloor$ is a piecewise polynomial that jumps only where $1/x$ crosses an integer. Squeezing controls behaviour at $0$, and the jump sizes form the Basel series $\sum 1/n^{2}$.
+
+  ### Working
+  **(A) Continuity at $0$.** For $x>0$, $\dfrac{1}{x}-1<\left\lfloor\dfrac{1}{x}\right\rfloor\le\dfrac{1}{x}$, hence
+  $$0\le x^{2}\left\lfloor\tfrac{1}{x}\right\rfloor\le x^{2}\cdot\tfrac{1}{x}=x\xrightarrow[x\to 0^{+}]{}0.$$
+  Since $f\equiv 0$ for $x\le 0$, $f$ is continuous at $0$. **(A) true.**
+
+  **(B) Discontinuity set.** On $\left(\tfrac{1}{n+1},\tfrac{1}{n}\right]$ we have $\lfloor 1/x\rfloor=n$, so $f(x)=nx^{2}$ there. For $x>1$, $\lfloor 1/x\rfloor=0$, so $f\equiv 0$. Within each open interval $\left(\tfrac{1}{n+1},\tfrac{1}{n}\right)$ the function is a polynomial, hence continuous. The only possible discontinuities are the endpoints $x=1/n$. At $x=\tfrac{1}{n}$ (with $n\ge 1$): left limit (from $\left(\tfrac{1}{n+1},\tfrac{1}{n}\right)$) is $n\cdot\tfrac{1}{n^{2}}=\tfrac{1}{n}$, while the right limit (from $\left(\tfrac{1}{n},\tfrac{1}{n-1}\right)$ for $n\ge 2$, taking $\lfloor 1/x\rfloor=n-1$) is $(n-1)\cdot\tfrac{1}{n^{2}}=\tfrac{n-1}{n^{2}}$; for $n=1$ the right limit is $0$. In every case the two one-sided limits differ. Hence the discontinuity set is exactly $\{1/n:n\in\mathbb{N}\}$. **(B) true.**
+
+  **(C) Sum of jumps.** The jump at $x=\tfrac{1}{n}$ has magnitude
+  $$J_{n}=\left|\tfrac{1}{n}-\tfrac{n-1}{n^{2}}\right|=\tfrac{1}{n^{2}}\qquad(n\ge 2),$$
+  and $J_{1}=|1-0|=1=\tfrac{1}{1^{2}}$. Therefore
+  $$\sum_{n=1}^{\infty}J_{n}=\sum_{n=1}^{\infty}\tfrac{1}{n^{2}}=\tfrac{\pi^{2}}{6}.$$
+  **(C) true.**
+
+  **(D) Differentiability at $0$.** For $x>0$,
+  $$\frac{f(x)-f(0)}{x-0}=x\left\lfloor\tfrac{1}{x}\right\rfloor.$$
+  Using $\tfrac{1}{x}-1<\lfloor 1/x\rfloor\le\tfrac{1}{x}$ we get $1-x<x\lfloor 1/x\rfloor\le 1$, so $x\lfloor 1/x\rfloor\to 1$ as $x\to 0^{+}$. The left difference quotient is $0$. Since $1\ne 0$, $f$ is not differentiable at $0$. **(D) false.**
+
+  Hence the correct options are **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student computes the jump at $x=1/n$ as $\\big|\\tfrac{1}{n}-\\tfrac{n+1}{n^{2}}\\big|=\\tfrac{1}{n^{2}}$ correctly for $n\\ge2$ but treats $J_{1}=0$ (mistakenly using $f\\equiv 0$ for $x>1$ on both sides). Sum becomes $\\tfrac{\\pi^{2}}{6}-1$, so they reject (C)."
+    landed_on_option: "Marks {A, B} only"
+    diagnosis: "Edge-case slip at $n=1$: they fail to note that the left limit at $x=1$ is $1\\cdot 1^{2}=1$ while the right limit is $0$. Classic TRAP-EDGE."
+  - path: "Student notes $f(x)\\to 0$ as $x\\to 0^{+}$ and concludes (D): since $f(0)=0$ and $f$ is small, they claim differentiability without computing $f(x)/x$."
+    landed_on_option: "Marks {A, B, C, D}"
+    diagnosis: "Confuses continuity with differentiability. They overlook that $x\\lfloor 1/x\\rfloor\\to 1$, not $0$. TRAP-PARTIAL on the derivative test."
+  - path: "Student observes that $\\lfloor 1/x\\rfloor$ is discontinuous at every $1/n$ and ALSO claims discontinuity at every irrational point near $0$, rejecting (B)."
+    landed_on_option: "Marks {A, C} only"
+    diagnosis: "Misreads the floor function: $\\lfloor 1/x\\rfloor$ is locally constant between consecutive $1/n$'s, so $f$ is continuous on each such interval. TRAP-NCERT-style confusion about floor."
+
+review_notes: |
+  Multi-correct cross-chapter staple: continuity via squeeze, locating discontinuities of a floor-driven function, and a Basel-series telescoping of jumps. The decisive distractor is (D) — students often conflate continuity with differentiability after the squeeze argument. Verify that the jump computation at $n=1$ (boundary with the constant-zero tail $x>1$) is presented clearly. Difficulty T3 (hard standard); 6 minutes on first attempt is realistic; later rounds compress sharply once the structure is recognized.

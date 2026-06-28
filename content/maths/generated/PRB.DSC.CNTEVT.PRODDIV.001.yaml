@@ -1,0 +1,81 @@
+schema_version: 1
+
+question_code: PRB.DSC.CNTEVT.PRODDIV.001
+
+fingerprint:
+  topic: PRB
+  subtopic: DSC
+  idea: CNTEVT
+  sub_idea: PRODDIV
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 300   # ~5 min — set up product sample space, count three events carefully
+  R2_seconds: 210   # ~3.5 min — pattern recalled, still counts each option
+  R3_seconds: 150   # ~2.5 min — fluent multiset counting
+  R4_seconds: 90    # ~1.5 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a,b,c$ be chosen independently and uniformly at random from $\{1,2,3\}$, and form the tetrahedron with vertices $O=(0,0,0)$, $(a,0,0)$, $(0,b,0)$, $(0,0,c)$, whose volume is $V=\dfrac{abc}{6}$. Which of the following are correct?
+
+  - **(A)** $P(V\text{ is an integer})=\dfrac49$
+  - **(B)** $P\!\left(V=\dfrac16\right)=\dfrac19$
+  - **(C)** $P(V<1)=\dfrac13$
+  - **(D)** the largest possible volume $\dfrac{27}{6}$ occurs with probability $\dfrac19$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A]
+
+solution: |
+  ### The IDEA
+  The sample space is the $27$ equally likely ordered triples $(a,b,c)\in\{1,2,3\}^3$. Every event below is an arithmetic condition on the product $abc$ (or on $a=b=c$), so each probability is just a count of favorable triples divided by $27$. The only care needed is correct multiset-to-ordered-triple counting and the exact boundary cutoff.
+
+  ### Working
+
+  **(A) $V\in\mathbb{Z}$.** Since $V=\dfrac{abc}{6}$, $V\in\mathbb{Z}\iff 6\mid abc$, i.e. $abc\in\{6,12,18\}$ (the only multiples of $6$ achievable from factors in $\{1,2,3\}$, max product $27$):
+  $$abc=6:\ \{1,2,3\}\to 3!=6\ \text{triples};\quad abc=12:\ \{2,2,3\}\to 3\ \text{triples};\quad abc=18:\ \{2,3,3\}\to 3\ \text{triples}.$$
+  Total $6+3+3=12$, so $P(V\in\mathbb{Z})=\dfrac{12}{27}=\dfrac49$. **(A) is correct.**
+
+  **(B) $V=\tfrac16$.** $V=\tfrac16\iff abc=1\iff (a,b,c)=(1,1,1)$, exactly one triple. So $P=\dfrac{1}{27}\neq\dfrac19$. **(B) is false.**
+
+  **(C) $V<1$.** $V<1\iff abc<6\iff abc\in\{1,2,3,4\}$:
+  $$abc=1:(1,1,1)\to1;\quad abc=2:\{1,1,2\}\to3;\quad abc=3:\{1,1,3\}\to3;\quad abc=4:\{1,1,4\}\,(\text{impossible}),\ \{1,2,2\}\to3.$$
+  Total $1+3+3+3=10$, so $P(V<1)=\dfrac{10}{27}\neq\dfrac13$. **(C) is false** ($\tfrac13=\tfrac{9}{27}$ would require a different cutoff).
+
+  **(D) maximal volume.** $V=\dfrac{27}{6}$ needs the maximum product $abc=27$, i.e. $a=b=c=3$, one triple, $P=\dfrac{1}{27}\neq\dfrac19$. **(D) is false.**
+
+  Exactly one option, **(A)**, holds.
+
+wrong_paths:
+  - path: "For (B)/(D), reasons that a single fixed product value among the '9 distinct product levels' has probability 1/9, treating the products as equally likely rather than the 27 triples. Picks B and/or D."
+    landed_on_option: "B and/or D"
+    diagnosis: "Confuses 'equally likely outcomes' (the 27 ordered triples) with 'equally likely product values'. The corner outcomes (1,1,1) and (3,3,3) are unique triples, each probability 1/27, not 1/9."
+  - path: "For (C), uses the cutoff $V\\le 1\\iff abc\\le 6$ (or counts $abc<6$ but mis-includes $abc=5$ as if achievable / miscounts {1,2,2}), landing on 9 triples and reading $9/27=1/3$."
+    landed_on_option: "C"
+    diagnosis: "TRAP-EDGE boundary slip: strict vs non-strict inequality and the unreachable product 5 inflate the count to 9, giving the planted 1/3. The correct count is 10."
+  - path: "For (A), counts only the 'all-distinct' triple {1,2,3} (6 ways) and forgets the repeated-factor multiples of 6, namely {2,2,3} and {2,3,3}, getting 6/27 = 2/9 and rejecting A."
+    landed_on_option: "rejects A (selects none or only B/D)"
+    diagnosis: "Incomplete enumeration of $6\\mid abc$: misses that 12 and 18 are also multiples of 6 reachable with a repeated factor. Undercounts favorable triples from 12 to 6."
+
+review_notes: |
+  - Variant (not parallel-form) of sheet 0609d Q4: same stem, MCQ-MC, single correct key [A].
+  - TOPIC PRB had no SUBTOPIC/IDEA/SUB-IDEA in the taxonomy; this record requires extending maths.yaml with PRB.DSC.CNTEVT.PRODDIV (see extension_note) before import, or the importer will reject the fingerprint.
+  - surface SURF-PARAM chosen because a,b,c are genuine random unknowns dressed as a geometric (tetrahedron-volume) wrapper; trap TRAP-EDGE because every distractor is a boundary/cutoff or equally-likely-level slip rather than a deeper conceptual trap.
+  - T2: standard counting once the product sample space is seen; the difficulty is purely careful enumeration, not insight. Confirm R1 timing empirically.
+  - All four counts (12, 1, 10, 1 favorable triples) cross-checked against the worked solution .tex Q4 block.

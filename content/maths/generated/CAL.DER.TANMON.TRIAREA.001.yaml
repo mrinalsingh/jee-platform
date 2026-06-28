@@ -1,0 +1,85 @@
+schema_version: 1
+
+question_code: CAL.DER.TANMON.TRIAREA.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DER
+  idea: TANMON
+  sub_idea: TRIAREA
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $C_b:\,y=x^{2}+bx-b$, let $\ell_b$ be the tangent to $C_b$ at $x=1$, and let
+  $$\varphi_b(x)=\int_{0}^{x}(t^{2}+bt-b)\,dt.$$
+  Which of the following is/are correct?
+
+  - (A) $(1,1)$ lies on $C_b$ only for $b=1$.
+  - (B) $\varphi_b$ is increasing on $\mathbb{R}$ if and only if $b\in[-4,0]$.
+  - (C) Exactly one integer value of $b$ makes the triangle bounded by $\ell_b$ and the coordinate axes have area $2$, namely $b=-3$.
+  - (D) Every $b$ for which that triangle has area $2$ also makes $\varphi_b$ increasing on $\mathbb{R}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  A cubic primitive is monotone on $\mathbb{R}$ exactly when its derivative (a quadratic) is non-negative everywhere, i.e. its discriminant is $\le 0$. Combine this with the standard "axes-triangle from a tangent line" computation: if a line has $x$-intercept $p$ and $y$-intercept $q$, the triangle area is $\tfrac12|pq|$.
+
+  ### Working
+  **Point on $C_b$.** $f_b(1)=1+b-b=1$ for *every* $b$, so $(1,1)\in C_b$ for all $b$. Hence **(A) is false**.
+
+  **Monotonicity of $\varphi_b$.** $\varphi_b'(x)=x^{2}+bx-b$. This is $\ge 0$ for all $x\in\mathbb{R}$ iff the discriminant
+  $$b^{2}-4(1)(-b)=b^{2}+4b\le 0\iff b\in[-4,0].$$
+  So **(B) is true**.
+
+  **Axes-triangle area.** $f_b'(x)=2x+b$, so $f_b'(1)=2+b$. The tangent at $x=1$ is
+  $$\ell_b:\ y-1=(2+b)(x-1)\Longrightarrow y=(2+b)x-(1+b).$$
+  (Assume $b\ne -2$ so $\ell_b$ is not horizontal.) The $x$-intercept is $x_0=\dfrac{1+b}{2+b}$, the $y$-intercept is $y_0=-(1+b)$, and the triangle area is
+  $$\tfrac12|x_0 y_0|=\tfrac12\cdot\frac{(1+b)^{2}}{|2+b|}=2\Longleftrightarrow(1+b)^{2}=4|2+b|.$$
+  *Case $b>-2$:* $(1+b)^{2}=4(2+b)\Rightarrow b^{2}-2b-7=0\Rightarrow b=1\pm 2\sqrt{2}$.
+  *Case $b<-2$:* $(1+b)^{2}=-4(2+b)\Rightarrow b^{2}+6b+9=0\Rightarrow b=-3$ (double root).
+  The integer solutions among $\{1+2\sqrt2,\ 1-2\sqrt2,\ -3\}$ are just $b=-3$. So **(C) is true**.
+
+  **Cross-check (D).** The three $b$-values are $-3,\ 1-2\sqrt2\approx -1.83,\ 1+2\sqrt2\approx 3.83$. The interval $[-4,0]$ contains $-3$ and $1-2\sqrt2$ but not $1+2\sqrt2$. So **(D) is false**.
+
+  Correct options: **(B), (C)**.
+
+wrong_paths:
+  - path: "Picks (A) by plugging $b=1$ into $C_b$ to get $y=1$ at $x=1$ and not checking other $b$ — failing to notice $f_b(1)=1$ for every $b$."
+    landed_on_option: "A"
+    diagnosis: "Confirmation bias / partial check (TRAP-PARTIAL): student verifies one case rather than treating $b$ as a free parameter."
+  - path: "For (B), drops the discriminant constraint and instead demands the leading coefficient $1>0$ plus 'vertex $\\ge 0$', or writes the condition $b^2-4b\\le 0$ (sign error on the constant term), getting $b\\in[0,4]$ — and rejects (B)."
+    landed_on_option: "not B"
+    diagnosis: "Algebra slip in the discriminant of $x^2+bx-b$: forgetting that the constant is $-b$, so $\\Delta=b^2-4(-b)=b^2+4b$."
+  - path: "For (C), solves only the case $b>-2$, gets $b=1\\pm 2\\sqrt{2}$, sees no integer, and declares no integer $b$ exists — rejecting (C)."
+    landed_on_option: "not C"
+    diagnosis: "TRAP-PARTIAL: drops the absolute-value branch $b<-2$ where the genuine integer solution $b=-3$ lives."
+  - path: "Picks (D) on autopilot, observing $-3\\in[-4,0]$ without checking the other two roots $1\\pm 2\\sqrt2$."
+    landed_on_option: "D"
+    diagnosis: "Generalization error: 'every $b$' requires checking all three roots, not just the integer one. $1+2\\sqrt2\\approx 3.83\\notin[-4,0]$ kills the claim."
+
+review_notes: |
+  Multi-correct fuses three Calculus DER strands: (i) value on a curve as a function of parameter, (ii) discriminant condition for monotonicity of a cubic primitive, (iii) axes-triangle area from a parametric tangent line with absolute-value case-split. Quadrants of failure: missing the all-$b$ verification (A), discriminant sign (B), |2+b| split (C), and the universal-quantifier check (D). Difficulty T4 — non-standard fusion, ~5-6 min target. Proposed taxonomy extension: IDEA=TANMON (tangent + monotonicity fusion) under CAL.DER; SUB-IDEA=TRIAREA (axes-triangle area from tangent line, parametric).

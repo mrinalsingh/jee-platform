@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.001
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=x^{2}-4ax+5a^{2}-6a$, where $a\in\mathbb{R}$. Let $m$ denote the smallest positive integer value of $a$ for which $f(x)>0$ for every real $x$, and let $n$ denote the largest possible value (over real $a$) of the gap between the two real roots of $f$. Then which of the following is/are correct?
+
+  - (A) $m=7$, $n=6$, and $m+n=13$
+  - (B) $f(x)>0\ \forall\,x\in\mathbb{R}\iff a<0$ or $a>6$
+  - (C) The smallest such positive integer $a$ is $1$
+  - (D) The root-gap is largest at $a=6$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  For a monic quadratic $f(x)=x^{2}+Bx+C$, positivity for all real $x$ is equivalent to a negative discriminant; when the roots are real, the gap $|x_{1}-x_{2}|=\sqrt{\Delta}$ is itself a function of the parameter and is maximised at an interior critical point, not at a boundary where $\Delta=0$.
+
+  ### Working
+  Compute the discriminant:
+  $$\Delta = (4a)^{2}-4(5a^{2}-6a) = 16a^{2}-20a^{2}+24a = -4a^{2}+24a = -4a(a-6).$$
+
+  **Positivity condition.** $f(x)>0\ \forall x\in\mathbb{R}\iff \Delta<0 \iff a(a-6)>0 \iff a<0\ \text{or}\ a>6$. This proves **(B)**.
+
+  **Smallest positive integer $a$.** From $a>6$, the smallest positive integer is $a=7$, hence $m=7$. Note $a=1$ fails: $\Delta(1)=-4(1)(-5)=20>0$, so $f$ has real roots — this kills **(C)**.
+
+  **Largest root-gap.** When roots are real (i.e.\ $0\le a\le 6$), the gap is
+  $$\sqrt{\Delta}=2\sqrt{6a-a^{2}}=2\sqrt{9-(a-3)^{2}},$$
+  which is maximised at the **interior** point $a=3$, giving gap $=6$. So $n=6$, and at $a=6$ the gap equals $0$ — **(D)** is the boundary fallacy and is false.
+
+  Therefore $m+n=13$, confirming **(A)**.
+
+  **Correct options: (A), (B).**
+
+wrong_paths:
+  - path: "Plug $a=1$ into the positivity condition without checking $\\Delta$; reason 'small $a$ should work for positivity'."
+    landed_on_option: "(C)"
+    diagnosis: "Confuses positivity of the coefficient region with positivity of $f$. At $a=1$ one has $\\Delta=20>0$, so $f$ has two real roots. TRAP-EDGE: students grab the smallest integer without verifying the strict inequality $a>6$."
+  - path: "Maximise the root-gap by pushing $a$ to the endpoint of the real-root interval, claiming the gap grows with $a$ up to $a=6$."
+    landed_on_option: "(D)"
+    diagnosis: "Boundary fallacy. The gap $2\\sqrt{9-(a-3)^{2}}$ is a concave function of $a$ on $[0,6]$; its maximum is at the interior critical point $a=3$ (gap $6$), and the gap is $0$ at both endpoints $a=0,6$. TRAP-EDGE."
+  - path: "Take $f>0\\ \\forall x\\iff a\\le 0$ or $a\\ge 6$ (weak inequality), then declare $m=6$."
+    landed_on_option: "neither (A) nor (C)"
+    diagnosis: "Strict-vs-weak confusion. At $a=0$ and $a=6$, $\\Delta=0$ so $f$ has a repeated real root and $f(x_{0})=0$ — not $f>0$ everywhere. The set is strict: $a<0$ or $a>6$."
+
+review_notes: |
+  Authored MCQ-MC. Discriminant + root-gap analysis on a one-parameter quadratic. Tier T3 (hard standard): two of the four options are direct discriminant work, but (D) is a boundary-fallacy trap and (C) tempts plug-and-check sloppiness. Reuses ALG.QUA.ROOTLOC.SIGNLOC. Surface = SURF-PARAM since the family is indexed by $a$. Trap = TRAP-EDGE (boundary/strict-inequality fallacies on both (C) and (D)).

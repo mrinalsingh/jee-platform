@@ -1,0 +1,73 @@
+schema_version: 1
+
+question_code: TRG.PROP.GPSIDES.ANGDBL.001
+
+fingerprint:
+  topic: TRG
+  subtopic: PROP
+  idea: GPSIDES
+  sub_idea: ANGDBL
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  The sides of a triangle are in geometric progression with common ratio $r>1$, and the largest angle is twice the smallest. Let $A$ denote the smallest angle. Which of the following are correct?
+
+  (A) $r \in (1, \varphi)$, where $\varphi = \tfrac{1+\sqrt{5}}{2}$
+
+  (B) $r \in (1, \sqrt{2})$
+
+  (C) $\cos A = r^{2}/2$
+
+  (D) middle angle $\le \pi/4$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  Let the sides be $a, ar, ar^{2}$ opposite the angles $A, B, C = 2A$.
+
+  By the law of sines,
+  $$\frac{a}{\sin A} = \frac{ar^{2}}{\sin 2A} = \frac{ar^{2}}{2\sin A \cos A},$$
+  which yields $\cos A = \dfrac{r^{2}}{2}$. This establishes **(C)**.
+
+  For a valid triangle, $A + B + 2A = \pi$ and $A < B$ force $A < \pi/3$, hence $\cos A \in (\tfrac{1}{2}, 1)$. Therefore $r^{2} \in (1, 2)$, i.e. $r \in (1, \sqrt{2})$. This establishes **(B)**.
+
+  **(A)** is false: the triangle inequality alone gives only $r^{2} - r - 1 < 0$, i.e. $r < \varphi$. But for $r \in (\sqrt{2}, \varphi)$, say $r = 1.5$, we get $\cos A = 1.125 > 1$, which is impossible. So the bound $\varphi$ is too loose.
+
+  **(D)** is false: at $r = 1.4$, $A = \arccos(0.98) \approx 0.20$, giving the middle angle $B = \pi - 3A \approx 2.54 \gg \pi/4$.
+
+wrong_paths:
+  - path: "Solver applies only the triangle inequality $r^{2} < ar + 1$ scaled to G.P. sides giving $r^{2} - r - 1 < 0$, concluding $r < \\varphi$ without using the angle-doubling constraint."
+    landed_on_option: "A"
+    diagnosis: "Necessary-but-insufficient condition; ignores $\\cos A < 1$ from the doubled-angle relation."
+  - path: "Solver computes $\\cos A = r^{2}/2$ and stops, without translating the bound $\\cos A < 1$ into a constraint on $r$, then guesses the looser bound (A)."
+    landed_on_option: "A, C"
+    diagnosis: "Partial derivation: correct formula but wrong window for $r$."
+  - path: "Solver assumes middle angle $B$ is the median of $A, 2A$ and concludes $B = 3A/2$ which is small, so $B \\le \\pi/4$ for small $A$, missing that $B = \\pi - 3A$ which is large when $A$ is small."
+    landed_on_option: "D"
+    diagnosis: "Mis-identifies which angle is the middle one; forgets angle sum constraint."
+
+review_notes: |
+  Multi-correct with two true (B, C) and two carefully-tuned distractors. (A) is the classic trap from using only triangle inequality. (D) tests whether the student tracks which angle is middle and uses $A+B+C=\pi$. Calibrated at T3: two synthesis steps (law of sines + double angle, then angle-sum bound on $A$). Time budget reflects ~3 minutes for first pass, dropping as the law-of-sines pattern becomes routine.

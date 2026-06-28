@@ -1,0 +1,98 @@
+schema_version: 1
+
+question_code: MAT.DET.PWRSUM.VNDFAC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: PWRSUM
+  sub_idea: VNDFAC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\alpha,\beta$ be the roots of $ax^2+bx+c=0$ ($a\neq 0$), and let $s_n=\alpha^n+\beta^n$ (so $s_0=2$). Define
+  $$D=\begin{vmatrix} 3 & 1+s_1 & 1+s_2\\ 1+s_1 & 1+s_2 & 1+s_3\\ 1+s_2 & 1+s_3 & 1+s_4\end{vmatrix}.$$
+  Which of the following is/are correct?
+
+  - (A) For $x^2-5x+6=0$, $D=4$.
+  - (B) $D=0$ iff $a+b+c=0$ or the quadratic has a repeated root.
+  - (C) $D=\dfrac{(a+b+c)^2(b^2-4ac)}{a^4}$.
+  - (D) $D=\dfrac{(a+b+c)(b^2-4ac)}{a^4}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  A Hankel matrix of power sums $s_{i+j}=\alpha^{i+j}+\beta^{i+j}$ factors through a Vandermonde: writing
+  $V=\begin{pmatrix}1&1\\ \alpha&\beta\\ \alpha^2&\beta^2\end{pmatrix}$ gives $S=VV^{T}$, with
+  $\det V=\beta-\alpha$ for the $2\times 2$ truncation. Adding the rank-one ``ones'' matrix to obtain
+  $1+s_{i+j}$ amounts to appending the column/row $(1,1)^{T}$ to the Vandermonde, so the whole determinant
+  becomes the square of a $3\times 3$ Vandermonde-like determinant on the nodes $\{1,\alpha,\beta\}$.
+
+  ### Working
+  Note $s_0=2$, so $3=1+s_0$. Hence every entry has the form $1+s_{i+j}$ for $i,j\in\{0,1,2\}$, and
+  $$1+s_{i+j} = 1\cdot 1 + \alpha^{i}\alpha^{j} + \beta^{i}\beta^{j}.$$
+  Let
+  $W=\begin{pmatrix} 1 & 1 & 1\\ 1 & \alpha & \beta\\ 1 & \alpha^2 & \beta^2\end{pmatrix}.$
+  Then the matrix in $D$ equals $W W^{T}$, so
+  $$D=(\det W)^2.$$
+  $\det W$ is the Vandermonde on $1,\alpha,\beta$:
+  $$\det W=(\alpha-1)(\beta-1)(\beta-\alpha).$$
+  Therefore
+  $$D=(\alpha-1)^2(\beta-1)^2(\alpha-\beta)^2=\bigl((\alpha-1)(\beta-1)\bigr)^2(\alpha-\beta)^2.$$
+  Now $(\alpha-1)(\beta-1)=\alpha\beta-(\alpha+\beta)+1=\dfrac{c}{a}+\dfrac{b}{a}+1=\dfrac{a+b+c}{a}$, and
+  $(\alpha-\beta)^2=(\alpha+\beta)^2-4\alpha\beta=\dfrac{b^2-4ac}{a^2}.$
+  Hence
+  $$\boxed{\,D=\dfrac{(a+b+c)^2(b^2-4ac)}{a^4}\,}.$$
+  This proves (C).
+
+  Check (A): for $x^2-5x+6$, $a=1,b=-5,c=6$, so $(a+b+c)^2=4$ and $b^2-4ac=25-24=1$, giving $D=4\cdot 1/1=4$. (A) is true.
+
+  (B): $D=0\iff (a+b+c)^2(b^2-4ac)=0\iff a+b+c=0$ (i.e.\ $x=1$ is a root) or $b^2-4ac=0$ (repeated root). True.
+
+  (D): drops the square on $(a+b+c)$; for $x^2-5x+6$ it gives $2\cdot 1/1=2\neq 4$. False.
+
+  Answer: (A), (B), (C).
+
+wrong_paths:
+  - path: "Forgets $s_0=2$ and treats the $3$ in the $(1,1)$ slot as unrelated to the Hankel pattern, blocking the $WW^T$ factorization. Student then expands the $3\\times 3$ by row 1 in $a,b,c$, gets the linear-in-$(a+b+c)$ form, and selects only (D)."
+    landed_on_option: "D"
+    diagnosis: "TRAP-PARTIAL: missing the half-step ($s_0=2$ aligns the $3$ with the Hankel structure) costs the square on $(a+b+c)$."
+  - path: "Computes (C)'s formula correctly but forgets to verify (A) on the explicit quadratic and concludes (A) needs separate proof beyond the formula — marks only (B), (C)."
+    landed_on_option: "B, C"
+    diagnosis: "Incomplete deduction: (A) is an immediate substitution into the formula derived for (C); skipping the check loses a correct mark in MCQ-MC."
+  - path: "Reads (B) as ``$D=0$ \\emph{only if} repeated root'' (ignoring the $a+b+c=0$ branch) and rejects (B). Selects (A), (C) only."
+    landed_on_option: "A, C"
+    diagnosis: "Logic slip on the iff: the product vanishes when either factor does, so $x=1$ being a root is also sufficient (e.g.\\ $x^2-3x+2$)."
+  - path: "Tries to expand the determinant directly without spotting the $WW^T$ structure, makes an algebra error, and matches a wrong sign or factor — picks (D) believing the $(a+b+c)$ appears linearly."
+    landed_on_option: "D"
+    diagnosis: "TRAP-PARTIAL: brute expansion is error-prone; the Vandermonde/Gram factorization is the intended path."
+
+review_notes: |
+  Classic Hankel-of-power-sums times rank-one-ones = Gram matrix of Vandermonde $W$ on nodes $\{1,\alpha,\beta\}$.
+  Beautiful structural problem; T3 because the $WW^T$ leap is the whole solution and not obvious to mid-tier students.
+  Taxonomy extension: new IDEA `PWRSUM` (power-sum Hankel determinant) and SUB-IDEA `VNDFAC` (Vandermonde/Gram factorization)
+  under MAT.DET. This idea recurs (e.g.\ Newton symmetric-function determinants) and warrants its own slot.

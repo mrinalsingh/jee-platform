@@ -1,0 +1,70 @@
+schema_version: 1
+
+question_code: MAT.DET.HANKDISC.VANDFAC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: HANKDISC
+  sub_idea: VANDFAC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\alpha,\beta,\gamma$ be the roots of $x^{3}-2x^{2}-x+2=0$, and let $s_r=\alpha^r+\beta^r+\gamma^r$. Define
+  $$D=\det\begin{pmatrix} s_0 & s_1 & s_2 \\ s_1 & s_2 & s_3 \\ s_2 & s_3 & s_4 \end{pmatrix}.$$
+  Which of the following is/are correct?
+
+  - (A) $D=(\alpha+\beta+\gamma)(\alpha-\beta)(\beta-\gamma)(\gamma-\alpha)=12$
+  - (B) $D=0$ (the rows are proportional)
+  - (C) $D=(\alpha-\beta)(\beta-\gamma)(\gamma-\alpha)=6$
+  - (D) $D=\displaystyle\prod_{i<j}(\alpha_i-\alpha_j)^{2}=36$ (the discriminant of the cubic)
+
+answer:
+  type: MCQ-MC
+  correct_options: [D]
+
+solution: |
+  ### The IDEA
+  The $3\times 3$ Hankel matrix of power sums $[s_{i+j}]_{0\le i,j\le 2}$ factors as $V\,V^{\mathsf T}$, where $V$ is the Vandermonde matrix in $\alpha,\beta,\gamma$. Hence its determinant is $(\det V)^{2}$, i.e. the discriminant $\prod_{i<j}(\alpha_i-\alpha_j)^{2}$ of the cubic — intrinsically a non-negative square.
+
+  ### Working
+  Write $V=\begin{pmatrix}1&1&1\\ \alpha&\beta&\gamma\\ \alpha^{2}&\beta^{2}&\gamma^{2}\end{pmatrix}$. Then $(V V^{\mathsf T})_{ij}=\alpha^{i+j}+\beta^{i+j}+\gamma^{i+j}=s_{i+j}$, so
+  $$D=\det(VV^{\mathsf T})=(\det V)^{2}=\prod_{i<j}(\alpha_i-\alpha_j)^{2}.$$
+  Factor the cubic: $x^{3}-2x^{2}-x+2=(x-1)(x+1)(x-2)$, so the roots are $-1,\,1,\,2$. Then
+  $$(\alpha-\beta)(\beta-\gamma)(\gamma-\alpha)=(-1-1)(1-2)(2-(-1))=(-2)(-1)(3)=6,$$
+  and therefore $D=6^{2}=36$. Only (D) is correct.
+
+wrong_paths:
+  - path: "Recall a (wrong) identity that inserts the symmetric factor $s_1=\\alpha+\\beta+\\gamma=2$ in front of the Vandermonde product, giving $2\\cdot 6=12$."
+    landed_on_option: "(A)"
+    diagnosis: "Mis-applied determinant identity; the correct Hankel factorisation is $VV^{\\mathsf T}$, which squares the Vandermonde — no extra $s_1$ factor. TRAP-PARTIAL: a half-remembered formula that gives a clean integer."
+  - path: "Believe that a Hankel matrix of power sums is automatically singular (rows look 'shifted'), so conclude $D=0$."
+    landed_on_option: "(B)"
+    diagnosis: "Rows are $(s_0,s_1,s_2),(s_1,s_2,s_3),(s_2,s_3,s_4)$ — there is no proportionality. Singularity would require a repeated root; here roots $-1,1,2$ are distinct, so $D\\ne 0$."
+  - path: "Compute the Vandermonde product $(\\alpha-\\beta)(\\beta-\\gamma)(\\gamma-\\alpha)=6$ and quote it directly, forgetting to square."
+    landed_on_option: "(C)"
+    diagnosis: "Dropped-square slip — the student stops at $\\det V$ instead of $(\\det V)^{2}$. Since $D$ comes from $VV^{\\mathsf T}$, it must be a perfect square; $6$ is impossible on sign/parity grounds."
+
+review_notes: |
+  Multi-correct gating: only (D) is keyed. (A) and (C) are quantitatively close traps (12 and 6 vs the correct 36) that test whether the student remembers the Hankel = $VV^{\\mathsf T}$ identity; (B) tests the misconception that Hankel matrices are singular. A strong solver should both compute $D=36$ and recognise that $D$ being a square rules out (A) and (C) on principle. Taxonomy extension: new IDEA `HANKDISC` (Hankel-power-sum determinant equals discriminant) under MAT.DET, with sub-idea `VANDFAC` (Vandermonde factorisation $VV^{\\mathsf T}$).

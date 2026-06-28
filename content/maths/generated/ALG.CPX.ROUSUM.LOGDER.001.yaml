@@ -1,0 +1,76 @@
+schema_version: 1
+
+question_code: ALG.CPX.ROUSUM.LOGDER.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: ROUSUM
+  sub_idea: LOGDER
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\omega = e^{2\pi i/7}$ and $S = \{\omega, \omega^2, \ldots, \omega^6\}$ denote the set of non-trivial $7$th roots of unity. Which of the following statement(s) is/are TRUE?
+
+  - (A) $\displaystyle\sum_{k=1}^{6}\frac{1}{1-\omega^{k}} = 3$
+  - (B) $\displaystyle\prod_{k=1}^{6}(1-\omega^{k}) = 7$
+  - (C) $\displaystyle\sum_{k=1}^{6}|1-\omega^{k}|^{2} = 12$
+  - (D) $\displaystyle\sum_{k=0}^{6}\omega^{k} = -1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  Factor $z^7 - 1 = \prod_{k=0}^{6}(z - \omega^k)$ and isolate the non-trivial roots via $g(z) := \dfrac{z^7-1}{z-1} = \prod_{k=1}^{6}(z-\omega^k) = 1 + z + z^2 + \cdots + z^6$. Then $g(1) = 7$ handles the product, the logarithmic derivative $g'/g = \sum 1/(z-\omega^k)$ handles the reciprocal sum, and $|1-\omega^k|^2 = 2 - 2\cos(2\pi k/7)$ with $\sum_{k=1}^{6}\omega^k = -1$ handles the modulus-squared sum.
+
+  ### Working
+  **(B)** $\displaystyle\prod_{k=1}^{6}(1-\omega^k) = g(1) = 1 + 1 + \cdots + 1 = 7.$ TRUE.
+
+  **(A)** Take logarithmic derivative of $g(z) = \prod_{k=1}^{6}(z-\omega^k)$:
+  $$\frac{g'(z)}{g(z)} = \sum_{k=1}^{6}\frac{1}{z-\omega^k}.$$
+  At $z = 1$: $g(1) = 7$ and $g'(z) = \dfrac{d}{dz}\dfrac{z^7-1}{z-1} = \dfrac{7z^6(z-1) - (z^7-1)}{(z-1)^2}$. Using L'Hopital (or expanding $g(z) = \sum_{j=0}^{6}z^j$ so $g'(1) = \sum_{j=0}^{6} j = 21$):
+  $$\sum_{k=1}^{6}\frac{1}{1-\omega^k} = \frac{g'(1)}{g(1)} = \frac{21}{7} = 3.$$
+  (General fact: for $n$th roots, $\sum 1/(1-\omega^k) = (n-1)/2$.) TRUE.
+
+  **(C)** $|1-\omega^k|^2 = (1-\omega^k)(1-\overline{\omega^k}) = 2 - 2\cos(2\pi k/7)$. Hence
+  $$\sum_{k=1}^{6}|1-\omega^k|^2 = 12 - 2\,\mathrm{Re}\!\sum_{k=1}^{6}\omega^k = 12 - 2(-1) = 14 \neq 12.$$
+  FALSE.
+
+  **(D)** The sum runs from $k=0$, so $\omega^0 = 1$ is included: $\sum_{k=0}^{6}\omega^k = 0$ (sum of all $7$th roots), not $-1$. The value $-1$ is $\sum_{k=1}^{6}\omega^k$. FALSE.
+
+wrong_paths:
+  - path: "For (C), student writes $|1-\\omega^k|^2 = 2 - 2\\cos(2\\pi k/7)$ but forgets that $\\sum \\cos(2\\pi k/7) = -1$ over $k=1,\\dots,6$ and instead uses $\\sum \\cos = 0$, getting $12 - 0 = 12$."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL: drops the $-(-1)$ contribution. The non-trivial roots sum to $-1$ (not $0$); only the FULL set of $7$th roots sums to $0$."
+  - path: "For (D), student reads the index range as $k=1,\\dots,6$ (non-trivial roots) and computes $\\sum_{k=1}^{6}\\omega^k = -1$, marking (D) true."
+    landed_on_option: "D"
+    diagnosis: "TRAP-PARTIAL / index-range trap. The summation explicitly starts at $k=0$, including $\\omega^0 = 1$, so the total is $0$, not $-1$."
+  - path: "For (A), student tries to pair terms $\\frac{1}{1-\\omega^k} + \\frac{1}{1-\\omega^{7-k}}$ using $\\omega^{7-k} = \\overline{\\omega^k}$ but mis-simplifies the algebra and lands on an incorrect value (e.g. $6$ or $7/2$), discarding (A)."
+    landed_on_option: "neither A (rejected) nor B alone"
+    diagnosis: "Misses the logarithmic-derivative shortcut. The pairing approach works but is error-prone; the clean route is $g'(1)/g(1) = 21/7 = 3$."
+
+review_notes: |
+  Source: 0609c Q1 (key (A), (B), tagged difficulty 8). Classic 7th-roots-of-unity multi-correct. Two true (A,B), two false (C,D) — both falsities are subtle index/sign traps, classic JEE MCQ-MC discrimination. New taxonomy proposed: IDEA = ROUSUM (roots-of-unity sums/products), SUB-IDEA = LOGDER (logarithmic-derivative trick on cyclotomic factor). Under ALG.CPX. Surface SURF-SET because the set $S$ is named. Trap TRAP-PARTIAL because two distractors use partial/wrong index ranges.

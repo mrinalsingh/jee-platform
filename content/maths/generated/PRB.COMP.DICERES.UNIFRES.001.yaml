@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: PRB.COMP.DICERES.UNIFRES.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: DICERES
+  sub_idea: UNIFRES
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Three fair dice are rolled. Let $T$ be the sum and $\Pi$ the product of the faces. Which of the following are correct?
+
+  - (A) $P(T\equiv 0\pmod 3)=\dfrac13$
+  - (B) $P(3\mid\Pi)=\dfrac{19}{27}$
+  - (C) $P(\text{all three faces have the same residue mod }3)=\dfrac19$
+  - (D) $P(\text{at least one face shows }6)=\dfrac12$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Faces $\{1,2,3,4,5,6\}$ split evenly into residue classes mod $3$: $\{3,6\}\to 0$, $\{1,4\}\to 1$, $\{2,5\}\to 2$. So each die's residue mod $3$ is **uniform** on $\{0,1,2\}$ and the three are independent. Once you see this, sum-residue and "$3\mid\Pi$" reduce to clean independent-trial calculations; the $6$-face question is a separate complement.
+
+  ### Working
+  **(A)** Since each die's residue is uniform on $\mathbb Z_3$ and they are independent, the sum $T\bmod 3$ is also uniform on $\mathbb Z_3$ (convolution of the uniform with anything on $\mathbb Z_3$ is uniform). Hence $P(T\equiv 0\pmod 3)=\dfrac13$. **TRUE**.
+
+  **(B)** $3\mid\Pi$ fails iff none of the three faces is a multiple of $3$. Each die avoids $\{3,6\}$ with probability $\tfrac{4}{6}=\tfrac23$, so
+  $$P(3\nmid\Pi)=\left(\tfrac23\right)^{3}=\tfrac{8}{27},\qquad P(3\mid\Pi)=1-\tfrac{8}{27}=\tfrac{19}{27}.$$
+  **TRUE**.
+
+  **(C)** "Same residue mod $3$" means all three lie in one of the three classes $\{3,6\},\{1,4\},\{2,5\}$. Each class has probability $(2/6)^3=1/27$, and the three classes are disjoint, so
+  $$P=3\cdot\tfrac{1}{27}=\tfrac19.$$
+  **TRUE**.
+
+  **(D)** By complement, $P(\text{at least one }6)=1-\left(\tfrac56\right)^3=1-\tfrac{125}{216}=\tfrac{91}{216}\approx 0.421\ne\tfrac12$. **FALSE**.
+
+  Correct options: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student computes $P(T\\equiv 0)$ by enumerating sums divisible by $3$ wrongly (e.g. counts sums $3,6,9,\\dots,18$ but mis-weights) and discards (A); keeps only (B), (C)."
+    landed_on_option: "(B), (C)"
+    diagnosis: "Misses the uniform-residue argument and gives up on (A) after a brute-force attempt. Classic TRAP-PARTIAL: selects a strict subset of the true answer key."
+  - path: "For (B), student computes $P(3\\mid\\Pi)$ as $P(\\text{at least one die is }3\\text{ or }6) = 1-(2/3)^3$ but then forgets to subtract and writes $\\tfrac{8}{27}$ instead of $\\tfrac{19}{27}$, rejecting (B)."
+    landed_on_option: "(A), (C)"
+    diagnosis: "Complement confusion — confuses $P(3\\nmid\\Pi)$ with $P(3\\mid\\Pi)$."
+  - path: "For (D), student computes $P(\\text{at least one }6)\\approx 3\\cdot \\tfrac16=\\tfrac12$ by linearity-of-expectation-style addition without inclusion-exclusion, marking (D) TRUE."
+    landed_on_option: "(A), (B), (C), (D)"
+    diagnosis: "Treats $P(A\\cup B\\cup C)$ as $P(A)+P(B)+P(C)$, ignoring overlaps. TRAP-PARTIAL flipped: over-selects."
+  - path: "For (C), student counts ordered triples in one residue class as $2^3=8$ but divides by $6^3=216$ and forgets the factor of $3$ for the three classes, getting $\\tfrac{8}{216}=\\tfrac{1}{27}$, rejects (C)."
+    landed_on_option: "(A), (B)"
+    diagnosis: "Misses the sum over the three disjoint residue classes."
+
+review_notes: |
+  Standard JEE-style multi-correct probability item. The unifying IDEA is the uniform-residue structure of $\{1,\ldots,6\}$ mod $3$, which makes (A), (B), (C) one-line each; (D) is a plain complement check that catches the "$\tfrac12$ heuristic" trap. Introduces new axis-3 code DICERES (dice residue / mod-$k$ structure) and axis-4 code UNIFRES (uniform-residue + complement). Reuse-check: existing PRB.COMP.INCEXC.EXACTK is about "exactly $k$" inclusion-exclusion, which does not match this residue/independence theme.

@@ -1,0 +1,84 @@
+schema_version: 1
+
+question_code: ALG.CPX.EQTRI.VIETAEQ.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: EQTRI
+  sub_idea: VIETAEQ
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $z_1,z_2,z_3$ be the roots of $t^3+3at^2+3bt+c=0$ with $a,b,c\in\mathbb{R}$ and the roots distinct. Treat $z_1,z_2,z_3$ as the vertices $A,B,C$ of a triangle in the Argand plane. Which of the following are true?
+
+  - (A) The centroid of $\triangle ABC$ equals $-a$.
+  - (B) $\triangle ABC$ is equilateral $\iff a^2=b$.
+  - (C) If $\triangle ABC$ is equilateral and its centroid is $0$, then $a=0=b$.
+  - (D) If $\triangle ABC$ is equilateral, its circumradius equals $|c|^{1/3}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Encode the equilateral-triangle condition for three complex numbers $z_1,z_2,z_3$ as the symmetric identity
+  $$ (z_1+z_2+z_3)^2 = 3(z_1z_2+z_2z_3+z_3z_1), $$
+  then translate it through Vieta into a relation between the elementary symmetric polynomials $a,b,c$ of the cubic.
+
+  ### Working
+  By Vieta on $t^3+3at^2+3bt+c=0$:
+  $$ z_1+z_2+z_3=-3a,\qquad z_1z_2+z_2z_3+z_3z_1=3b,\qquad z_1z_2z_3=-c. $$
+
+  **(A)** Centroid $=\tfrac13(z_1+z_2+z_3)=\tfrac13(-3a)=-a$. **True.**
+
+  **(B)** $\triangle ABC$ equilateral $\iff (z_1+z_2+z_3)^2=3(z_1z_2+z_2z_3+z_3z_1)$, i.e. $9a^2=9b$, so $a^2=b$. **True.**
+
+  **(C)** Equilateral $\Rightarrow a^2=b$. Centroid $0$ $\Rightarrow -a=0$, so $a=0$, hence $b=a^2=0$. **True.**
+
+  **(D)** Counterexample: take $a=1,b=1$ (so $a^2=b$, equilateral) and $c=-1$. Then
+  $$ t^3+3t^2+3t-1=(t+1)^3-2, $$
+  whose roots are $-1+\sqrt[3]{2}\,\omega^k$, $k=0,1,2$. Side length $=\sqrt{3}\,\sqrt[3]{2}$, circumradius $=\sqrt[3]{2}\approx 1.260$, but $|c|^{1/3}=1$. **False.**
+
+  Correct options: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student recalls that for an equilateral triangle of side $s$, $R=s/\\sqrt{3}$, computes $s^2=|z_1-z_2|^2$ via symmetric functions and (incorrectly) collapses $|z_1z_2z_3|^{1/3}$ to $R$, marking (D) as also true."
+    landed_on_option: "D"
+    diagnosis: "Conflates the geometric circumradius with $|z_1z_2z_3|^{1/3}$; this is only true when the centroid is at the origin (Vieta gives $R=|c|^{1/3}$ then), not in general. TRAP-PARTIAL: a special-case identity over-generalised."
+  - path: "Student forgets the factor $\\tfrac13$ in the centroid and reports the centroid as $-3a$, rejecting (A)."
+    landed_on_option: "B, C"
+    diagnosis: "Vieta misread — treats $z_1+z_2+z_3$ itself as the centroid. Drops a true statement."
+  - path: "Student uses the equilateral condition $\\sum z_k^2=\\sum z_jz_k$ but never re-expresses in elementary symmetric form, so cannot connect to $a^2=b$; marks only (A) and (C)."
+    landed_on_option: "A, C"
+    diagnosis: "Stops at the raw identity in the $z_k$'s without converting to coefficients via Newton/Vieta. TRAP-PARTIAL on (B)."
+
+review_notes: |
+  Multi-correct, Argand-plane triangle + Vieta. Key idea: equilateral $\iff (\sum z)^2=3\sum z_jz_k$, then push through Vieta. (D) is a calibrated trap exploiting the special case "centroid at origin $\Rightarrow R=|c|^{1/3}$".
+
+  Taxonomy extension flagged:
+  - AXIS-2: ALG.CPX (Complex numbers subtopic) — present at AXIS-1 (ALG) but no CPX subtopic listed; adding ALG.CPX.
+  - AXIS-3: EQTRI (equilateral-triangle / Argand-vertex symmetric condition) — new.
+  - AXIS-4: VIETAEQ (Vieta-to-equilateral symmetric-function translation) — new.

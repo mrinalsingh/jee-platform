@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: MAT.SPL.ORBSUM.CNJSP.003
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: ORBSUM
+  sub_idea: CNJSP
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EIGEN
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\omega$ be a primitive cube root of unity, let $N$ be a $3\times 3$ matrix with complex entries satisfying $N^{2}=O$ (with $N\neq O$), and for a positive integer $n$ define $\displaystyle T_{n}=\sum_{k=1}^{n}(\omega I+N)^{k}$. Then
+
+  - (A) $\operatorname{trace}(T_{n})=0$ whenever $n$ is a multiple of $3$
+  - (B) $\det(T_{n})=1$ whenever $n$ leaves remainder $1$ on division by $3$
+  - (C) $T_{n}$ is invertible if and only if $n$ is not a multiple of $3$
+  - (D) $T_{n}$ is invertible for every positive integer $n$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  When $N$ is nilpotent of index $2$, the binomial expansion of $(\omega I+N)^k$ truncates after two terms, so each power lies in the commutative algebra $\mathbb{C}[N]=\{aI+bN\}$. The whole sum $T_n$ also lies in this algebra, and a matrix $aI+bN$ has the single eigenvalue $a$ (with multiplicity $3$), so trace and determinant are controlled entirely by the scalar coefficient $a_n=\sum_{k=1}^{n}\omega^k$, which cycles mod $3$.
+
+  ### Working
+  Since $N^{2}=O$, the binomial expansion gives
+  $$(\omega I+N)^{k}=\omega^{k}I+k\omega^{k-1}N\qquad(k\ge 1).$$
+  Summing from $k=1$ to $n$:
+  $$T_n=a_n\,I+b_n\,N,\qquad a_n=\sum_{k=1}^{n}\omega^{k},\ \ b_n=\sum_{k=1}^{n}k\omega^{k-1}.$$
+  Because $N$ commutes with $I$ and is nilpotent, $T_n=a_nI+b_nN$ has $a_n$ as its only eigenvalue (multiplicity $3$). Hence
+  $$\operatorname{trace}(T_n)=3a_n,\qquad \det(T_n)=a_n^{3}.$$
+  The sequence $a_n$ cycles with period $3$ because $1+\omega+\omega^2=0$:
+  $$a_n=\begin{cases}\omega,& n\equiv 1\pmod 3,\\ \omega+\omega^2=-1,& n\equiv 2\pmod 3,\\ 0,& n\equiv 0\pmod 3.\end{cases}$$
+  Now read off each option:
+
+  - $3\mid n\Rightarrow a_n=0\Rightarrow \operatorname{trace}(T_n)=0$, so **(A) is true**, and simultaneously $\det T_n=0$, i.e. $T_n$ is not invertible.
+  - $n\equiv 1\pmod 3\Rightarrow a_n=\omega\Rightarrow \det T_n=\omega^{3}=1$, so **(B) is true**.
+  - $T_n$ is invertible $\iff a_n\neq 0\iff 3\nmid n$, so **(C) is true**.
+  - From the $3\mid n$ case, **(D) is false**.
+
+  Correct options: $(A),(B),(C)$.
+
+wrong_paths:
+  - path: "Treats $T_n$ as invertible for all $n$ by arguing that $\\omega I+N$ is invertible (since $\\det(\\omega I+N)=\\omega^3=1\ne 0$) and so its $k$-th powers are; concluding a sum of invertibles is invertible."
+    landed_on_option: "Picks (D) (and may drop (C))"
+    diagnosis: "TRAP-EIGEN style slip: a sum of invertible matrices need not be invertible. The student forgets that $a_n=\\sum\\omega^k$ vanishes whenever $3\\mid n$, killing the determinant."
+  - path: "Expands $(\\omega I+N)^k$ but forgets the linear $N$-term (treats $N^2=O$ as $N=O$), so $T_n=\\big(\\sum\\omega^k\\big)I$. Then the determinant analysis still gives (A),(B),(C) — but in option (B) the student writes $\\det T_n=\\omega^n=\\omega$, not $1$."
+    landed_on_option: "Drops (B), keeps (A),(C)"
+    diagnosis: "Confusing $\\det((\\omega I+N)^n)$ with $\\det T_n$ — the determinant of the sum is not the product of determinants. The cycle of $a_n$ has period 3, but the cube of $\\omega$ (not $\\omega$ itself) is what equals $1$."
+  - path: "Computes $\\operatorname{trace}(\\omega I+N)=3\\omega$ and so $\\operatorname{trace}(T_n)=3\\omega\\sum 1=3n\\omega$, never zero for $n\\ge 1$."
+    landed_on_option: "Rejects (A); may pick only (D)"
+    diagnosis: "Trace is additive but not multiplicative — the student incorrectly treats $\\operatorname{trace}((\\omega I+N)^k)=k\\operatorname{trace}(\\omega I+N)$. Correct value is $3\\omega^k$ since $(\\omega I+N)^k=\\omega^k I+k\\omega^{k-1}N$ and $\\operatorname{trace}(N)=0$ (nilpotent)."
+
+review_notes: |
+  Multi-correct, JEE-Advanced flavor. Core ideas: nilpotent binomial truncation, the commutative subalgebra $\mathbb{C}[N]$, eigenvalue structure of $aI+bN$, period-3 geometric sum of $\omega$. Strong TRAP-EIGEN distractor (D) that catches students who forget $a_n$ can vanish. Time budget: ~6 minutes for first-pass JEE student, ~3-4 minutes for trained student who recognises the $aI+bN$ algebra immediately.

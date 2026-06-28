@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: CAL.DIF.ARCSIN.VERTTAN.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: ARCSIN
+  sub_idea: VERTTAN
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=\sin^{-1}\!\left(\dfrac{2x^2-1}{x^2}\right)$ with natural domain $D$. Which of the following is/are correct?
+
+  (A) $D=[-1,1]\setminus\{0\}$
+
+  (B) $f$ is non-differentiable at $x=\pm 1$
+
+  (C) The number of points in $D$ where $f$ is non-differentiable equals $2$
+
+  (D) $f$ is non-differentiable at $x=\pm 1/\sqrt{3}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  **Domain.** $\sin^{-1}$ requires $-1\le \dfrac{2x^2-1}{x^2}\le 1$, i.e.\ $-1\le 2-\dfrac{1}{x^2}\le 1$, equivalently
+  $$1\le \dfrac{1}{x^2}\le 3 \iff \tfrac{1}{3}\le x^2\le 1.$$
+  Hence $D=[-1,-1/\sqrt 3]\cup[1/\sqrt 3,1]$, not $[-1,1]\setminus\{0\}$. So **(A) is false**.
+
+  **Differentiability.** Write $u(x)=2-1/x^2$, so $u'(x)=2/x^3$ and
+  $$f'(x)=\dfrac{u'(x)}{\sqrt{1-u(x)^2}}=\dfrac{2/x^3}{\sqrt{1-(2-1/x^2)^2}}.$$
+  The radicand $1-u^2$ vanishes precisely when $u=\pm 1$, i.e.\ $x^2=1$ (giving $u=1$) and $x^2=1/3$ (giving $u=-1$). At each of these four boundary points $x=\pm 1,\ \pm 1/\sqrt 3$ we have $|f'(x)|\to\infty$, i.e.\ a vertical tangent, so $f$ is non-differentiable there.
+
+  Therefore **(B) true**, **(D) true**, and the total count is $4$, not $2$, so **(C) false**.
+
+  **Correct options: (B), (D).**
+
+wrong_paths:
+  - path: "Solver forgets the upper-bound constraint $u\\le 1$ and only enforces $u\\ge -1$ (or vice versa), or confuses the rational expression's domain ($x\\ne 0$) with the arcsin domain. They write $D=[-1,1]\\setminus\\{0\\}$ and mark (A)."
+    landed_on_option: "A"
+    diagnosis: "Domain-of-composition error: arcsin's bracket condition not solved; rational-function domain mistaken for full domain."
+  - path: "Solver correctly computes $D=[-1,-1/\\sqrt3]\\cup[1/\\sqrt3,1]$ and notices vertical tangents at the outer endpoints $x=\\pm 1$ only, missing the inner endpoints $\\pm 1/\\sqrt3$. Concludes that the only non-diff points are $\\pm 1$, so the count is $2$ and marks (B) and (C)."
+    landed_on_option: "C (along with B)"
+    diagnosis: "Edge-case omission: forgets inner endpoints of a disjoint-interval domain as additional non-diff sites."
+  - path: "Solver finds the domain and the four critical $x$-values but argues that $f$ is non-differentiable only at the interior-style points $\\pm 1/\\sqrt3$ (treating $\\pm 1$ as endpoints of the global $[-1,1]$ where 'differentiability is not even defined'). Marks only (D)."
+    landed_on_option: "D only"
+    diagnosis: "Mishandling of one-sided differentiability at boundary points of $D$; vertical-tangent obstruction overlooked at $\\pm 1$."
+
+review_notes: |
+  Classic JEE multi-correct on $\sin^{-1}$ of a rational expression. The crux is two-fold:
+  (i) correctly solving the bracket inequality to land on the disconnected domain, and
+  (ii) recognising that ALL four boundary points of $D$ are non-differentiable due to vertical tangents from $1-u^2\to 0$.
+  Distractor (C) is the cleanest trap: most students will see only the outer pair $\pm 1$ or only the inner pair $\pm 1/\sqrt3$.
+  Difficulty T3 (mid-JEE Advanced). Reviewer: confirm fingerprint axes 3-4 — proposing new codes ARCSIN / VERTTAN under CAL.DIF for "arcsin composition with vertical-tangent non-differentiability at domain boundary."

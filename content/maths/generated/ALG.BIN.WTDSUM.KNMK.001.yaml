@@ -1,0 +1,68 @@
+schema_version: 1
+
+question_code: ALG.BIN.WTDSUM.KNMK.001
+
+fingerprint:
+  topic: ALG
+  subtopic: BIN
+  idea: WTDSUM
+  sub_idea: KNMK
+  answer_type: NUM-INT
+  surface: SURF-FUNC
+  trap: TRAP-NONE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q12"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f:(0,\infty)\to\mathbb{R}$ be a differentiable function satisfying $f(xy)=f(x)+f(y)$ for all $x,y>0$, with $f(2)=1$. The value of $\displaystyle\sum_{k=0}^{10}\binom{10}{k}\,f\!\left(2^{k}\right)\,f\!\left(2^{\,10-k}\right)$ equals \underline{\hspace{2.2cm}}.
+
+answer:
+  type: NUM-INT
+  value: 23040
+
+solution: |
+  ### The IDEA
+  A differentiable solution of the Cauchy multiplicative–to–additive equation $f(xy)=f(x)+f(y)$ on $(0,\infty)$ must be $f(x)=c\ln x$; the normalisation pins down $c$. With $f(2^k)=k$, the sum collapses to the weighted binomial identity $\sum_{k=0}^{n}\binom{n}{k}k(n-k)=n(n-1)2^{n-2}$.
+
+  ### Working
+  Differentiating $f(xy)=f(x)+f(y)$ w.r.t. $y$ and setting $y=1$ gives $xf'(x)=f'(1)$, so $f'(x)=c/x$ with $c=f'(1)$, hence $f(x)=c\ln x$ (the constant of integration vanishes since $f(1)=0$ from the functional equation). $f(2)=1$ forces $c=1/\ln 2$, so $f=\log_2$ and $f(2^k)=k$.
+
+  The sum becomes
+  $$S=\sum_{k=0}^{10}\binom{10}{k}\,k\,(10-k).$$
+  Use $\sum_{k=0}^{n}k\binom{n}{k}=n\,2^{n-1}$ and $\sum_{k=0}^{n}k^2\binom{n}{k}=n(n+1)2^{n-2}$:
+  $$S=10\sum_{k}k\binom{10}{k}-\sum_{k}k^2\binom{10}{k}=10\cdot(10\cdot 2^{9})-(10\cdot 11\cdot 2^{8})=51200-28160=23040.$$
+  Equivalently, $\sum_{k=0}^{n}\binom{n}{k}k(n-k)=n(n-1)2^{n-2}$, giving $10\cdot 9\cdot 2^{8}=23040$.
+
+wrong_paths:
+  - path: "Student solves the functional equation correctly but ignores the symmetric structure and computes $\\sum\\binom{10}{k}k = 10\\cdot 2^9=5120$, mistaking the product $k(10-k)$ for just $k$."
+    landed_on_option: "5120"
+    diagnosis: "Drops one factor of the product; forgets the second $f(2^{10-k})$ term entirely."
+  - path: "Recognises $f=\\log_2$ but tries to factor as $(\\sum k\\binom{10}{k})\\cdot(\\sum (10-k)\\binom{10}{k}) / 2^{10}$ or similar — confusing pointwise product inside the sum with product of sums."
+    landed_on_option: "produces $5120\\cdot 5120/1024=25600$ or similar"
+    diagnosis: "Treats $\\sum a_k b_k$ as $(\\sum a_k)(\\sum b_k)$ — a classic algebraic slip."
+  - path: "Mis-identifies the Cauchy solution: assumes $f(x)=x-1$ or some other form satisfying $f(2)=1$, ignoring that the functional equation forces $f(1)=0$ and additivity over products."
+    landed_on_option: "spurious integer (e.g., from $f(2^k)=2^k-1$)"
+    diagnosis: "Fails the uniqueness step; tries an ad-hoc fit rather than recognising the standard Cauchy logarithm form."
+  - path: "Uses $n(n-1)2^{n-2}$ but plugs $n=11$ (off-by-one on summation upper limit)."
+    landed_on_option: "$11\\cdot 10\\cdot 2^{9}=56320$"
+    diagnosis: "Confuses number of terms (11) with $n$ in the identity (which is 10)."
+
+review_notes: |
+  Two-step fusion: (i) Cauchy/log functional-equation recognition, (ii) weighted binomial sum identity. Calibrated T3: each step is standard JEE but the chain is non-trivial. ALG.BIN sub-tree is sparse — proposed new IDEA "WTDSUM" (weighted binomial sum $\\sum k(n-k)\\binom{n}{k}$ family) with sub-idea "KNMK" for the specific $k(n-k)$ weight. Reviewer should confirm IDEA/SUB-IDEA names or align with the in-house convention.

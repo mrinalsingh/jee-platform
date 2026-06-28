@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: SOT.MEAN.AGHGP.AGHREL.001
+
+fingerprint:
+  topic: SOT
+  subtopic: MEAN
+  idea: AGHGP
+  sub_idea: AGHREL
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 120
+  R3_seconds: 90
+  R4_seconds: 60
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $u,v>0$ have arithmetic mean $A=5$ and geometric mean $G=4$; let $H$ denote their harmonic mean. Which of the following is/are correct?
+
+  - (A) $H=\dfrac{16}{5}$
+  - (B) $u,v$ are the roots of $t^{2}-10t+16=0$
+  - (C) $\{u,v\}=\{4,6\}$
+  - (D) $A,G,H$ are in G.P.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  For two positive reals $u,v$, the three classical means satisfy $A=\tfrac{u+v}{2}$, $G=\sqrt{uv}$, $H=\tfrac{2uv}{u+v}$, and the identity $G^{2}=AH$. Hence $A,G,H$ are always in geometric progression. Given $A$ and $G$, the pair $\{u,v\}$ is uniquely determined as the roots of $t^{2}-2At+G^{2}=0$.
+
+  ### Working
+  From $A=5$ and $G=4$:
+  $$u+v=2A=10, \qquad uv=G^{2}=16.$$
+  So $u,v$ are the roots of
+  $$t^{2}-10t+16=0,$$
+  confirming **(B)**. Solving: $t=\dfrac{10\pm\sqrt{100-64}}{2}=\dfrac{10\pm6}{2}=2 \text{ or } 8$, so $\{u,v\}=\{2,8\}$, not $\{4,6\}$ (and indeed $4\cdot 6=24\neq 16$), so **(C)** is false.
+
+  The harmonic mean is
+  $$H=\dfrac{2uv}{u+v}=\dfrac{2\cdot 16}{10}=\dfrac{16}{5},$$
+  confirming **(A)**.
+
+  Finally, $G^{2}=16$ and $A\cdot H=5\cdot\tfrac{16}{5}=16$, so $G^{2}=AH$, i.e.\ $A,G,H$ are in G.P., confirming **(D)**.
+
+  Correct options: **(A), (B), (D)**.
+
+wrong_paths:
+  - path: "Assume $\\{u,v\\}=\\{4,6\\}$ because $4+6=10$ matches $u+v$, forgetting to check $uv=G^{2}=16$."
+    landed_on_option: "C (incorrectly marked true)"
+    diagnosis: "TRAP-PARTIAL: student verifies only one Vieta relation (sum) and ignores the product constraint $uv=16$. This is the classical AM-only check trap."
+  - path: "Compute $H$ as $\\tfrac{u+v}{2uv}=\\tfrac{10}{32}=\\tfrac{5}{16}$ (reciprocal slip in the HM formula)."
+    landed_on_option: "A (marked false)"
+    diagnosis: "HM formula confusion: $\\tfrac{1}{H}=\\tfrac{1}{2}\\bigl(\\tfrac{1}{u}+\\tfrac{1}{v}\\bigr)$ gives $H=\\tfrac{2uv}{u+v}$, not $\\tfrac{u+v}{2uv}$."
+  - path: "Claim $A,G,H$ are in A.P. because the means are 'ordered evenly', so reject (D)."
+    landed_on_option: "D (marked false)"
+    diagnosis: "Standard misconception: the AM-GM-HM relation is $G^{2}=AH$ (G.P.), not $2G=A+H$ (A.P.). Many students confuse the inequality chain $A\\ge G\\ge H$ with an arithmetic spacing."
+  - path: "Set up $t^{2}-(A+G)t+AG=0$ instead of $t^{2}-2At+G^{2}=0$, getting $t^{2}-9t+20=0$ with roots $4,5$."
+    landed_on_option: "B (marked false), and may pick neither (B) nor (C)"
+    diagnosis: "Vieta confusion: student treats $A,G$ themselves as the elementary symmetric functions, forgetting that $u+v=2A$ and $uv=G^{2}$."
+
+review_notes: |
+  Standard AM-GM-HM-in-G.P. multi-correct. Three of four options are true; (C) is the partial-verification distractor. Difficulty T2 — quick for a student who knows $G^{2}=AH$, slightly longer for one who solves the quadratic and checks each option mechanically. Taxonomy extension: SOT.MEAN (means subtopic) with idea AGHGP (A-G-H-in-GP) and sub-idea AGHREL (general AM-GM-HM relation problem). Reviewer should confirm whether to use SOT.MEAN or fold under ALG.QUA.SYMFNRT (Vieta-based) — current pick foregrounds the means identity, which is the load-bearing fact.

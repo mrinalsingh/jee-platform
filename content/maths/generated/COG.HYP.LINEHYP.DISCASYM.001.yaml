@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: COG.HYP.LINEHYP.DISCASYM.001
+
+fingerprint:
+  topic: COG
+  subtopic: HYP
+  idea: LINEHYP
+  sub_idea: DISCASYM
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{H}:\dfrac{x^{2}}{4}-\dfrac{y^{2}}{9}=1$ and, for each $m\in\mathbb{Z}$, let $\ell_{m}:y=mx+1$. Which of the following statement(s) is/are TRUE?
+
+  - (A) $\ell_{m}$ is tangent to $\mathcal{H}$ for some integer $m$.
+  - (B) For every integer $m$, $\ell_{m}$ meets $\mathcal{H}$ at two points.
+  - (C) The integers $m$ for which $\ell_{m}$ meets $\mathcal{H}$ at two points are exactly $m\in\{-1,0,1\}$.
+  - (D) For every integer $m$ with $|m|\ge 2$, $\ell_{m}$ does not meet $\mathcal{H}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  For a line meeting a central conic, substitute and reduce to a quadratic in $x$. Two real intersection points require BOTH the leading coefficient to be nonzero AND the discriminant to be positive. For a hyperbola $\tfrac{x^2}{a^2}-\tfrac{y^2}{b^2}=1$ the leading coefficient vanishes precisely when the line's slope equals the asymptote slope $\pm b/a$ — that case must be handled separately. Tangency requires discriminant exactly zero (with nonzero leading coefficient).
+
+  ### Working
+  Substitute $y=mx+1$ into $\dfrac{x^{2}}{4}-\dfrac{y^{2}}{9}=1$ and clear denominators:
+  $$ (9-4m^{2})x^{2}-8m\,x-40=0. $$
+
+  Two quantities control the picture.
+
+  **Asymptote condition.** $9-4m^{2}>0 \iff |m|<\tfrac{3}{2}$. For integer $m$ this is $m\in\{-1,0,1\}$.
+
+  **Discriminant.** $\Delta = 64m^{2}+160(9-4m^{2}) = 1440-576m^{2}$. So $\Delta>0 \iff m^{2}<\tfrac{5}{2}$, i.e. $|m|<\sqrt{2.5}\approx 1.58$.
+
+  Combining for integer $m$:
+
+  - $m\in\{-1,0,1\}$: leading coefficient and $\Delta$ are both positive, hence **two** intersection points. This gives option **(C)**.
+  - $|m|\ge 2$: $\Delta = 1440-576m^{2}\le 1440-2304 < 0$, so the line **misses** $\mathcal{H}$. (Check: $m=2$ gives $-7x^2-16x-40=0$, discriminant $256-1120<0$.) This gives option **(D)** and refutes **(B)**.
+
+  **Tangency.** Needs $\Delta=0$, i.e. $m^{2}=\tfrac{5}{2}$, which has no integer solution. So **(A)** is false.
+
+  Correct options: **(C), (D)**.
+
+wrong_paths:
+  - path: "Forget to also check the leading coefficient and conclude that two intersection points happen whenever $\\Delta>0$; report $|m|\\le 1$ as the only case and miss that (B) and (A) both fail."
+    landed_on_option: "(C) alone"
+    diagnosis: "Partial-credit trap (TRAP-PARTIAL): solver gets the correct integer set in (C) but doesn't run the $|m|\\ge 2$ branch to confirm (D) is true and (B) is false."
+  - path: "Assume that 'for every integer $m$ the line through $(0,1)$ cuts the hyperbola twice' because the point $(0,1)$ lies between the branches — a Euclidean intuition that ignores the asymptotic cone."
+    landed_on_option: "(B)"
+    diagnosis: "Misreads the geometry: $(0,1)$ does sit between branches, but for $|m|\\ge 2$ the line is steeper than the asymptotes and exits the hyperbola's exterior in both directions without meeting either branch."
+  - path: "Set discriminant zero to test tangency; get $m^{2}=5/2$ and round to $m=2$ (or $m=\\pm 2$) as an integer tangent."
+    landed_on_option: "(A)"
+    diagnosis: "Forces a non-integer root to be an integer. Tangency requires $\\Delta=0$ exactly, not approximately; $m=\\pm 2$ in fact makes $\\Delta<0$ so the line misses entirely."
+  - path: "Use only the asymptote condition $|m|<3/2$ and call the asymptote-slope case $m=\\pm 3/2$ a tangent."
+    landed_on_option: "(A)"
+    diagnosis: "Confuses 'asymptote-parallel' with 'tangent'. When the leading coefficient vanishes, the equation becomes linear in $x$ and gives exactly ONE intersection point, not tangency; and anyway $m=\\pm 3/2$ are not integers."
+
+review_notes: |
+  Multi-correct (C, D). Difficulty T3: standard hyperbola-line intersection enriched with the asymptote-slope subtlety and the integer constraint. Key trap is TRAP-PARTIAL — many students stop after confirming (C) without checking (D)/(B), or vice-versa. Note: subtopic HYP (Hyperbola), idea LINEHYP (line-hyperbola intersection), and sub-idea DISCASYM (joint discriminant + asymptote-slope analysis) are NEW codes for the COG axis, which was not yet populated. Surface SURF-PARAM because the line is given as a one-parameter family $\ell_m$ indexed by integer $m$.

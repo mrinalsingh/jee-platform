@@ -1,0 +1,97 @@
+schema_version: 1
+
+question_code: CAL.DIF.INVTRIGBR.SIN2UBR.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: INVTRIGBR
+  sub_idea: SIN2UBR
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 210
+  R4_seconds: 165
+
+source_metadata:
+  jee_authenticity_score: 8.6
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.6
+    reviewed_at: "2026-06-14"
+    notes: "methods-of-diff fused with location trap"
+
+status: provisional
+
+provenance:
+  inspired_by: "0613a_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Define $f:(-1,1)\to\mathbb{R}$ by
+  $$f(x)=\sin^{-1}\!\bigl(2x\sqrt{1-x^{2}}\bigr)+\sec^{-1}\!\bigl(\tfrac{1}{\sqrt{1-x^{2}}}\bigr)\qquad(x\neq 0),$$
+  and $f(0)=0$. Which of the following statement(s) is/are TRUE?
+
+  - (A) $f$ is NOT differentiable at $x=0$
+  - (B) $f'\!\left(\tfrac{1}{2}\right)=2\sqrt{3}$
+  - (C) $f'\!\left(\tfrac{\sqrt{3}}{2}\right)=-2$
+  - (D) $f$ is differentiable at $x=\dfrac{1}{\sqrt{2}}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Both summands collapse to expressions in $\sin^{-1}x$, but the principal-value branch of $\sin^{-1}(\sin 2t)$ folds back as $2t$ leaves $[-\pi/2,\pi/2]$, and $\sec^{-1}\!\bigl(1/\sqrt{1-x^{2}}\bigr)=|\sin^{-1}x|$ injects an absolute-value kink at $x=0$. The domain $(-1,1)$ splits into four branches at $\{-1/\sqrt 2,\,0,\,1/\sqrt 2\}$; on each branch $f$ is a clean linear combination of $\sin^{-1}x$, but the slope jumps at every break-point.
+
+  ### Working
+  **Step 1 — simplify the second term.** For $x\in(-1,1)$, $\sqrt{1-x^{2}}\in(0,1]$, so $1/\sqrt{1-x^{2}}\ge 1$ and $\sec^{-1}\!\bigl(1/\sqrt{1-x^{2}}\bigr)=\cos^{-1}\!\sqrt{1-x^{2}}=|\sin^{-1}x|$.
+
+  **Step 2 — branch-analyse the first term.** Put $x=\sin t$ with $t=\sin^{-1}x\in(-\pi/2,\pi/2)$. Then $2x\sqrt{1-x^{2}}=\sin 2t$, and
+  $$\sin^{-1}(\sin 2t)=\begin{cases}2t,&2t\in[-\pi/2,\pi/2],\\ \pi-2t,&2t\in(\pi/2,\pi),\\ -\pi-2t,&2t\in(-\pi,-\pi/2),\end{cases}$$
+  i.e. cases $|x|\le 1/\sqrt 2$, $x>1/\sqrt 2$, $x<-1/\sqrt 2$.
+
+  **Step 3 — assemble $f$ on each open interval.**
+  - $x\in(0,1/\sqrt 2)$: $f=2\sin^{-1}x+\sin^{-1}x=3\sin^{-1}x$, so $f'=\dfrac{3}{\sqrt{1-x^{2}}}$.
+  - $x\in(1/\sqrt 2,1)$: $f=(\pi-2\sin^{-1}x)+\sin^{-1}x=\pi-\sin^{-1}x$, so $f'=\dfrac{-1}{\sqrt{1-x^{2}}}$.
+  - $x\in(-1/\sqrt 2,0)$: $f=2\sin^{-1}x+(-\sin^{-1}x)=\sin^{-1}x$, so $f'=\dfrac{1}{\sqrt{1-x^{2}}}$.
+  - $x\in(-1,-1/\sqrt 2)$: $f=(-\pi-2\sin^{-1}x)+(-\sin^{-1}x)=-\pi-3\sin^{-1}x$, so $f'=\dfrac{-3}{\sqrt{1-x^{2}}}$.
+
+  **Step 4 — evaluate each option.**
+  - **(A)** At $x=0$, left derivative $=1$, right derivative $=3$; the two one-sided slopes disagree, so $f$ is NOT differentiable at $0$. **TRUE.**
+  - **(B)** $1/2<1/\sqrt 2$, first branch: $f'(1/2)=3/\sqrt{3/4}=2\sqrt 3$. **TRUE.**
+  - **(C)** $\sqrt 3/2>1/\sqrt 2$, second branch: $f'(\sqrt 3/2)=-1/\sqrt{1/4}=-2$. **TRUE.**
+  - **(D)** At $x=1/\sqrt 2$, left derivative $=3/\sqrt{1/2}=3\sqrt 2$, right derivative $=-1/\sqrt{1/2}=-\sqrt 2$; they differ, so $f$ is NOT differentiable at $1/\sqrt 2$. **FALSE.**
+
+  Correct options: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student writes $\\sin^{-1}(2x\\sqrt{1-x^{2}})=2\\sin^{-1}x$ for ALL $x\\in(-1,1)$ and $\\sec^{-1}(1/\\sqrt{1-x^{2}})=\\sin^{-1}x$ (dropping the absolute value), giving $f=3\\sin^{-1}x$ globally. Then $f$ is smooth everywhere with $f'=3/\\sqrt{1-x^{2}}$, so the student picks (B) and (D) and rejects (A) and (C)."
+    landed_on_option: "B and D"
+    diagnosis: "Twin trap: ignores the principal-value fold of $\\sin^{-1}(\\sin 2t)$ at $|x|=1/\\sqrt 2$ AND drops the modulus from $\\sec^{-1}(1/\\sqrt{1-x^{2}})=|\\sin^{-1}x|$. Both errors are needed to make the function globally smooth; either alone reveals at least one kink."
+  - path: "Student catches the absolute value at $x=0$ and gets the $|x|<1/\\sqrt 2$ branches right, but never checks the branch outside $|x|=1/\\sqrt 2$ and treats $f=3\\sin^{-1}x$ on $(0,1)$ unchanged. Picks (A), (B), and (D); rejects (C)."
+    landed_on_option: "A, B, D"
+    diagnosis: "Half-solve: handles the kink at $0$ (the easier of the two break-points) but misses the fold at $x=1/\\sqrt 2$ where $2t$ crosses $\\pi/2$. Loses (C) and falsely picks (D) — classic TRAP-PARTIAL where the trap-discriminating option is (D)."
+  - path: "Student attempts (D) by plugging $x=1/\\sqrt 2$ into the formula $f=3\\sin^{-1}x$ and gets $f(1/\\sqrt 2)=3\\pi/4$; then plugs into $f=\\pi-\\sin^{-1}x$ and gets $\\pi-\\pi/4=3\\pi/4$. Concludes the two branches match in value and (mis)reads continuity as differentiability."
+    landed_on_option: "A, B, C, D"
+    diagnosis: "Confuses continuity with differentiability. The two branches of $f$ DO agree in value at $x=1/\\sqrt 2$ (both equal $3\\pi/4$), so $f$ is continuous there, but the slopes $3\\sqrt 2$ and $-\\sqrt 2$ are unequal."
+
+review_notes: |
+  Q3 of sheet 0613a. Two layered branch-traps fused: (i) the modulus in $\sec^{-1}(1/\sqrt{1-x^{2}})=|\sin^{-1}x|$ creates a non-differentiability at $x=0$ that is invisible if you naively drop the absolute value; (ii) the principal-value fold of $\sin^{-1}(\sin 2t)$ at $|x|=1/\sqrt 2$ creates two more non-differentiability points. The four-option layout is calibrated so that each option targets a distinct partial-solve failure mode: (B) is on the easy branch (rewards correct $|x|<1/\sqrt 2$ work); (C) is on the folded branch (rewards correct $x>1/\sqrt 2$ work); (A) rewards spotting the modulus; (D) is the explicit trap (matches in value but not in slope). The combination earns it T4 — students who half-solve will pick subsets like {A,B,D} or {B,D} and miss. SURF-FUNC because everything is wrapped in a piecewise function definition; TRAP-PARTIAL because the multi-correct layout is engineered for partial-marking loss.

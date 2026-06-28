@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: MAT.DET.POLYDET.MULTILENS.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: POLYDET
+  sub_idea: MULTILENS
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathbf a=(1,1,0)$, $\mathbf b=(0,1,1)$, $\mathbf c(t)=(t,t^{2},t^{3})$, and define $V(t)=[\,\mathbf a\ \mathbf b\ \mathbf c(t)\,]$ (the scalar triple product). Which of the following is/are correct?
+
+  - (A) $\mathbf a,\mathbf b,\mathbf c(t)$ are coplanar for exactly one real value of $t$
+  - (B) $V$ is strictly increasing on $\mathbb R$ (so $V$ has no local extremum)
+  - (C) The three (complex) roots $t_i$ of $V(t)=0$ satisfy $\sum t_i=1$, and the two non-real roots multiply to $1$
+  - (D) $\displaystyle\int_{0}^{1}V(t)\,dt=\dfrac{5}{12}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  A scalar triple product whose third vector depends polynomially on a parameter is itself a polynomial in that parameter. Once you write $V(t)$ as a cubic, four independent JEE lenses light up at once: discriminant of a quadratic factor (real-root count), sign of $V'$ (monotonicity), Vieta's formulas (root sums/products, including for complex roots), and definite integration.
+
+  ### Working
+  Expand the determinant:
+  $$V(t)=\det\begin{pmatrix}1&0&t\\ 1&1&t^{2}\\ 0&1&t^{3}\end{pmatrix}=1\cdot(t^{3}-t^{2})-0+t\cdot(1-0)=t^{3}-t^{2}+t=t\,(t^{2}-t+1).$$
+
+  **(A)** Coplanarity $\iff V(t)=0$. The quadratic factor $t^{2}-t+1$ has discriminant $1-4=-3<0$, so its roots are non-real. Thus the only real root is $t=0$ — exactly one real coplanarity value. **(A) true.**
+
+  **(B)** $V'(t)=3t^{2}-2t+1$ has discriminant $4-12=-8<0$ and positive leading coefficient, so $V'(t)>0$ for every real $t$. Hence $V$ is strictly increasing on $\mathbb R$ and has no local extremum. **(B) true.**
+
+  **(C)** By Vieta on $t^{3}-t^{2}+t+0$: $\sum t_i = 1$ (coefficient of $t^{2}$ with sign flip). The non-real pair are the roots of $t^{2}-t+1$, whose product is the constant term $=1$. **(C) true.**
+
+  **(D)** $\displaystyle\int_{0}^{1}(t^{3}-t^{2}+t)\,dt=\frac{1}{4}-\frac{1}{3}+\frac{1}{2}=\frac{3-4+6}{12}=\frac{5}{12}$. **(D) true.**
+
+  All four options hold; each invokes a genuinely different tool (discriminant, derivative sign, complex Vieta, definite integral) applied to the same cubic $V(t)$.
+
+wrong_paths:
+  - path: "Computes V(t) but mis-expands the determinant — e.g. drops the cross term and gets V(t)=t^3-t, concluding three real roots."
+    landed_on_option: "Rejects (A) (would claim three real coplanarity values)."
+    diagnosis: "Arithmetic slip in the 3x3 expansion. The middle column contributes via the (1,2) and (3,2) cofactors; missing one of them changes the linear/quadratic coefficients and inflates the real-root count."
+  - path: "Tests V'(t)=3t^2-2t+1 only at t=0 (V'(0)=1>0) and concludes 'increasing somewhere' but does not justify globally; hesitates to confirm (B)."
+    landed_on_option: "Rejects (B)."
+    diagnosis: "TRAP-PARTIAL — checks one sample point instead of using the discriminant test for the sign of a quadratic. The correct argument is global: discriminant <0 plus positive leading coefficient forces V'>0 everywhere."
+  - path: "Reads 'sum of roots = 1' as 'sum of the real roots = 1' and, since the only real root is 0, declares (C) false."
+    landed_on_option: "Rejects (C)."
+    diagnosis: "Vieta's formulas count all complex roots (with multiplicity), not just real ones. The student is conflating 'roots of V(t)=0 in R' (used in (A)) with the algebraic root set used by Vieta."
+  - path: "Integrates V(t)=t^3-t^2+t but slips a sign: 1/4 + 1/3 + 1/2 = 13/12, so picks 13/12 instead of 5/12."
+    landed_on_option: "Rejects (D) (value 13/12)."
+    diagnosis: "Standard integration slip — forgets the minus sign from the -t^2 term. The combined fraction 3/12 - 4/12 + 6/12 = 5/12 is the correct evaluation."
+
+review_notes: |
+  Four-correct multi-lens item built from a single cubic V(t)=t(t^2-t+1). High-value training problem because every option lands on a genuinely different JEE technique (discriminant, monotonicity via derivative discriminant, complex Vieta, integration of a polynomial). Difficulty calibrated to T3: each lens is standard, but the student must execute all four without a slip — and resist the partial-correct trap of marking 3 out of 4. Surface tagged SURF-PARAM because the triple product is parametrised by t; could also be argued SURF-GEOM but the geometric content (coplanarity) is reduced to algebra immediately.

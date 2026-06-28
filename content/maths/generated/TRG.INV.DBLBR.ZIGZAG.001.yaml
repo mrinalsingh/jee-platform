@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: TRG.INV.DBLBR.ZIGZAG.001
+
+fingerprint:
+  topic: TRG
+  subtopic: INV
+  idea: DBLBR
+  sub_idea: ZIGZAG
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=\sin^{-1}\!\big(2x\sqrt{1-x^{2}}\big)$ for $x\in[-1,1]$, where $\sin^{-1}$ denotes the principal value with range $[-\tfrac{\pi}{2},\tfrac{\pi}{2}]$. Then
+
+  - (A) $f'(x)=\dfrac{2}{\sqrt{1-x^{2}}}$ for every $x\in(-1,1)$ with $x\neq\pm\dfrac{1}{\sqrt2}$
+  - (B) $f\!\left(\dfrac{1}{2}\right)=f\!\left(\dfrac{\sqrt3}{2}\right)$
+  - (C) $f$ is not differentiable at $x=\dfrac{1}{\sqrt2}$ and at $x=-\dfrac{1}{\sqrt2}$
+  - (D) $f'\!\left(\dfrac{1}{2}\right)=f'\!\left(\dfrac{\sqrt3}{2}\right)$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  Writing $x=\sin\theta$ with $\theta\in[-\tfrac{\pi}{2},\tfrac{\pi}{2}]$, the expression becomes $f=\sin^{-1}(\sin 2\theta)$, which is a piecewise-linear "zigzag" in $\theta$ with break-points where $2\theta=\pm\tfrac{\pi}{2}$, i.e.\ at $x=\pm\tfrac{1}{\sqrt2}$. The function is symmetric about these break-points, and the derivative changes sign across them.
+
+  ### Working
+  Put $x=\sin\theta$, $\theta\in[-\tfrac{\pi}{2},\tfrac{\pi}{2}]$, so $2x\sqrt{1-x^2}=\sin 2\theta$ and $f(x)=\sin^{-1}(\sin 2\theta)$. Since $\sin^{-1}(\sin u)$ has range $[-\tfrac{\pi}{2},\tfrac{\pi}{2}]$,
+  $$f(x)=\begin{cases} -\pi-2\theta, & 2\theta\in[-\pi,-\tfrac{\pi}{2}], \text{ i.e. } x\in[-1,-\tfrac{1}{\sqrt2}],\\ 2\theta, & 2\theta\in[-\tfrac{\pi}{2},\tfrac{\pi}{2}], \text{ i.e. } x\in[-\tfrac{1}{\sqrt2},\tfrac{1}{\sqrt2}],\\ \pi-2\theta, & 2\theta\in[\tfrac{\pi}{2},\pi], \text{ i.e. } x\in[\tfrac{1}{\sqrt2},1]. \end{cases}$$
+  Differentiating on each open piece (using $\tfrac{d\theta}{dx}=\tfrac{1}{\sqrt{1-x^2}}$):
+  $$f'(x)=\begin{cases} -\dfrac{2}{\sqrt{1-x^2}}, & |x|>\tfrac{1}{\sqrt2},\\ +\dfrac{2}{\sqrt{1-x^2}}, & |x|<\tfrac{1}{\sqrt2}. \end{cases}$$
+
+  **(B)** $f(\tfrac{1}{2})$: here $\theta=\tfrac{\pi}{6}$, so $f=2\theta=\tfrac{\pi}{3}$. $f(\tfrac{\sqrt3}{2})$: here $\theta=\tfrac{\pi}{3}$, so $f=\pi-2\theta=\tfrac{\pi}{3}$. Equal — **true**.
+
+  **(C)** At $x=\tfrac{1}{\sqrt2}$, the left derivative is $+\tfrac{2}{\sqrt{1/2}}=+2\sqrt2$ and the right derivative is $-2\sqrt2$; they disagree, so $f$ is not differentiable there. By symmetry the same holds at $x=-\tfrac{1}{\sqrt2}$. **True**.
+
+  **(A)** On the outer branches the sign is negative: $f'(0.9)=-\tfrac{2}{\sqrt{1-0.81}}<0$, not the claimed $+$ formula. **False**.
+
+  **(D)** $f'(\tfrac{1}{2})=+\tfrac{2}{\sqrt{3/4}}=+\tfrac{4}{\sqrt3}$, while $f'(\tfrac{\sqrt3}{2})=-\tfrac{2}{\sqrt{1/4}}=-4$. **False**.
+
+  Hence the correct options are **(B)** and **(C)**.
+
+wrong_paths:
+  - path: "Differentiate $\\sin^{-1}(2x\\sqrt{1-x^2})$ blindly via chain rule and simplify to $\\tfrac{2}{\\sqrt{1-x^2}}$ on the entire domain (ignoring that $\\sin^{-1}(\\sin u)\\neq u$ outside $[-\\tfrac{\\pi}{2},\\tfrac{\\pi}{2}]$)."
+    landed_on_option: "A (also leads to ticking D)"
+    diagnosis: "TRAP-PARTIAL: the student sees only the inner branch and misses that the principal-value clamp flips the sign on the outer branches, so the formula is correct only on $|x|<\\tfrac{1}{\\sqrt2}$. They then conclude $f'$ is the same at $\\tfrac12$ and $\\tfrac{\\sqrt3}{2}$."
+  - path: "Use the identity $\\sin^{-1}(2x\\sqrt{1-x^2})=2\\sin^{-1}x$ as if it held globally, getting $f(\\tfrac{\\sqrt3}{2})=2\\cdot\\tfrac{\\pi}{3}=\\tfrac{2\\pi}{3}$, which exceeds $\\tfrac{\\pi}{2}$ — student then either rejects (B) or 'fixes' by taking $\\tfrac{\\pi}{3}$, accepting (B) for the wrong reason."
+    landed_on_option: "rejects B (loses a correct option)"
+    diagnosis: "TRAP-NCERT: the double-angle identity for $\\sin^{-1}$ is valid only on $|x|\\le\\tfrac{1}{\\sqrt2}$; ignoring the restriction is a classic NCERT-level oversight."
+  - path: "Notice non-differentiability at $\\pm\\tfrac{1}{\\sqrt2}$ but also (incorrectly) claim non-differentiability at $x=\\pm1$ from the $\\sqrt{1-x^2}$ factor, so reject the clean form of (C)."
+    landed_on_option: "rejects C"
+    diagnosis: "TRAP-EDGE: $x=\\pm1$ are endpoints of the domain, not interior corners; the statement of (C) is about the two interior break-points and is correct."
+
+review_notes: |
+  Classic inverse-trig zigzag question (Q3 of Refined 8.5 sheet). Tests recognition that $\sin^{-1}(2x\sqrt{1-x^2})$ is $\sin^{-1}(\sin 2\theta)$ with branch structure, not a single smooth formula. Key trap is (A): the chain-rule output is correct only on the middle branch. Difficulty calibrated T3 (hard standard JEE).
+  NEW codes proposed: IDEA = DBLBR (double-angle branch of inverse-sine), SUB-IDEA = ZIGZAG (principal-value piecewise/zigzag structure with sign-flipping derivative). These are reusable for the family $\sin^{-1}(2x\sqrt{1-x^2})$, $\cos^{-1}(2x^2-1)$, $\tan^{-1}\tfrac{2x}{1-x^2}$ etc.

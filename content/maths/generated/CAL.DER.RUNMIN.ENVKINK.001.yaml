@@ -1,0 +1,109 @@
+schema_version: 1
+
+question_code: CAL.DER.RUNMIN.ENVKINK.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DER
+  idea: RUNMIN
+  sub_idea: ENVKINK
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 420
+  R3_seconds: 330
+  R4_seconds: 270
+
+source_metadata:
+  jee_authenticity_score: 9.0
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 9.0
+    reviewed_at: "2026-06-14"
+    notes: "probability + PnC; cleanest of batch"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613a_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=x^{3}-9x^{2}+15x+7$ and define
+  $$g(x)=\begin{cases}\displaystyle\min_{0\le t\le x}f(t), & 0\le x\le 6,\\[4pt] x-24, & x>6.\end{cases}$$
+  Which of the following statement(s) is/are TRUE?
+
+  (A) $g$ is continuous on $[0,\infty)$.
+
+  (B) $g$ is NOT differentiable at exactly two points of $[0,\infty)$.
+
+  (C) $g(3)=-2$.
+
+  (D) The global minimum of $g$ on $[0,\infty)$ equals $-18$ and is attained at every $x\in[5,6]$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  The running minimum $\displaystyle g(x)=\min_{0\le t\le x}f(t)$ traces the *lower envelope* of $f$ over $[0,x]$. As $x$ grows, $g$ stays constant on intervals where $f(t)>g(x^{-})$ (the current low has not been broken) and drops together with $f$ on intervals where $f$ is decreasing below the previous low. The envelope therefore picks up kinks at the points where it switches between "constant plateau" and "tracking $f$ downward", plus at any externally stitched piece beyond.
+
+  ### Working
+  Compute $f'(x)=3x^{2}-18x+15=3(x-1)(x-5)$, so $f$ has a local max at $x=1$ with $f(1)=14$ and a local min at $x=5$ with $f(5)=1-9\cdot 25+75+7$... let us redo: $f(5)=125-225+75+7=-18$.
+
+  Note $f(0)=7$. On $(1,5)$, $f$ decreases from $14$ down to $-18$, so it crosses the level $f=7$ exactly once. Solve
+  $$x^{3}-9x^{2}+15x+7=7\ \Longleftrightarrow\ x(x^{2}-9x+15)=0,$$
+  whose root in $(1,5)$ is $\alpha=\dfrac{9-\sqrt{21}}{2}\approx 2.21$.
+
+  Track the running minimum:
+  - On $[0,1]$: $f$ increases $7\to 14$, so the min stays at $f(0)=7$ and $g\equiv 7$.
+  - On $[1,\alpha]$: $f$ decreases $14\to 7$, still $\ge 7$, so $g\equiv 7$.
+  - On $[\alpha,5]$: $f$ decreases through $7$ down to $-18$, so $g(x)=f(x)$.
+  - On $[5,6]$: $f$ increases from $-18$ to $f(6)=216-324+90+7=-11$, but the running minimum is now stuck at $f(5)=-18$, so $g\equiv -18$.
+  - On $(6,\infty)$: $g(x)=x-24$, and $g(6^{+})=-18$, matching.
+
+  **(A) Continuity.** All four joins match: at $x=\alpha$, $g$ is $7$ on the left and $f(\alpha)=7$ on the right; at $x=5$, both sides give $-18$; at $x=6$, both sides give $-18$. So $g$ is continuous on $[0,\infty)$. TRUE.
+
+  **(B) Non-differentiability count.** Compute one-sided derivatives at the joins.
+  - At $x=\alpha$: left $g'=0$ (constant), right $g'=f'(\alpha)=3(\alpha-1)(\alpha-5)$. Since $\alpha\in(1,5)$, $f'(\alpha)<0$, so the two sides disagree — kink.
+  - At $x=5$: left $g'=f'(5)=0$ (since $5$ is a critical point of $f$), right $g'=0$ (constant $-18$). Both sides equal $0$, so $g$ IS differentiable here.
+  - At $x=6$: left $g'=0$, right $g'=1$. Kink.
+
+  Elsewhere $g$ is a piece of a polynomial or a constant, hence smooth. So $g$ is non-differentiable at exactly $\{\alpha,6\}$ — two points. TRUE.
+
+  **(C) $g(3)$.** Since $3\in(\alpha,5)$, $g(3)=f(3)=27-81+45+7=-2$. TRUE.
+
+  **(D) Global minimum.** On $[0,\alpha]$ we have $g\equiv 7$. On $[\alpha,5]$, $g=f$ decreasing from $7$ down to $-18$, with strict inequality $g>-18$ on $(\alpha,5)$. On $[5,6]$, $g\equiv -18$. On $(6,\infty)$, $g(x)=x-24>-18$. Thus the global minimum is $-18$, attained precisely on $[5,6]$. TRUE.
+
+  All four options are correct.
+
+wrong_paths:
+  - path: "Student forgets that the local minimum of $f$ at $x=5$ creates a plateau in $g$ on $[5,6]$ and assumes $g(x)=f(x)$ all the way to $x=6$; then $g(6)=f(6)=-11\\ne -18$ from the left, while the $x-24$ piece gives $-18$. They reject (A) thinking there's a continuity jump at $6$, and also miscount the minimum location."
+    landed_on_option: "B, C only (drops A and D)"
+    diagnosis: "TRAP-EDGE: failure to apply the *running* minimum definition past the local min; running-min is non-decreasing-after-trough, not equal to $f$ on $[5,6]$."
+  - path: 'Student catches the plateau idea but mishandles differentiability at $x=5$, claiming $g$ is non-differentiable there because the *definition* switches from ''tracks $f$'' to ''constant''. They count three kinks ($\alpha, 5, 6$) and reject (B).'
+    landed_on_option: "A, C, D only (drops B)"
+    diagnosis: "Forgets that differentiability is about matching left/right derivative *values*, not about the rule changing. Since $f'(5)=0$ matches the constant's slope $0$, $g$ is in fact differentiable at $5$."
+  - path: 'Student solves $f(x)=7$ but uses $\alpha=(9+\sqrt{21})/2\approx 6.79$ (the wrong root, which lies outside $(1,5)$). They then conclude $g\equiv 7$ throughout $[0,5]$ and only equals $f$ on a tiny window before $5$, breaking (C) and the location of the minimum in (D).'
+    landed_on_option: "A, B only (drops C and D)"
+    diagnosis: "Picks the wrong root of $x^{2}-9x+15=0$; the relevant root is the *smaller* one inside the interval $(1,5)$ where $f$ is monotonically decreasing."
+
+review_notes: |
+  Calibrated at T4 / authenticity 9.0. Three concurrent pitfalls drive the difficulty: (i) recognising that the running min creates a plateau on $[5,6]$ rather than equalling $f$, (ii) the subtle equality of one-sided derivatives at $x=5$ that rescues differentiability there, and (iii) selecting the right root of $x^{2}-9x+15=0$ inside $(1,5)$. All four options are correct, which is a JEE-Advanced-flavour calibration that punishes any partial-credit guesswork. Proposed new taxonomy: CAL.DER.RUNMIN (running-minimum / envelope of a smooth function) and sub-idea ENVKINK (the kink at the constant-to-tracking-$f$ switch and at an external stitched piece).

@@ -1,0 +1,95 @@
+schema_version: 1
+
+question_code: CAL.DIF.ABSPROD.CORNCAN.002
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: ABSPROD
+  sub_idea: CORNCAN
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+source_metadata:
+  jee_authenticity_score: 8.8
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.8
+    reviewed_at: "2026-06-14"
+    notes: "derangement D5=44 + corner-kill; C1-not-C2 trap"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613d_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $n$ denote the number of permutations $\sigma$ of $\{1,2,3,4,5\}$ that satisfy $\sigma(i)\ne i$ for every $i$. Define $f:\mathbb{R}\to\mathbb{R}$ by
+  $$f(x)\;=\;(x-1)(x-2)(x-3)\,\sum_{j=1}^{n}\,|x-j|.$$
+  Let $A=\{a\in\mathbb{R}: f \text{ is not differentiable at } a\}$. Which of the following is/are correct?
+
+  (A) $n=44$
+
+  (B) $|A|=41$
+
+  (C) $f$ is differentiable at $x=4$
+
+  (D) $f$ is twice differentiable at $x=2$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  **Step 1 (PnC, derangement count).** The condition $\sigma(i)\ne i$ defines a derangement of $\{1,\dots,5\}$:
+  $$D_5=5!\sum_{k=0}^{5}\frac{(-1)^k}{k!}=120\Bigl(1-1+\tfrac12-\tfrac16+\tfrac1{24}-\tfrac1{120}\Bigr)=44.$$
+  So $n=44$, confirming **(A)**.
+
+  **Step 2 (Corner-kill lemma).** For each integer $m\in\{1,2,\dots,44\}$ the only term in $\sum_{j=1}^{n}|x-j|$ that produces a corner at $x=m$ is $|x-m|$ (the others are smooth at $m$). Write
+  $$f(x)=P(x)\bigl[\,|x-m|+R_m(x)\bigr],\qquad P(x):=(x-1)(x-2)(x-3),$$
+  with $R_m$ smooth at $m$. The cubic $P$ has simple zeros at $1,2,3$ and is non-zero elsewhere.
+
+  *Case $m\in\{1,2,3\}$.* $P(x)=(x-m)Q(x)$ with $Q(m)\ne 0$, so the dangerous summand is
+  $$(x-m)Q(x)\,|x-m|=Q(x)\,\operatorname{sgn}(x-m)(x-m)^2,$$
+  whose derivative $Q'(x)(x-m)|x-m|+2Q(x)|x-m|$ is continuous at $m$. So $f$ is differentiable at $m$. The second derivative of $(x-m)|x-m|$ equals $2\,\operatorname{sgn}(x-m)$, which jumps by $4Q(m)$ at $m$; hence $f$ is $C^{1}$ but **not** $C^{2}$ at $m$. In particular **(D)** is FALSE: $f''(2)$ does not exist.
+
+  *Case $m\in\{4,5,\dots,44\}$.* $P(m)\ne 0$, so the corner of $|x-m|$ survives with jump $2P(m)$ in $f'$. At $x=4$, $P(4)=3\cdot 2\cdot 1=6$, so the jump in $f'$ is $12\ne 0$ — thus $f$ is non-differentiable at $4$, ruling out **(C)**.
+
+  **Step 3 (count).** Combining the two cases, $A=\{4,5,\dots,44\}$ so $|A|=44-3=41$. This is **(B)**.
+
+  **Answer:** (A), (B).
+
+wrong_paths:
+  - path: "Student computes $D_5$ correctly (44) and recognises that the cubic prefactor kills corners at $x=1,2,3$, but does not distinguish $C^{1}$ from $C^{2}$ — concluding that the corner-kill makes $f$ TWICE differentiable at $x=2$ and picking (D) as well."
+    landed_on_option: "(A), (B), (D)"
+    diagnosis: "Conflates $C^{1}$ with $C^{2}$: $(x-m)|x-m|$ has continuous first derivative $2|x-m|$ but its second derivative $2\\operatorname{sgn}(x-m)$ JUMPS at $m$. The corner-kill recovers differentiability ONE level only."
+  - path: "Student recognises corner-kill at $x=1,2,3$ but forgets to extend to $x=4$ — assumes $4$ behaves the same because it is 'near the prefactor roots' and picks (C) as well."
+    landed_on_option: "(A), (B), (C)"
+    diagnosis: "Geometric proximity is irrelevant: corner-kill needs the cubic prefactor to VANISH at the kink. At $x=4$, $P(4)=6\\ne 0$, so the $|x-4|$ corner survives with jump $2P(4)=12$."
+  - path: "Student incorrectly computes the derangement count as $D_5=5!/e\\approx 44.1\\Rightarrow 44$ but then double-counts and reports $|A|=44$ (forgets to subtract the three corner-killed anchors at $x=1,2,3$)."
+    landed_on_option: "(A) only"
+    diagnosis: "Misses that the cubic prefactor REMOVES the kinks at $j=1,2,3$ from $A$; correct count is $44-3=41$."
+
+review_notes: |
+  Fuses PnC derangement count (D_5=44) with the corner-kill mechanism in differentiability of $P(x)\sum|x-j|$. The 41-element answer requires students to (i) compute D_5, (ii) recognise that only the cubic-prefactor roots {1,2,3} get corner-killed, and (iii) subtract from 44. Option (D) is the C^1-vs-C^2 trap — students who correctly apply corner-kill but skip the second-derivative analysis incorrectly mark (D). T4 because three independent insights are needed and the (D) trap is genuine. Sub-idea CORNCAN reused exactly.

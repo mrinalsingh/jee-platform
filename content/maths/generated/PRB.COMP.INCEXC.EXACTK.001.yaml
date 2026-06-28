@@ -1,0 +1,95 @@
+schema_version: 1
+
+question_code: PRB.COMP.INCEXC.EXACTK.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: INCEXC
+  sub_idea: EXACTK
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-NCERT
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 360   # ~6 min — first time arranging the S1/S2/S3 "exactly-k" identities
+  R2_seconds: 240   # ~4 min — identities recalled; still writes them out
+  R3_seconds: 150   # ~2.5 min — fluent with the three symmetric sums
+  R4_seconds: 90    # ~1.5 min — exam pace; spots S2 from the union immediately
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A,B,C$ be events with
+  $$P(A)=P(B)=P(C)=\tfrac23,\qquad P(A\cup B\cup C)=1,\qquad P(A\cap B\cap C)=\tfrac16.$$
+  Which of the following are correct?
+
+  - **(A)** $P(\text{none of }A,B,C)=\tfrac16$
+  - **(B)** $P(\text{exactly two of }A,B,C)=\tfrac23$
+  - **(C)** $P(\text{exactly one of }A,B,C)=P(\text{exactly three of }A,B,C)=\tfrac16$
+  - **(D)** $P(\text{at least two of }A,B,C)=\tfrac13$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### Set up the three symmetric sums
+  Write
+  $$S_1=P(A)+P(B)+P(C),\quad S_2=P(A\cap B)+P(B\cap C)+P(C\cap A),\quad S_3=P(A\cap B\cap C).$$
+  From the data $S_1=3\cdot\tfrac23=2$ and $S_3=\tfrac16$.
+
+  ### Recover the missing sum $S_2$ from the union
+  Inclusion–exclusion gives
+  $$P(A\cup B\cup C)=S_1-S_2+S_3.$$
+  Since $P(A\cup B\cup C)=1$,
+  $$S_2=S_1+S_3-1=2+\tfrac16-1=\tfrac76.$$
+
+  ### Read off the "exactly-$k$" probabilities
+  The standard exactly-$k$ identities for three events are
+  $$P(\text{exactly one})=S_1-2S_2+3S_3,\qquad
+  P(\text{exactly two})=S_2-3S_3,\qquad
+  P(\text{exactly three})=S_3.$$
+  Hence
+  $$P(\text{exactly two})=\tfrac76-3\cdot\tfrac16=\tfrac76-\tfrac12=\tfrac23,$$
+  so **(B)** is correct.
+  $$P(\text{exactly one})=2-2\cdot\tfrac76+3\cdot\tfrac16=2-\tfrac73+\tfrac12=\tfrac16,
+  \qquad P(\text{exactly three})=S_3=\tfrac16,$$
+  so both equal $\tfrac16$ and **(C)** is correct. (This equality is the hidden invariant: when the union fills the whole space, $P(\text{exactly one})$ collapses to $P(A\cap B\cap C)$.)
+
+  ### Check the two false options
+  Because the union fills the space,
+  $$P(\text{none})=1-P(A\cup B\cup C)=1-1=0\neq\tfrac16,$$
+  so **(A)** is false. Finally
+  $$P(\text{at least two})=P(\text{exactly two})+P(\text{exactly three})=\tfrac23+\tfrac16=\tfrac56\neq\tfrac13,$$
+  so **(D)** is false.
+
+  **Answer: (B), (C).**
+
+wrong_paths:
+  - path: "Computes P(none) as a 'leftover' equal to P(A∩B∩C)=1/6, or simply assumes some probability must be 'none', without using P(∪)=1. Picks (A)."
+    landed_on_option: "A"
+    diagnosis: "TRAP-NCERT / standard NCERT edge case: when P(A∪B∪C)=1 the complement has probability 0, so P(none)=1−P(∪)=0, not 1/6. Confuses 'the triple intersection' with 'the outside region.'"
+  - path: "Uses the wrong exactly-k formula, e.g. P(exactly one)=S_1−2S_2 (dropping the +3S_3 term) or P(at least two)=S_2−S_3, and gets P(at least two)=7/6−1/6=1 or 1/3. Picks (D)."
+    landed_on_option: "D"
+    diagnosis: "Mis-states the inclusion–exclusion coefficients for 'exactly k' / 'at least k'. Correct value P(at least two)=P(exactly two)+P(exactly three)=2/3+1/6=5/6, not 1/3 — the 1/3 distractor is what a sign/coefficient slip produces."
+  - path: "Forgets to recover S_2 from the union and instead guesses S_2 from the pairwise data of a different (symmetric-looking) problem, e.g. takes S_2=1, giving P(exactly two)=1−1/2=1/2. Rejects (B)."
+    landed_on_option: "Rejects B (and may mis-evaluate C)."
+    diagnosis: "Skips the key step S_2=S_1+S_3−P(∪)=7/6; without S_2 every exactly-k value is wrong. The union datum is the only handle on S_2."
+
+review_notes: |
+  - Cross-chapter PnC/Probability batch item (sheet 0609d, Q8). NEW taxonomy node: TOPIC PRB had no SUBTOPIC/IDEA/SUB-IDEA; added PRB.COMP (compound events) → INCEXC (inclusion-exclusion on event probabilities) → EXACTK (the exactly-k symmetric-sum decomposition for three events). Verify these codes read well before bulk reuse.
+  - Difficulty T2: the whole item is a clean application of the standard three-event inclusion-exclusion identities; the only non-mechanical step is recovering S_2 from P(∪)=1. The bite is conceptual (the P(none)=0 and exactly-one=triple-intersection coincidences), not computational.
+  - The designed trap is the "P(none)=1−P(∪)" slip (option A) and the exactly-one = triple-intersection coincidence (option C, correct but surprising). Key verified against the sheet: (B), (C).
+  - Authored times are estimates pending empirical calibration.

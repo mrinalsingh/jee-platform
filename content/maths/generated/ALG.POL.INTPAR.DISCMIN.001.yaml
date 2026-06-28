@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: ALG.POL.INTPAR.DISCMIN.001
+
+fingerprint:
+  topic: ALG
+  subtopic: POL
+  idea: INTPAR
+  sub_idea: DISCMIN
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=2x^3+ax^2+bx$ where $a,b\in\mathbb{N}$, and suppose $f$ has three distinct real roots. Then which of the following are true?
+
+  A) $\min(a+b)=4$
+
+  B) The unique minimiser of $a+b$ gives $f(x)=x(2x+1)(x+1)$
+
+  C) All three roots are positive at the minimum
+
+  D) The local maximum value of $f$ equals $0$ at the minimum
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  Factor: $f(x)=x(2x^2+ax+b)$, so $x=0$ is always a root. For three distinct real roots, the quadratic $2x^2+ax+b$ must have two distinct real roots, both nonzero.
+
+  - Distinct real roots: discriminant $a^2-8b>0$, i.e. $a^2>8b$.
+  - Nonzero: $b\ne 0$, automatic since $b\in\mathbb{N}$.
+
+  Minimise $a+b$ over $a,b\in\mathbb{N}$ with $a^2>8b$:
+  - $b=1$: $a^2>8\Rightarrow a\ge 3$, so $a+b\ge 4$, attained at $(a,b)=(3,1)$.
+  - $b=2$: $a^2>16\Rightarrow a\ge 5$, so $a+b\ge 7$.
+  - Larger $b$ only worsens the bound.
+
+  Hence $\min(a+b)=4$, attained uniquely at $(a,b)=(3,1)$, giving
+  $$f(x)=2x^3+3x^2+x=x(2x+1)(x+1),$$
+  with roots $\{0,-\tfrac12,-1\}$. So (A) and (B) are correct.
+
+  (C) The three roots are $0,-\tfrac12,-1$ — two strictly negative and one zero, not all positive. False.
+
+  (D) $f'(x)=6x^2+6x+1$ vanishes at $x=\dfrac{-1\pm 1/\sqrt3}{2}$. The local maximum lies at $x_*=\dfrac{-1-1/\sqrt3}{2}<-\tfrac12$, and
+  $$f(x_*)=\dfrac{\sqrt3}{18}\ne 0.$$
+  The root $x=0$ is not where the local max lives. False.
+
+  Correct options: (A), (B).
+
+wrong_paths:
+  - path: "Student solves $a^2\\ge 8b$ instead of strict inequality, allowing $(a,b)=(2,1)\\Rightarrow a+b=3$ but then realises repeated root; falls back and accepts $(3,1)$ but assumes the cubic's three roots include $x=0$ as a positive root or misreads sign of roots, marking (C)."
+    landed_on_option: "C"
+    diagnosis: "Sign-of-roots misreading after correct minimisation."
+  - path: "Student finds $(a,b)=(3,1)$ and the factorisation $x(2x+1)(x+1)$, then assumes the local maximum of $f$ occurs at the middle root $x=0$ (since $f(0)=0$), concluding the local max value is $0$ and marks (D)."
+    landed_on_option: "D"
+    diagnosis: "Confuses a root with the location of the local extremum."
+  - path: "Student tries $b=1, a=3$ and also $b=2, a=5$ both giving valid configurations, but fails to check uniqueness — concludes (A) correct but rejects (B) as not unique."
+    landed_on_option: "A"
+    diagnosis: "Partial credit: misses uniqueness of the minimiser."
+
+review_notes: |
+  Clean two-parameter integer-optimisation problem under a cubic-discriminant constraint. Genuine MCQ-MC: (A) and (B) form a coupled pair (existence + uniqueness of the minimiser), while (C) and (D) are well-designed traps tied to misreading the structure at the minimum. Difficulty T3: the discriminant/sieve step is standard, but checking uniqueness over $b\ge 2$ and the local-max trap in (D) require care. Proposed new axis-3 code `INTPAR` (integer-parameter optimisation on polynomial coefficient pairs) and axis-4 sub-idea `DISCMIN` (minimise via discriminant inequality sieve) under ALG.POL — taxonomy currently has no ALG.POL ideas listed.

@@ -1,0 +1,96 @@
+schema_version: 1
+question_code: CAL.DEF.KINGSYM.L2DECOMP.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DEF
+  idea: KINGSYM
+  sub_idea: L2DECOMP
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 600
+  R2_seconds: 420
+  R3_seconds: 300
+  R4_seconds: 240
+
+source_metadata:
+  jee_authenticity_score: 8.5
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+  source_qs: "Definite-integral king-rule (reflection x->1-x) fused with L^2 decomposition into symmetric/antisymmetric parts about x=1/2; functional-equation orthogonality plus a |.| antisymmetric perturbation to break smoothness."
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.5
+    reviewed_at: "2026-06-14"
+    notes: "king's rule + symmetric/antisymmetric L2 decomposition"
+
+status: provisional
+
+provenance:
+  inspired_by: "0613d_Q6"
+  parallel_form: false
+  generator: "jee-mcq skill, batch 0613d"
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f:[0,1]\to\mathbb{R}$ be a continuous function satisfying
+  $$f(x)+f(1-x)=x(1-x)\qquad\text{for every }x\in[0,1].$$
+  Which of the following statements is/are correct for EVERY such function $f$?
+
+  (A) $\displaystyle\int_{0}^{1}f(x)\,dx=\tfrac{1}{12}$
+
+  (B) $\displaystyle\int_{0}^{1}x\,f(x)\,dx=\tfrac{1}{24}$
+
+  (C) $\displaystyle\int_{0}^{1}\bigl(f(x)\bigr)^{2}\,dx\;\ge\;\tfrac{1}{120}$, with equality iff $f(x)=\tfrac{1}{2}x(1-x)$
+
+  (D) $f$ must be differentiable on $(0,1)$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  Let $I=\int_{0}^{1}f(x)\,dx$.
+
+  **(A)** Substitute $u=1-x$: $\int_{0}^{1}f(1-x)\,dx=I$. Adding,
+  $$2I=\int_{0}^{1}\bigl[f(x)+f(1-x)\bigr]\,dx=\int_{0}^{1}x(1-x)\,dx=\tfrac{1}{6},$$
+  so $I=\tfrac{1}{12}$. **TRUE.**
+
+  **(B)** Let $J=\int_{0}^{1}xf(x)\,dx$. Substituting $x\mapsto 1-x$:
+  $$J=\int_{0}^{1}(1-x)f(1-x)\,dx=\int_{0}^{1}(1-x)\bigl[x(1-x)-f(x)\bigr]\,dx=\int_{0}^{1}x(1-x)^{2}\,dx-(I-J).$$
+  Using $\int_{0}^{1}x(1-x)^{2}\,dx=\tfrac{1}{12}$ and $I=\tfrac{1}{12}$, this collapses to the identity $0=0$, so $J$ is not pinned down. Concrete counter-illustration: $f_{1}(x)=\tfrac{1}{2}x(1-x)$ gives $J=\tfrac{1}{24}$, while $f_{2}(x)=\tfrac{1}{2}x(1-x)+(x-\tfrac{1}{2})|x-\tfrac{1}{2}|$ also satisfies the functional equation (the perturbation is antisymmetric about $\tfrac{1}{2}$) but gives a different $J$. **FALSE.**
+
+  **(C)** Decompose $f=\tfrac{1}{2}h+g$ where $h(x)=x(1-x)$ is symmetric about $\tfrac{1}{2}$ and $g(x)+g(1-x)=0$ (antisymmetric). Then
+  $$\int_{0}^{1}f^{2}=\tfrac{1}{4}\int_{0}^{1}h^{2}+\int_{0}^{1}h\,g+\int_{0}^{1}g^{2}.$$
+  Since $h$ is symmetric and $g$ antisymmetric about $\tfrac{1}{2}$, the cross-term $\int_{0}^{1}h\,g\,dx=0$. Hence
+  $$\int_{0}^{1}f^{2}=\tfrac{1}{4}\int_{0}^{1}x^{2}(1-x)^{2}\,dx+\int_{0}^{1}g^{2}\ge\tfrac{1}{4}\cdot\tfrac{1}{30}=\tfrac{1}{120},$$
+  with equality iff $g\equiv 0$, i.e.\ $f(x)=\tfrac{1}{2}x(1-x)$. **TRUE.**
+
+  **(D)** The same antisymmetric perturbation breaks differentiability. E.g.\ $g(x)=|x-\tfrac{1}{4}|-|x-\tfrac{3}{4}|$ is antisymmetric about $\tfrac{1}{2}$ and continuous but not differentiable at $\tfrac{1}{4},\tfrac{3}{4}$; then $f(x)=\tfrac{1}{2}x(1-x)+g(x)$ satisfies the hypothesis but fails to be differentiable on $(0,1)$. **FALSE.**
+
+  **Answer: (A), (C).**
+
+wrong_paths:
+  - path: "Computes (A) and (B) assuming the functional equation pins down both moments by king's rule; misses that king's rule on $\\int x f$ collapses to a tautology, so (B) is hypothesis-free."
+    landed_on_option: [A, B]
+    diagnosis: "Over-extends the reflection argument; doesn't test (B) on a non-canonical $f$ satisfying the constraint."
+  - path: "Assumes the unique symmetric solution $f(x)=\\tfrac{1}{2}x(1-x)$ is the only continuous solution, since it 'obviously' satisfies the equation; then (A),(B),(C),(D) all read TRUE."
+    landed_on_option: [A, B, C, D]
+    diagnosis: "Ignores the antisymmetric kernel: any $g$ with $g(x)+g(1-x)=0$ added to $\\tfrac{1}{2}x(1-x)$ also satisfies the constraint."
+  - path: "Gets (A) and (C) but adds (D) under the assumption that continuous + satisfies a functional equation = nice."
+    landed_on_option: [A, C, D]
+    diagnosis: "Misses the explicit $|x-\\tfrac{1}{2}|$ or $|x-\\tfrac{1}{4}|-|x-\\tfrac{3}{4}|$ antisymmetric counterexample."
+
+review_notes: |
+  Cross-chapter fusion: definite-integration king's rule + L^2 inner-product decomposition into symmetric and antisymmetric components about $x=\tfrac{1}{2}$. The trap (D) calibrates partial-marking: a solver who has internalised the antisymmetric-kernel idea for (B) and (C) should also see it kills (D); a solver who only got (A),(C) by ad-hoc king's rule will be tempted by (D) on smoothness grounds.

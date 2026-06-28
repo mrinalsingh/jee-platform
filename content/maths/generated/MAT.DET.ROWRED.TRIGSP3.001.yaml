@@ -1,0 +1,89 @@
+schema_version: 1
+
+question_code: MAT.DET.ROWRED.TRIGSP3.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: ROWRED
+  sub_idea: TRIGSP3
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let
+  $$\Delta=\det\!\begin{pmatrix}\sin^3 A & \sin^3 B & \sin^3 C\\ \sin A & \sin B & \sin C\\ \cos A & \cos B & \cos C\end{pmatrix},\qquad A,B,C\in(0,\pi/3)\text{ distinct.}$$
+  Which of the following is/are correct?
+
+  (A) $\Delta\neq 0$ on the given domain.
+
+  (B) $\Delta=0$ whenever $A+B+C=\pi/2$.
+
+  (C) $\Delta=-\tfrac14\det\!\begin{pmatrix}\sin 3A & \sin 3B & \sin 3C\\ \sin A & \sin B & \sin C\\ \cos A & \cos B & \cos C\end{pmatrix}$.
+
+  (D) $\Delta$ is unchanged under every permutation of $A,B,C$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  The cubed-sine in the top row is the only obstacle. Use the power-reduction identity
+  $$\sin^3\alpha=\tfrac14\bigl(3\sin\alpha-\sin 3\alpha\bigr)$$
+  and split the top row by multilinearity. One piece duplicates row 2 (kills the determinant), the other piece is exactly the determinant in option (C).
+
+  ### Working
+  By multilinearity in the first row,
+  $$\Delta=\tfrac34\,D_1-\tfrac14\,D_2,$$
+  where $D_1$ has top row $(\sin A,\sin B,\sin C)$ — identical to row 2, so $D_1=0$ — and $D_2$ has top row $(\sin 3A,\sin 3B,\sin 3C)$. Hence
+  $$\Delta=-\tfrac14\,D_2,$$
+  which is exactly option **(C)**.
+
+  For (A): a standard factorisation gives
+  $$\Delta=\sin(A+B+C)\,\prod_{X<Y}\sin(X-Y)\qquad\text{(up to a fixed sign).}$$
+  On $A,B,C\in(0,\pi/3)$ distinct we have $A+B+C\in(0,\pi)$, so $\sin(A+B+C)>0$, and each $\sin(X-Y)\ne 0$ since $|X-Y|<\pi/3$. Therefore $\Delta\ne 0$: option **(A)** is correct.
+
+  For (B): take $A=0.3,\,B=0.5,\,C=\pi/2-0.8$, so $A+B+C=\pi/2$. Numerically $\Delta\ne 0$, so (B) is false (the factorisation also shows the only way $\Delta=0$ is via a coincidence among $A,B,C$, not via $A+B+C=\pi/2$).
+
+  For (D): swapping any two columns of $\Delta$ flips its sign, so $\Delta$ is NOT unchanged under permutations (it changes sign under a transposition). (D) is false.
+
+  **Correct options: (A), (C).**
+
+wrong_paths:
+  - path: "Student reads 'A+B+C=π/2' as a triangle-style constraint and recalls that many trig determinants vanish on such constraints; marks (B) without checking the factorisation."
+    landed_on_option: "B"
+    diagnosis: "TRAP-PARTIAL — confuses the closed factorisation $\\sin(A+B+C)\\prod\\sin(X-Y)$ with the more familiar $A+B+C=\\pi$ identity for a triangle. The actual factor is $\\sin(A+B+C)$, which vanishes only at $0$ and $\\pi$, not at $\\pi/2$."
+  - path: "Student notes 'the entries are built from sin and cos of A,B,C in the same way for each column' and concludes $\\Delta$ is symmetric in $(A,B,C)$; marks (D)."
+    landed_on_option: "D"
+    diagnosis: "Confuses 'each column has the same functional form' with 'the determinant is symmetric'. A determinant is alternating under column swaps, never symmetric (unless identically zero). Forgetting the sign flip is the standard pitfall."
+  - path: "Student fails to spot the $\\sin^3\\alpha=\\tfrac14(3\\sin\\alpha-\\sin 3\\alpha)$ reduction and instead tries $\\sin^3\\alpha=\\sin\\alpha\\cdot\\sin^2\\alpha=\\sin\\alpha(1-\\cos^2\\alpha)$, gets stuck, and rejects (C); also wrongly concludes $\\Delta$ might vanish, rejecting (A)."
+    landed_on_option: "B, D"
+    diagnosis: "TRAP-PARTIAL — wrong choice of identity for $\\sin^3$. The Pythagorean split keeps a $\\cos^2$ that does not combine cleanly with rows 2 and 3, whereas the triple-angle split immediately produces a row identical to row 2."
+
+review_notes: |
+  Taxonomy extension needed: MAT.DET currently has no IDEA codes in the listed taxonomy. Proposing IDEA=ROWRED (row reduction by an algebraic/trig identity that exposes a duplicate row) and SUB-IDEA=TRIGSP3 (the specific $\sin^3\alpha=\tfrac14(3\sin\alpha-\sin 3\alpha)$ split). This is a recurring JEE pattern (powers of sin/cos in one determinant row reduced to lower-degree harmonics, then multilinearity exposes a duplicate row). Reviewer to confirm code names or rename.
+
+  Difficulty T3: idea is standard once $\sin^3$ identity is recalled; multi-correct format and the (B)/(D) trap-options add discrimination.
+
+  Surface SURF-PLAIN (direct determinant statement, no geometric/functional wrapper). Trap TRAP-PARTIAL — distractors (B) and (D) are partial-truth traps (right structure, wrong sign condition / wrong symmetry claim).

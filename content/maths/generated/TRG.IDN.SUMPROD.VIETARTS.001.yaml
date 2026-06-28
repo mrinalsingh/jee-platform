@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: TRG.IDN.SUMPROD.VIETARTS.001
+
+fingerprint:
+  topic: TRG
+  subtopic: IDN
+  idea: SUMPROD
+  sub_idea: VIETARTS
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 120
+  R3_seconds: 90
+  R4_seconds: 60
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  $\tan A$ and $\tan B$ are the roots of $x^{2}-5x+6=0$. Which of the following are correct?
+
+  - (A) $\cot A+\cot B=\tfrac12$
+  - (B) $\tan(A+B)=-1$
+  - (C) $\tan^{2}A+\tan^{2}B=13$
+  - (D) $(1+\tan A)(1+\tan B)=12$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### The IDEA
+  When $\tan A$ and $\tan B$ are the roots of a quadratic $x^2-px+q=0$, Vieta gives $p=\tan A+\tan B$ and $q=\tan A\tan B$. Every symmetric trig expression in $A,B$ — including $\tan(A+B)=\dfrac{p}{1-q}$, $\tan^2 A+\tan^2 B=p^2-2q$, $\cot A+\cot B=p/q$, and $(1+\tan A)(1+\tan B)=1+p+q$ — is then a direct polynomial in $p,q$.
+
+  ### Working
+  The roots of $x^{2}-5x+6=0$ are $2,3$, so $p:=\tan A+\tan B=5$ and $q:=\tan A\tan B=6$.
+
+  **(B)** $\tan(A+B)=\dfrac{\tan A+\tan B}{1-\tan A\tan B}=\dfrac{p}{1-q}=\dfrac{5}{1-6}=-1$. **True.**
+
+  **(C)** $\tan^{2}A+\tan^{2}B=(\tan A+\tan B)^2-2\tan A\tan B=p^{2}-2q=25-12=13$. **True.**
+
+  **(D)** $(1+\tan A)(1+\tan B)=1+(\tan A+\tan B)+\tan A\tan B=1+p+q=1+5+6=12$. **True.**
+
+  **(A)** $\cot A+\cot B=\dfrac{1}{\tan A}+\dfrac{1}{\tan B}=\dfrac{\tan A+\tan B}{\tan A\tan B}=\dfrac{p}{q}=\dfrac{5}{6}\neq\dfrac{1}{2}$. **False.**
+
+  Correct options: **(B), (C), (D)**.
+
+wrong_paths:
+  - path: "Student computes $\\cot A+\\cot B$ as $\\dfrac{1}{p}+\\dfrac{1}{q}=\\dfrac{1}{5}+\\dfrac{1}{6}$ or simply $\\dfrac{1}{p+q}=\\dfrac{1}{11}$, fails to verify against $\\tfrac12$, and marks (A) as true by misreading the value."
+    landed_on_option: "Includes (A) (chooses A, B, C, D)"
+    diagnosis: "Confuses $\\cot A+\\cot B$ with reciprocals of Vieta sums instead of the correct identity $\\dfrac{p}{q}$. TRAP-PARTIAL: gets B, C, D right but adds the wrong A."
+  - path: "Student forgets the sign in $\\tan(A+B)=\\dfrac{p}{1-q}$ and writes $\\dfrac{p}{1+q}=\\dfrac{5}{7}$, concluding (B) is false."
+    landed_on_option: "Picks only (C), (D)"
+    diagnosis: "Standard tan(A+B) sign-error: denominator $1-\\tan A\\tan B$ replaced by $1+\\tan A\\tan B$. Loses a true option."
+  - path: "Student expands $\\tan^2 A+\\tan^2 B=(\\tan A+\\tan B)^2=p^2=25$ and rejects (C)."
+    landed_on_option: "Picks only (B), (D)"
+    diagnosis: "Forgets the $-2q$ cross-term in $(x+y)^2 = x^2+y^2+2xy$; a Newton-identity slip on the second power-sum."
+  - path: "Student expands $(1+\\tan A)(1+\\tan B)=1+\\tan A\\tan B=1+6=7$, dropping the linear sum term."
+    landed_on_option: "Picks only (B), (C)"
+    diagnosis: "Distributive-law slip: omits the $\\tan A+\\tan B$ middle term. Loses (D)."
+
+review_notes: |
+  Classic Vieta-on-tan-roots problem. Three of four options exercise different symmetric-function identities (sum-of-reciprocals, tan(A+B), sum-of-squares, $(1+x)(1+y)$ expansion), making it a clean multi-correct stress test. Difficulty T2 — standard JEE Main / easy Advanced. Sub-idea code VIETARTS proposed for "Vieta's symmetric functions applied to trig roots"; reusing TRG.IDN.SUMPROD idea since all four checks are symmetric sum/product reductions.

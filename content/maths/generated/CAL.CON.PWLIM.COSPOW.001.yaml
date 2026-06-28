@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: CAL.CON.PWLIM.COSPOW.001
+
+fingerprint:
+  topic: CAL
+  subtopic: CON
+  idea: PWLIM
+  sub_idea: COSPOW
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 120
+  R4_seconds: 90
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=\lim_{n\to\infty}(\cos x)^{2n}$. Which of the following is/are correct?
+
+  - (A) $f(x)=1$ if $x=k\pi,\ k\in\mathbb{Z}$, and $f(x)=0$ otherwise
+  - (B) $f$ is discontinuous exactly at the points $x=k\pi,\ k\in\mathbb{Z}$
+  - (C) The set of discontinuities of $f$ is countably infinite
+  - (D) $f$ is continuous on $\mathbb{R}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  For a real number $t\in[0,1]$, the sequence $t^{n}$ tends to $0$ if $t<1$ and to $1$ if $t=1$. Hence the pointwise limit of $(\cos x)^{2n}$ is the indicator of the set where $\cos^{2}x=1$, which is the isolated set $\{k\pi:k\in\mathbb{Z}\}$. A pointwise limit of continuous functions need not be continuous, and here the limit jumps from $0$ to $1$ at every $k\pi$.
+
+  ### Working
+  Since $\cos^{2}x\in[0,1]$, we have
+  $$(\cos x)^{2n}=(\cos^{2}x)^{n}\to\begin{cases}1,&\cos^{2}x=1\\0,&\cos^{2}x<1\end{cases}$$
+  Now $\cos^{2}x=1\iff\cos x=\pm1\iff x=k\pi$ for some integer $k$. Therefore
+  $$f(x)=\begin{cases}1,&x=k\pi,\ k\in\mathbb{Z}\\0,&\text{otherwise.}\end{cases}$$
+
+  **(A)** This is exactly the formula above: **true**.
+
+  **(B)** At any non-integer multiple of $\pi$, $f\equiv 0$ in a neighbourhood (since $\{k\pi\}$ is a discrete set), so $f$ is continuous there. At $x=k\pi$, $f(k\pi)=1$ but $f(x)=0$ for all $x$ in a punctured neighbourhood, so $\lim_{x\to k\pi}f(x)=0\ne 1=f(k\pi)$. Thus $f$ is discontinuous at exactly $\{k\pi\}$: **true**.
+
+  **(C)** $\{k\pi:k\in\mathbb{Z}\}$ is in bijection with $\mathbb{Z}$, hence countably infinite: **true**.
+
+  **(D)** From (B), $f$ has discontinuities, so it is not continuous on $\mathbb{R}$: **false**.
+
+  Correct: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student computes the limit only at $x=0$ or a generic point and stops without checking the indicator structure; declares the limit is $0$ everywhere and so $f\equiv 0$ is continuous."
+    landed_on_option: "(D) only"
+    diagnosis: "Misses the edge case $\\cos^{2}x=1$. TRAP-EDGE: the limit of $t^{n}$ behaves differently at the boundary $t=1$."
+  - path: "Student recognises the indicator structure but argues that since each $(\\cos x)^{2n}$ is continuous, the pointwise limit must be continuous too."
+    landed_on_option: "(A) and (D)"
+    diagnosis: "Confuses pointwise limit with uniform limit; only uniform convergence preserves continuity."
+  - path: "Student says the discontinuity set $\\{k\\pi\\}$ is uncountable because $\\mathbb{R}$ is uncountable, or finite because they think only $x=0$ matters."
+    landed_on_option: "(A) and (B) only"
+    diagnosis: "Cardinality slip: failing to recognise a bijection with $\\mathbb{Z}$."
+  - path: "Student writes $\\cos^{2}x=1\\iff x=2k\\pi$ (forgets $\\cos x=-1$ also gives $\\cos^{2}x=1$), so concludes discontinuities are at $2k\\pi$ only."
+    landed_on_option: "(A) modified; misses (B) as stated"
+    diagnosis: "Algebra slip on $\\cos^{2}x=1$; the squaring kills the sign so all integer multiples of $\\pi$ qualify."
+
+review_notes: |
+  Classic JEE pointwise-limit-of-power problem. New axis-3/4 codes proposed:
+  - IDEA PWLIM (pointwise limit of a function sequence producing an indicator-style function)
+  - SUB-IDEA COSPOW (specifically $(\cos x)^{2n}$ / $(\sin x)^{2n}$ flavour)
+  Trap TRAP-EDGE captures the $t=1$ boundary behaviour of $t^{n}$.

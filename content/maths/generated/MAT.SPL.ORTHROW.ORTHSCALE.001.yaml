@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: MAT.SPL.ORTHROW.ORTHSCALE.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: ORTHROW
+  sub_idea: ORTHSCALE
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathbf a=(1,2,2)$, $\mathbf b=(2,-2,1)$, $\mathbf c=(2,1,-2)$, and let $P$ be the $3\times3$ matrix whose rows are $\mathbf a,\mathbf b,\mathbf c$ (in that order). Which of the following statements is/are correct?
+
+  - (A) $P^2=I$
+  - (B) the projection of $\mathbf a$ onto $\mathbf b$ has length $3$
+  - (C) $[\mathbf a\ \mathbf b\ \mathbf c]=27$
+  - (D) $\operatorname{adj}(P)=3P^{\mathsf T}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  If the rows of a square matrix $P$ are mutually orthogonal vectors each of length $k$, then $PP^{\mathsf T}=k^{2}I$, so $\det P=\pm k^{n}$ and $P^{-1}=k^{-2}P^{\mathsf T}$, which forces $\operatorname{adj}(P)=\det(P)\,P^{-1}=\pm k^{\,n-2}P^{\mathsf T}$. The rows being orthonormal (length $1$) is what makes $P$ an involution-like orthogonal matrix; with length $k\ne 1$ the scaling factor $k^{2}$ never goes away.
+
+  ### Working
+  Compute the dot products:
+  $$\mathbf a\cdot\mathbf b=2-4+2=0,\quad \mathbf b\cdot\mathbf c=4-2-2=0,\quad \mathbf a\cdot\mathbf c=2+2-4=0,$$
+  and the squared norms $|\mathbf a|^{2}=|\mathbf b|^{2}=|\mathbf c|^{2}=1+4+4=9$. Thus the rows of $P$ are mutually orthogonal, each of length $3$, so
+  $$PP^{\mathsf T}=9I.$$
+
+  **(C)** $[\mathbf a\ \mathbf b\ \mathbf c]=\det P$. From $\det(P)\det(P^{\mathsf T})=\det(9I)=729$ we get $|\det P|=27$. Direct expansion along row $1$ gives $\det P=1(4-1)-2(-4-2)+2(2+4)=3+12+12=27>0$, so $[\mathbf a\ \mathbf b\ \mathbf c]=27$. **True.**
+
+  **(D)** From $PP^{\mathsf T}=9I$, $P^{-1}=\tfrac{1}{9}P^{\mathsf T}$, hence
+  $$\operatorname{adj}(P)=\det(P)\,P^{-1}=27\cdot\tfrac{1}{9}P^{\mathsf T}=3P^{\mathsf T}.$$
+  **True.**
+
+  **(A)** $P^{2}=PP$. Here $P$ happens to be symmetric ($P_{ij}=P_{ji}$ from the given rows), so $P^{2}=PP^{\mathsf T}=9I\ne I$. **False.**
+
+  **(B)** The projection length of $\mathbf a$ onto $\mathbf b$ equals $|\mathbf a\cdot\mathbf b|/|\mathbf b|=0/3=0$, not $3$. **False.**
+
+  Correct options: **(C), (D)**.
+
+wrong_paths:
+  - path: "Confuses 'rows orthogonal' with 'orthogonal matrix', concluding $P^{\\mathsf T}P=I$ hence $P^{2}=I$ (using symmetry of $P$)."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL: drops the norm-$3$ scaling. Correct identity is $PP^{\\mathsf T}=9I$, so $P^{2}=9I$, not $I$."
+  - path: "Reads 'projection of $\\mathbf a$ on $\\mathbf b$' as $|\\mathbf a|\\cos\\theta$ but blindly uses $|\\mathbf a|=3$ without computing $\\cos\\theta$ (which is $0$ since $\\mathbf a\\perp\\mathbf b$)."
+    landed_on_option: "B"
+    diagnosis: "Skips the orthogonality check; reports the length of $\\mathbf a$ itself as the projection length."
+  - path: "Computes $|\\det P|=27$ but assigns the sign as negative (e.g., orders rows as a left-handed triad mentally) and reports $[\\mathbf a\\ \\mathbf b\\ \\mathbf c]=-27$, hence rejects (C)."
+    landed_on_option: "neither C nor D (picks only D, or only A,D)"
+    diagnosis: "TRAP-PARTIAL: forgets to actually expand the determinant to fix the sign; the rows here form a right-handed triad."
+  - path: "Uses $\\operatorname{adj}(P)=P^{-1}$ instead of $\\det(P)\\,P^{-1}$, getting $\\operatorname{adj}(P)=\\tfrac{1}{9}P^{\\mathsf T}$ and rejecting (D)."
+    landed_on_option: "C only"
+    diagnosis: "Standard NCERT-formula slip: forgets the $\\det(P)$ factor in $\\operatorname{adj}(P)=\\det(P)\\,P^{-1}$."
+
+review_notes: |
+  IDEA code 'ORTHROW' (matrix with mutually orthogonal rows, length $\ne 1$) and SUB-IDEA 'ORTHSCALE' (the $k^{n-2}$ scaling that appears in adj/inv when norms aren't unit) are NEW codes — not in the existing MAT.SPL list (which only has ORBSUM/CNJSP). Suggest adding them; alternatively reuse MAT.SPL.ORBSUM is wrong (that's orbit sums under conjugation). Surface SURF-PLAIN — bare matrix; no functional/parametric dressing. Trap TRAP-PARTIAL captures the dominant 'orthogonal rows $\Rightarrow$ orthogonal matrix' slip in (A) and the NCERT adj-formula slip in (D).
+  Difficulty T3: standard concept (orthogonality + adjugate), but multi-correct with three distinct sub-facts; mid-paper hard.

@@ -1,0 +1,76 @@
+schema_version: 1
+
+question_code: MAT.DET.CIRCFAC.GRAMVEC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: CIRCFAC
+  sub_idea: GRAMVEC
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 420
+  R3_seconds: 330
+  R4_seconds: 270
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\Delta(a,b,c)$ denote the determinant of the circulant matrix
+  $$\begin{pmatrix} a & b & c \\ c & a & b \\ b & c & a \end{pmatrix},$$
+  and let $\mathbf{u},\mathbf{v},\mathbf{w}$ be unit vectors with pairwise angles $60^{\circ}$. Let $V=[\mathbf{u}\ \mathbf{v}\ \mathbf{w}]$ denote the scalar triple product. Which of the following is/are correct?
+
+  - (A) $\Delta(a,b,c)=(a+b+c)(a^{2}+b^{2}+c^{2}-ab-bc-ca)$
+  - (B) $\Delta(a,b,c)=(a+b+c)^{3}$
+  - (C) $V^{2}=\tfrac{1}{2}$ and $|\mathbf{u}+\mathbf{v}+\mathbf{w}|=\sqrt{6}$
+  - (D) $\mathbf{u},\mathbf{v},\mathbf{w}$ are coplanar
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  The $3\times3$ circulant determinant factors as $a^{3}+b^{3}+c^{3}-3abc=(a+b+c)(a^{2}+b^{2}+c^{2}-ab-bc-ca)$. The Gram matrix of three unit vectors with pairwise angle $60^{\circ}$ is itself a circulant with entries $(1,\tfrac12,\tfrac12)$, so the same identity computes $V^{2}=\det G$.
+
+  ### Working
+  **(A)/(B)** Expanding row-by-row (or using the eigenvalues $a+b+c,\ a+\omega b+\omega^{2}c,\ a+\omega^{2}b+\omega c$ of a circulant, $\omega=e^{2\pi i/3}$),
+  $$\Delta=a^{3}+b^{3}+c^{3}-3abc=(a+b+c)(a^{2}+b^{2}+c^{2}-ab-bc-ca).$$
+  So **(A) is true**. Test $(a,b,c)=(1,2,3)$: $\Delta=1+8+27-18=18$, while $(a+b+c)^{3}=216$, so **(B) is false**.
+
+  **(C)** The Gram matrix is
+  $$G=\begin{pmatrix} 1 & \tfrac12 & \tfrac12 \\ \tfrac12 & 1 & \tfrac12 \\ \tfrac12 & \tfrac12 & 1 \end{pmatrix},$$
+  a circulant with $(a,b,c)=(1,\tfrac12,\tfrac12)$. By the formula in (A),
+  $$\det G=1+\tfrac18+\tfrac18-3\cdot\tfrac14=\tfrac{10}{8}-\tfrac{6}{8}=\tfrac12.$$
+  Since $V^{2}=\det G=\tfrac12$. Also $|\mathbf{u}+\mathbf{v}+\mathbf{w}|^{2}=3+2(\mathbf{u}\!\cdot\!\mathbf{v}+\mathbf{v}\!\cdot\!\mathbf{w}+\mathbf{w}\!\cdot\!\mathbf{u})=3+2\cdot\tfrac{3}{2}=6$, so the length is $\sqrt{6}$. **(C) is true**.
+
+  **(D)** Coplanarity would require $V=0$, i.e. $\det G=0$. But $\det G=\tfrac12\ne0$, so the triad is linearly independent and **not coplanar**. **(D) is false**.
+
+wrong_paths:
+  - path: "Student remembers $a^{3}+b^{3}+c^{3}-3abc=(a+b+c)(\\ldots)$ but mis-recalls the second factor as $(a+b+c)^{2}$, collapsing $\\Delta$ to $(a+b+c)^{3}$."
+    landed_on_option: "B"
+    diagnosis: "Confuses the genuine cyclic-sum factorisation with the cube identity $(a+b+c)^{3}=a^{3}+b^{3}+c^{3}+3(a+b+c)(ab+bc+ca)-3abc$, which is NOT equal to $\\Delta$. A single numeric check (e.g. $a=b=c=1$ gives $\\Delta=0$ but $(a+b+c)^{3}=27$) refutes it. TRAP-PARTIAL: remembers the factorisation shape but not the discriminant-like second factor."
+  - path: "Student computes $|\\mathbf{u}+\\mathbf{v}+\\mathbf{w}|^{2}=3+3\\cdot\\tfrac12=\\tfrac92$ by counting only three dot products instead of doubling them, hence concludes $V^{2}=\\tfrac12$ but $|\\mathbf{u}+\\mathbf{v}+\\mathbf{w}|\\ne\\sqrt6$, rejecting (C) as 'half right'."
+    landed_on_option: "C is rejected (so only A is marked)"
+    diagnosis: "Forgets the $2\\sum\\mathbf{u}\\!\\cdot\\!\\mathbf{v}$ cross-term in $|\\sum|^{2}=\\sum|\\cdot|^{2}+2\\sum_{i<j}\\mathbf{u}_i\\!\\cdot\\!\\mathbf{u}_j$. Classic squared-norm slip; loses the partial credit (TRAP-PARTIAL)."
+  - path: "Student sees three vectors in $\\mathbb{R}^{3}$ with equal pairwise angles and concludes they 'must lie on a cone hence coplanar'."
+    landed_on_option: "D"
+    diagnosis: "Confuses 'lie on a common cone (axis = $\\mathbf{u}+\\mathbf{v}+\\mathbf{w}$)' with 'coplanar'. Coplanarity requires $\\det G=0$, which fails here since $60^{\\circ}\\ne 90^{\\circ}$ from the cone axis. Geometric-intuition slip."
+
+review_notes: |
+  Cross-chapter fuse: MAT (3x3 circulant determinant) + VEC (Gram matrix / scalar triple product of equiangular unit vectors). The Gram-as-circulant trick is the key bridge — both true options use the SAME identity from (A), making this genuinely multi-correct rather than parallel calculations. New idea code CIRCFAC (circulant factorisation $a^3+b^3+c^3-3abc$) and sub-idea GRAMVEC (Gram-matrix-as-circulant for equiangular unit vectors) are proposed; closest existing is MAT.SPL.ORBSUM but that one is for orbit-sums of conjugates, not 3x3 circulant factorisation. Difficulty T3: the circulant identity is standard but the Gram-as-same-circulant recognition is non-routine. Trap is PARTIAL (B looks plausible because of the shared "$(a+b+c)\\cdot$" factor; D looks plausible from geometric symmetry).

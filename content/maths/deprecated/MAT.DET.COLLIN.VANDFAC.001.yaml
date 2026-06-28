@@ -1,0 +1,95 @@
+schema_version: 1
+
+question_code: MAT.DET.COLLIN.VANDFAC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: COLLIN
+  sub_idea: VANDFAC
+  answer_type: MCQ-SC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For $t \ne 1$, define the point
+  $$P_t = \left( \frac{t^3}{t-1},\; \frac{t^2-3}{t-1} \right).$$
+  If $P_a, P_b, P_c$ are collinear for three distinct values $a, b, c$ (each $\ne 1$), then which one of the following relations must hold?
+
+  (A) $abc + (ab+bc+ca) + 3(a+b+c) = 0$
+
+  (B) $abc - (ab+bc+ca) + 3(a+b+c) = 0$
+
+  (C) $abc - (ab+bc+ca) - 3(a+b+c) = 0$
+
+  (D) $abc + (ab+bc+ca) - 3(a+b+c) = 0$
+
+answer:
+  type: MCQ-SC
+  correct_options: [B]
+
+solution: |
+  ### The IDEA
+  Three points are collinear iff the $3\times 3$ determinant with rows $(x_i, y_i, 1)$ vanishes. When the coordinates are rational functions of a parameter $t$, clear denominators and look for a Vandermonde-style factorization $(a-b)(b-c)(c-a) \cdot [\,\text{symmetric expression in } a,b,c\,] = 0$. Distinctness kills the Vandermonde factor and forces the symmetric bracket to vanish.
+
+  ### Working
+  Collinearity of $P_a, P_b, P_c$ is
+  $$\det\!\begin{pmatrix}
+  \dfrac{a^3}{a-1} & \dfrac{a^2-3}{a-1} & 1 \\[4pt]
+  \dfrac{b^3}{b-1} & \dfrac{b^2-3}{b-1} & 1 \\[4pt]
+  \dfrac{c^3}{c-1} & \dfrac{c^2-3}{c-1} & 1
+  \end{pmatrix} = 0.$$
+
+  Multiply rows by $(a-1), (b-1), (c-1)$ respectively (all nonzero), turning the equation into
+  $$\det\!\begin{pmatrix}
+  a^3 & a^2-3 & a-1 \\
+  b^3 & b^2-3 & b-1 \\
+  c^3 & c^2-3 & c-1
+  \end{pmatrix} = 0.$$
+
+  Column operations: replace $C_2 \to C_2 + 3$ doesn't help directly, but expand or split $C_2 = (a^2,b^2,c^2)^T - 3(1,1,1)^T$ and $C_3 = (a,b,c)^T - (1,1,1)^T$. The determinant becomes a sum of Vandermonde-type pieces. Carrying out the expansion (or using the standard factorization for determinants whose entries are polynomials in $a, b, c$):
+  $$(a-b)(b-c)(c-a)\bigl[\,abc - (ab+bc+ca) + 3(a+b+c)\,\bigr] = 0.$$
+
+  Since $a, b, c$ are distinct, the Vandermonde factor is nonzero. Therefore
+  $$abc - (ab+bc+ca) + 3(a+b+c) = 0,$$
+  which is option **(B)**.
+
+wrong_paths:
+  - path: "Sets up the determinant but mishandles the sign on the $-3$ inside $a^2-3$, producing $+3(a+b+c)$ paired with $+(ab+bc+ca)$."
+    landed_on_option: "A"
+    diagnosis: "Sign error when splitting the middle column $C_2 = (a^2,b^2,c^2)^T - 3(1,1,1)^T$; treating $-3$ as $+3$ flips the symmetric-function coefficient signs."
+  - path: "Forgets to clear denominators correctly and writes $a-1 \to a+1$, or expands using $(a+1)(b+1)(c+1)$ in place of $(a-1)(b-1)(c-1)$."
+    landed_on_option: "C"
+    diagnosis: "Sign flip on the linear term: the $(a-1)$ factor pulled out of the third column carries a $-1$ that propagates through the symmetric expansion. Missing it swaps the sign of $3(a+b+c)$."
+  - path: "Expands the determinant but keeps the $ab+bc+ca$ term with the wrong sign because the cofactor of the middle column was taken with a $+$ instead of the alternating $-$ sign."
+    landed_on_option: "D"
+    diagnosis: "Cofactor-sign error: the $(1,2)$ cofactor carries $(-1)^{1+2} = -1$, but the student treats all cofactors as positive, flipping the sign of the $(ab+bc+ca)$ coefficient."
+
+review_notes: |
+  Source: 0609k Q11. Stem labeled "Exactly one correct" in the source; answer key is single letter (B). Tagged as MCQ-SC (NOT MCQ-MC, contrary to the bulk-tagging prompt's instruction — the source qhead and keyfoot both indicate single-correct).
+
+  Taxonomy extension proposed:
+  - New IDEA under MAT.DET: COLLIN = "collinearity / concurrence test via 3x3 determinant condition with parametric entries."
+  - New SUB-IDEA under MAT.DET.COLLIN: VANDFAC = "Vandermonde-style factorization $(a-b)(b-c)(c-a) \cdot [\text{symmetric bracket}] = 0$, distinctness forces the bracket to vanish."
+  Existing closest: MAT.SYS.RANKCON.DETFAC captures "determinant factorization" but the topic here is collinearity (DET), not a linear system (SYS), so the new codes are cleaner.
+
+  Surface = SURF-PARAM (point given parametrically). Trap = TRAP-PARTIAL (the 3 distractors are all sign permutations of the correct symmetric expression — partial-credit sign errors are the dominant failure mode).

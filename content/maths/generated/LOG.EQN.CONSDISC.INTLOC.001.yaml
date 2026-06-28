@@ -1,0 +1,112 @@
+schema_version: 1
+
+question_code: LOG.EQN.CONSDISC.INTLOC.001
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: CONSDISC
+  sub_idea: INTLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 270
+  R4_seconds: 210
+
+source_metadata:
+  jee_authenticity_score: 8.6
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.6
+    reviewed_at: "2026-06-14"
+    notes: "constant-discriminant + open-interval infimum trap"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613b_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For a real parameter $k$, consider the equation in $x>0$:
+  $$(\log_{2} x)^{2} - (2k+1)\,\log_{2} x + (k^{2}+k-2) = 0.$$
+  Let $x_{1}(k) > x_{2}(k)$ denote its two roots in $x$. Which of the following is/are correct?
+
+  - (A) For every real $k$, $\dfrac{x_{1}(k)}{x_{2}(k)} = 8$.
+  - (B) The set of $k$ for which both $x_{1}(k)$ and $x_{2}(k)$ lie in the open interval $(1,64)$ is exactly $(1,4)$.
+  - (C) The product $x_{1}(k)\cdot x_{2}(k)$ is independent of $k$.
+  - (D) Over the set in (B), the sum $x_{1}(k)+x_{2}(k)$ attains a minimum value.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  Substitute $t=\log_{2}x$ to convert the equation into a quadratic in $t$ whose
+  discriminant is a perfect square independent of $k$. The two $t$-roots then
+  separate by a fixed amount, so the ratio $x_{1}/x_{2}$ is constant while the
+  product $x_{1}x_{2}$ is not. Locating both roots in an open $x$-interval becomes
+  an open-interval problem in $t$, which exposes the standard "infimum is not a
+  minimum on an open set" trap.
+
+  ### Working
+  Let $t=\log_{2}x$. The equation becomes
+  $$t^{2}-(2k+1)t+(k^{2}+k-2)=0,$$
+  with discriminant
+  $$\Delta=(2k+1)^{2}-4(k^{2}+k-2)=4k^{2}+4k+1-4k^{2}-4k+8=9.$$
+  Hence $t=\dfrac{(2k+1)\pm 3}{2}\in\{k+2,\;k-1\}$, giving
+  $$x_{1}=2^{k+2}>x_{2}=2^{k-1}.$$
+
+  **(A)** $\dfrac{x_{1}}{x_{2}}=2^{(k+2)-(k-1)}=2^{3}=8$ for every $k$. **TRUE.**
+
+  **(B)** Both roots lie in $(1,64)$ iff $x_{2}>1$ and $x_{1}<64$, i.e.\
+  $k-1>0$ and $k+2<6$, i.e.\ $k\in(1,4)$. At $k=1$, $x_{2}=2^{0}=1$ is excluded;
+  at $k=4$, $x_{1}=2^{6}=64$ is excluded. **TRUE.**
+
+  **(C)** $x_{1}\cdot x_{2}=2^{(k+2)+(k-1)}=2^{2k+1}$, which depends on $k$. **FALSE.**
+
+  **(D)** $S(k)=x_{1}+x_{2}=2^{k+2}+2^{k-1}=2^{k-1}(8+1)=9\cdot 2^{k-1}$ is
+  strictly increasing in $k$. On the open interval $k\in(1,4)$ its range is the
+  open interval $(9,72)$; the infimum $9$ is not attained, so **no minimum exists**.
+  **FALSE.**
+
+  **Correct options: (A), (B).**
+
+wrong_paths:
+  - path: "Reads (C) and grabs Vieta on the $t$-quadratic: product of $t$-roots $=k^{2}+k-2$, which is non-constant; but then conflates that with the product of $x$-roots being non-constant — failing to notice that $x_{1}x_{2}=2^{t_{1}+t_{2}}=2^{2k+1}$ also depends on $k$, so still rejects (C). Equivalent students who instead compute $x_{1}x_{2}=2^{\text{(prod of $t$-roots)}}$ get $2^{k^{2}+k-2}$ and reject (C) for the wrong reason."
+    landed_on_option: "Rejects (C) correctly but for the wrong algebraic reason; doesn't affect final key."
+    diagnosis: "Vieta on the $t$-quadratic gives the sum and product of the $t$-roots; the product of the $x$-roots is $2^{t_{1}+t_{2}}$ (i.e.\\ $2^{\\text{sum}}$), not $2^{t_{1}t_{2}}$. Students who write $x_{1}x_{2}=2^{t_{1}t_{2}}$ make a log-exponent algebra slip even though they happen to land on the right (C)-verdict."
+  - path: "Sees that $S(k)=9\\cdot 2^{k-1}$ is bounded below by $9$ on $k\\in(1,4)$ and picks (D), forgetting that the infimum of a continuous strictly-increasing function on an OPEN interval is not attained."
+    landed_on_option: "Marks (D) as TRUE."
+    diagnosis: "TRAP-EDGE: classical open-vs-closed interval confusion. The set in (B) is genuinely open at $k=1$ (where $x_{2}=1$ is excluded by strict inequality), so $S$ has infimum $9$ but no minimum. The Q1-style \"both roots in open interval\" packaging primes students to compute boundary values and then mistakenly call them attained."
+  - path: "Solves the quadratic carefully but forgets to translate the $x$-interval $(1,64)$ to a $t$-interval; instead requires $-64<t<64$ or some sloppy bound on $t$, then mismatches (B)'s answer."
+    landed_on_option: "Rejects (B), keeps only (A)."
+    diagnosis: "Conversion oversight: $x\\in(1,64)\\iff t\\in(0,6)$ under $t=\\log_{2}x$, then $t_{1}=k+2\\in(0,6)$ and $t_{2}=k-1\\in(0,6)$ jointly force $k\\in(1,4)$. Students who skip this conversion mishandle the endpoints."
+
+review_notes: |
+  Multi-correct, key (A)(B). The DNA of the problem is "log-substitute, observe a constant
+  discriminant that forces a fixed t-gap of 3, hence a fixed x-ratio of 8". The trap engine is
+  (D): students compute S(k)=9·2^{k-1} on an OPEN interval (1,4), see the value 9 at the
+  excluded endpoint, and mistakenly call it a minimum. New axis-3 code CONSDISC (constant-
+  discriminant log-substitution) and axis-4 code INTLOC (interval location in t-coordinates
+  + open-interval infimum trap) are proposed. Surface SURF-PARAM since k is the real unknown
+  and the family is indexed by it. Trap TRAP-EDGE: the open-interval infimum trap is the
+  decisive distinguisher between this problem and a vanilla root-location problem.

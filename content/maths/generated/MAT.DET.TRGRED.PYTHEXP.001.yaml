@@ -1,0 +1,85 @@
+schema_version: 1
+
+question_code: MAT.DET.TRGRED.PYTHEXP.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: TRGRED
+  sub_idea: PYTHEXP
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let
+  $$D(\theta,\varphi,\lambda)=\det\!\begin{pmatrix}\cos(\theta+\varphi)&-\sin(\theta+\varphi)&\cos 2\varphi\\ \sin\theta&\cos\theta&\sin\varphi\\ -\cos\theta&\sin\theta&\lambda\cos\varphi\end{pmatrix}.$$
+  Which of the following are TRUE?
+
+  (A) $D$ is independent of $\varphi$ for all $\lambda$.
+
+  (B) $D\equiv 0$ when $\lambda=-1$.
+
+  (C) $D$ is independent of $\theta$ for all $\lambda$.
+
+  (D) $\lambda=-1$ is the unique value of $\lambda$ for which $D$ is independent of both $\theta$ and $\varphi$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### The IDEA
+  When a determinant has rows mixing $\sin\theta,\cos\theta$ with an angle-sum entry $\cos(\theta+\varphi),\sin(\theta+\varphi)$, expand the angle-sum entries using
+  $\cos(\theta+\varphi)=\cos\theta\cos\varphi-\sin\theta\sin\varphi$ and
+  $\sin(\theta+\varphi)=\sin\theta\cos\varphi+\cos\theta\sin\varphi$.
+  The $\theta$-coefficients then collect into $\cos^2\theta+\sin^2\theta=1$, killing all $\theta$-dependence.
+
+  ### Working
+  Expand along the first row. Each cofactor is a $2\times 2$ determinant in $\sin\theta,\cos\theta$ whose value, after substituting the angle-sum expansion, simplifies via $\cos^2\theta+\sin^2\theta=1$. The result is
+  $$D(\theta,\varphi,\lambda)=\lambda\cos^2\varphi+\cos^2\varphi=(\lambda+1)\cos^2\varphi.$$
+
+  Hence:
+  - $D$ depends only on $\varphi$ and $\lambda$, never on $\theta$ — option **(C)** is true for every $\lambda$.
+  - At $\lambda=-1$, $(\lambda+1)\cos^2\varphi=0$ identically, so $D\equiv 0$ — option **(B)** is true.
+  - $D$ is independent of $\varphi$ iff $(\lambda+1)\cos^2\varphi$ is constant in $\varphi$, i.e. iff $\lambda+1=0$, giving $\lambda=-1$ uniquely — option **(D)** is true.
+  - $D$ depends on $\varphi$ whenever $\lambda\ne -1$, so **(A)** is false.
+
+  **Answer: (B), (C), (D).**
+
+wrong_paths:
+  - path: "Sees the angle-sum structure, concludes by symmetry that both $\\theta$ and $\\varphi$ drop out, and marks (A) as the analogue of (C)."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL: the Pythagorean collapse kills $\\theta$ but leaves $(\\lambda+1)\\cos^2\\varphi$; $\\varphi$-independence is not automatic, it forces $\\lambda=-1$."
+  - path: "Tries $\\lambda=-1$ as a special test value and verifies $D\\equiv 0$, but stops there without checking the general formula, missing (C) and (D)."
+    landed_on_option: "B"
+    diagnosis: "Stops at the first true option — fails to recognise that (C) holds for every $\\lambda$ and that $\\lambda=-1$ is the unique value yielding double-independence."
+  - path: "Computes $D=(\\lambda+1)\\cos^2\\varphi$ correctly and marks only (C), assuming (B) and (D) describe the same fact and dismissing one as redundant."
+    landed_on_option: "C"
+    diagnosis: "Conflates two distinct claims: (B) is the identity $D\\equiv 0$ at $\\lambda=-1$; (D) is the uniqueness of $\\lambda=-1$ for $\\varphi$-independence. Both are independently true."
+
+review_notes: |
+  Taxonomy extension flagged: introduced MAT.DET.TRGRED (trigonometric determinant reduction) and sub-idea PYTHEXP (Pythagorean-identity expansion to eliminate a parameter). No existing MAT.DET IDEA captured "expand angle-sum entries and collapse via $\sin^2+\cos^2=1$". Confirm with taxonomy owner.
+
+  Key reconciliation: questions_with_key file lists keyfoot "(B), (C), (D)" preceding qhead{9}; the Solutions.tex worked solution confirms (B), (C), (D). A stray `\ans{(A), (C)}` near Q10 in Solutions.tex caused some downstream confusion — independent verification of the algebra confirms (B), (C), (D).
+
+  Difficulty T3: the angle-sum expansion is standard but the multi-correct logic (separating "always-true" (C) from "$\lambda=-1$-only" (B)/(D)) is where students lose marks.

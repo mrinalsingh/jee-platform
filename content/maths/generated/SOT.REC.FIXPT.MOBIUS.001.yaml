@@ -1,0 +1,84 @@
+schema_version: 1
+
+question_code: SOT.REC.FIXPT.MOBIUS.001
+
+fingerprint:
+  topic: SOT
+  subtopic: REC
+  idea: FIXPT
+  sub_idea: MOBIUS
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 300
+  R4_seconds: 240
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a_{n+1}=\dfrac{1}{1+a_n}$ with $a_1\in\mathbb{R}$. Which of the following is/are correct?
+
+  (A) $a_3=\dfrac{1+a_1}{2+a_1}$
+
+  (B) $a_4=\dfrac{2+a_1}{3+2a_1}$
+
+  (C) A fixed point of the recursion is $\dfrac{\sqrt5-1}{2}$
+
+  (D) If $a_1=1$, then $a_n\to\dfrac{\sqrt5+1}{2}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  Compute the orbit symbolically:
+  $$a_2=\frac{1}{1+a_1},\qquad a_3=\frac{1}{1+\frac{1}{1+a_1}}=\frac{1+a_1}{2+a_1}\quad\textbf{(A)},$$
+  $$a_4=\frac{1}{1+\frac{1+a_1}{2+a_1}}=\frac{2+a_1}{3+2a_1}\quad\textbf{(B)}.$$
+  Fixed points solve $a=\dfrac{1}{1+a}$, i.e.\ $a^2+a-1=0$, giving $a=\dfrac{-1\pm\sqrt5}{2}$.
+  The positive root is $\dfrac{\sqrt5-1}{2}$ **(C)**.
+
+  Stability: with $f(a)=\dfrac{1}{1+a}$, $f'(a)=-\dfrac{1}{(1+a)^2}$. At $a=\dfrac{\sqrt5-1}{2}$, $1+a=\dfrac{\sqrt5+1}{2}$, so $|f'|=\left(\dfrac{2}{\sqrt5+1}\right)^2=\dfrac{3-\sqrt5}{2}<1$ — attracting. The other fixed point $\dfrac{-1-\sqrt5}{2}$ is repelling. So from $a_1=1$ the orbit converges to $\dfrac{\sqrt5-1}{2}$, **not** to $\dfrac{\sqrt5+1}{2}=\varphi$. Hence **(D)** is false.
+
+  Correct: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Treats both roots of $a^2+a-1=0$ as legitimate limits and identifies the golden ratio $\\varphi=\\tfrac{\\sqrt5+1}{2}$ as the limit from $a_1=1$, conflating $\\varphi$ with the actual attracting fixed point $\\tfrac{\\sqrt5-1}{2}$."
+    landed_on_option: "Picks D in addition to A,B,C"
+    diagnosis: "FIXPT-vs-LIMIT confusion: fixed-point set $\\neq$ limit set; ignores stability of $f'$."
+  - path: "Computes $a_3$ correctly but algebra-slips on the $a_4$ simplification, e.g.\\ writes $a_4=\\tfrac{2+a_1}{3+a_1}$ instead of $\\tfrac{2+a_1}{3+2a_1}$, hence rejects (B)."
+    landed_on_option: "Picks only A, C"
+    diagnosis: "Arithmetic slip in nested-fraction simplification."
+  - path: "Solves $a^2+a-1=0$, takes the wrong-sign root $\\tfrac{-1-\\sqrt5}{2}$ and discards (C) as not matching a fixed point; doesn't see $\\tfrac{\\sqrt5-1}{2}=\\tfrac{-1+\\sqrt5}{2}$."
+    landed_on_option: "Picks only A, B"
+    diagnosis: "Sign/normalization slip — fails to recognize equivalent forms of the positive root."
+  - path: "Iterates numerically from $a_1=1$, observes $a_n\\to0.618\\ldots\\approx 1/\\varphi$ and (correctly) rejects (D), but also rejects (C) because the student expected $\\varphi$ as the canonical golden-ratio answer."
+    landed_on_option: "Picks only A, B"
+    diagnosis: "Aesthetic bias toward $\\varphi$ — discards correct fixed point because its form is unfamiliar."
+
+review_notes: |
+  Recursion $a_{n+1}=1/(1+a_n)$ is a Mobius / linear-fractional iteration whose
+  fixed points are the roots of $a^2+a-1=0$; the attracting one is $1/\varphi=(\sqrt5-1)/2$.
+  This question tests:
+    (i) symbolic orbit computation (A, B),
+    (ii) fixed-point identification (C),
+    (iii) distinguishing fixed-point set from limit, and golden-ratio vs its reciprocal (D — trap).
+  Tagged with a NEW SOT subtopic `REC` (recursion sequences), idea `FIXPT`
+  (fixed-point analysis), sub-idea `MOBIUS` (linear-fractional / Mobius recursion).
+  Recommend taxonomy extension before bank-wide use.
+  Trap classified as TRAP-PARTIAL: partial-credit MCQ-MC where (D) looks plausible
+  and confuses $\varphi$ with $1/\varphi$.

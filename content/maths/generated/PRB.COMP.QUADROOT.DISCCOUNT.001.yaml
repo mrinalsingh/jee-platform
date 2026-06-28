@@ -1,0 +1,92 @@
+schema_version: 1
+
+question_code: PRB.COMP.QUADROOT.DISCCOUNT.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: QUADROOT
+  sub_idea: DISCCOUNT
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608b_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a$ and $b$ be independent random variables, each uniformly distributed on $\{1,2,3,4,5\}$. Consider the quadratic equation $x^2 - ax + b = 0$ with roots $\alpha,\beta$. Which of the following is/are correct?
+
+  - (A) $P(|\alpha|=|\beta|)=\dfrac{12}{25}$
+  - (B) $P(\alpha,\beta\in\mathbb N)=\dfrac{1}{5}$
+  - (C) $P(\alpha,\beta\in\mathbb R)=\dfrac{12}{25}$
+  - (D) $P(\alpha,\beta\in\mathbb N\mid\alpha,\beta\in\mathbb R)=\dfrac{5}{12}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### The IDEA
+  For a quadratic $x^2-ax+b=0$ with $a,b\in\{1,\dots,5\}$, classify the $25$ equally likely pairs by the sign and structure of the discriminant $D=a^2-4b$: $D<0$ gives complex-conjugate roots (equal modulus), $D=0$ a real double root (equal modulus), and $D>0$ two distinct reals. Natural-number roots arise from integer factorisations of $b$ summing to $a$.
+
+  ### Working
+  Sample space: $25$ equally likely ordered pairs $(a,b)$.
+
+  **Real roots (C):** Need $a^2\ge 4b$. Counting:
+  - $a=1$: $1\ge 4b\Rightarrow$ none.
+  - $a=2$: $4\ge 4b\Rightarrow b=1$. (1 case)
+  - $a=3$: $9\ge 4b\Rightarrow b\in\{1,2\}$. (2 cases)
+  - $a=4$: $16\ge 4b\Rightarrow b\in\{1,2,3,4\}$. (4 cases)
+  - $a=5$: $25\ge 4b\Rightarrow b\in\{1,2,3,4,5\}$. (5 cases)
+
+  Total $=1+2+4+5=12$, so $P(\alpha,\beta\in\mathbb R)=\dfrac{12}{25}$. **(C) true.**
+
+  **Natural-number roots (B):** With $\alpha,\beta\in\mathbb N$, $\alpha+\beta=a\le 5$ and $\alpha\beta=b\le 5$. Cases:
+  $(\alpha,\beta)\in\{(1,1),(1,2),(1,3),(1,4),(2,2)\}$ (unordered) — but since roots are unordered the pair $(a,b)$ is what matters: $(a,b)\in\{(2,1),(3,2),(4,3),(4,4),(5,4)\}$. That is $5$ pairs, so $P=\dfrac{5}{25}=\dfrac15$. **(B) true.**
+
+  **Conditional (D):** $P(\mathbb N\mid\mathbb R)=\dfrac{5/25}{12/25}=\dfrac{5}{12}$. **(D) true.**
+
+  **Equal modulus (A):** $|\alpha|=|\beta|$ holds when (i) roots are complex conjugates ($a^2<4b$), (ii) real double root ($a^2=4b$), or (iii) two distinct real roots with $\beta=-\alpha$, which forces $a=\alpha+\beta=0$ — impossible here. Count $a^2\le 4b$:
+  - $a=1$: $1\le 4b\Rightarrow b\in\{1,\dots,5\}$ (5)
+  - $a=2$: $4\le 4b\Rightarrow b\in\{1,\dots,5\}$ (5)
+  - $a=3$: $9\le 4b\Rightarrow b\in\{3,4,5\}$ (3)
+  - $a=4$: $16\le 4b\Rightarrow b\in\{4,5\}$ (2)
+  - $a=5$: $25\le 4b\Rightarrow$ none.
+
+  Total $=5+5+3+2=15$, so $P(|\alpha|=|\beta|)=\dfrac{15}{25}=\dfrac35\ne\dfrac{12}{25}$. **(A) false.**
+
+  Correct options: **(B), (C), (D)**.
+
+wrong_paths:
+  - path: "Conflate $|\\alpha|=|\\beta|$ with 'real roots' or with 'complex roots only', getting $12/25$ for (A)."
+    landed_on_option: "(A)"
+    diagnosis: "Student counts only $a^2<4b$ (complex) or only $a^2>4b$ (real distinct) and forgets that (i) complex conjugates automatically have equal modulus, (ii) $a^2=4b$ gives equal real roots, (iii) distinct reals cannot have equal modulus when $a\\ge 1$. TRAP-PARTIAL."
+  - path: "Compute natural-number roots by listing ordered pairs $(\\alpha,\\beta)$ rather than $(a,b)$ pairs, double-counting and getting $9/25$ or $8/25$ for (B)."
+    landed_on_option: "rejects (B)"
+    diagnosis: "Sample space is over $(a,b)$, not over ordered root pairs; e.g. $(\\alpha,\\beta)=(1,2)$ and $(2,1)$ both give the same $(a,b)=(3,2)$ and must count once."
+  - path: "Use $D>0$ (strict) instead of $D\\ge 0$ for 'real roots', losing the $a^2=4b$ cases $(2,1),(4,4)$ and reporting $P=10/25=2/5$ for (C)."
+    landed_on_option: "rejects (C)"
+    diagnosis: "Real roots include repeated real roots; the discriminant condition is non-strict."
+  - path: "Compute $P(\\mathbb N\\cap\\mathbb R)=5/25$ but divide by total $25$ instead of by $P(\\mathbb R)=12/25$ for (D), getting $1/5$."
+    landed_on_option: "rejects (D)"
+    diagnosis: "Conditional probability requires dividing by the probability of the conditioning event, not by 1."
+
+review_notes: |
+  Classic discrete-uniform + quadratic-roots problem. Difficulty T3: requires careful case-counting on the discriminant plus conditional-probability mechanics; the (A) distractor is the genuine trap (students compute the wrong probability for equal modulus by forgetting the complex-conjugate case or the $a=0$ requirement). Time estimate reflects four parallel sub-questions to evaluate.

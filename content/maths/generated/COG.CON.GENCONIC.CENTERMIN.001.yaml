@@ -1,0 +1,94 @@
+schema_version: 1
+
+question_code: COG.CON.GENCONIC.CENTERMIN.001
+
+fingerprint:
+  topic: COG
+  subtopic: CON
+  idea: GENCONIC
+  sub_idea: CENTERMIN
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q13"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For a real number $k$, let
+  $$S_{k}=\{(x,y)\in\mathbb{R}^{2}:\,4x^{2}+6xy+9y^{2}-8x-24y+k=0\}.$$
+  Then
+
+  - (A) $S_{16}$ consists of exactly one point
+  - (B) $S_{16}$ is a pair of straight lines
+  - (C) for $k=4$, $S_{4}$ is an ellipse on which the greatest value of $y$ is $\dfrac{8}{3}$
+  - (D) $S_{k}=\varnothing$ for every $k>16$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C, D]
+
+solution: |
+  ### The IDEA
+  For the general second-degree curve $ax^{2}+2hxy+by^{2}+2gx+2fy+c=0$, the sign of the form-discriminant $h^{2}-ab$ classifies the quadratic part (ellipse-type when $h^{2}-ab<0$). If the quadratic part is positive-definite, the whole expression is minimised at the centre (the unique stationary point of the quadratic form), and the curve $=0$ is non-empty iff this minimum is $\le 0$.
+
+  ### Working
+  Here $a=4,\ b=9,\ 2h=6\Rightarrow h=3$, so
+  $$h^{2}-ab=9-36=-27<0,$$
+  hence $4x^{2}+6xy+9y^{2}$ is positive-definite and $S_k$ is of ellipse type for every $k$.
+
+  **Centre.** Setting the partial derivatives of $F(x,y)=4x^{2}+6xy+9y^{2}-8x-24y+k$ to zero:
+  $$F_x=8x+6y-8=0,\qquad F_y=6x+18y-24=0.$$
+  Solving: from the first, $4x+3y=4$; from the second, $x+3y=4$. Subtract: $3x=0$, so $x=0$, $y=\tfrac{4}{3}$. Thus the centre is $\big(0,\tfrac{4}{3}\big)$.
+
+  **Minimum of $F$.** Since the quadratic part is positive-definite, $F$ attains its global minimum at the centre, and that value equals
+  $$F\!\left(0,\tfrac{4}{3}\right)=9\cdot\tfrac{16}{9}-24\cdot\tfrac{4}{3}+k=16-32+k=k-16.$$
+
+  **(A), (D).** $S_k\ne\varnothing\iff \min F\le 0\iff k\le 16$. So $S_k=\varnothing$ for every $k>16$ — **(D) true**. At $k=16$, $\min F=0$ is attained only at the centre, so $S_{16}=\{(0,4/3)\}$ — **(A) true**.
+
+  **(B).** At $k=16$ the $3\times 3$ conic determinant vanishes (necessary for a degenerate conic), but because the quadratic part is positive-definite the degeneration is a single real point (imaginary line-pair), **not** a real pair of lines — **(B) false**.
+
+  **(C).** For $k=4$, treat the relation as a quadratic in $x$:
+  $$4x^{2}+(6y-8)x+(9y^{2}-24y+4)=0.$$
+  Real $x$ requires discriminant $\ge 0$:
+  $$(6y-8)^{2}-16(9y^{2}-24y+4)\ge 0.$$
+  Expand: $36y^{2}-96y+64-144y^{2}+384y-64\ge 0$, i.e. $-108y^{2}+288y\ge 0$, i.e. $108y(8/3 - y)\cdot\tfrac{1}{?}$… cleaner: $-108y^{2}+288y\ge 0\iff 108y(y-\tfrac{8}{3})\le 0\iff 0\le y\le\tfrac{8}{3}.$ The greatest $y$ on $S_4$ is $\tfrac{8}{3}$ — **(C) true**.
+
+  Hence the correct options are **(A), (C), (D)**.
+
+wrong_paths:
+  - path: "Sees the $3\\times 3$ conic determinant vanish at $k=16$ and blindly concludes the locus is a pair of straight lines, ignoring that positive-definiteness of the quadratic part forces an imaginary (point) degeneracy."
+    landed_on_option: "B"
+    diagnosis: "TRAP-EDGE / classical NCERT mistake: 'determinant = 0 means pair of lines' is only true when the quadratic part is indefinite ($h^2-ab>0$). When $h^2-ab<0$ the degenerate locus is a single real point."
+  - path: "Mis-classifies the conic by looking only at the coefficients of $x^2$ and $y^2$ ($4\\ne 9$) and decides 'cannot be a circle, must check', then drops the $6xy$ term and treats it as an axis-aligned ellipse; computes the wrong centre and misses (A)."
+    landed_on_option: "Only D"
+    diagnosis: "Surface-level conic classification that ignores the cross term. The $6xy$ term shifts the centre and is essential for the discriminant analysis."
+  - path: "For (C), parametrises $y$ as the running variable and tries to maximise $y$ on the curve by Lagrange or by setting $\\tfrac{dx}{dy}=0$ but forgets to take the discriminant of the quadratic in $x$; ends with $y=4/3$ (the centre's $y$-coordinate) as the 'extreme' value."
+    landed_on_option: "Drops (C), keeps only (A), (D)"
+    diagnosis: "Confuses the centre with the extremal point. The extremes of $y$ on an ellipse occur where the tangent is horizontal, i.e. where the discriminant of the quadratic in $x$ vanishes — not at the centre."
+  - path: "Forgets to test the sign of $h^2-ab$ and assumes that, since the coefficients $a,b>0$, the form is always positive; gets (A), (C), (D) by luck but cannot defend (D) for, say, $k>16$ if asked."
+    landed_on_option: "A, C, D (right letters, wrong reason)"
+    diagnosis: "TRAP-PARTIAL: arrives at the correct selection by an incomplete argument. Positivity of $a,b$ alone does not guarantee positive-definiteness when a cross term is present; $h^2-ab<0$ is the genuine criterion."
+
+review_notes: |
+  Classic JEE Advanced 2020-style conic-classification multi-correct. New axis codes proposed:
+    - SUBTOPIC COG.CON  (conics — general second-degree curve classification)
+    - IDEA     COG.CON.GENCONIC  (use of form-discriminant $h^2-ab$ + centre to classify and locate extrema)
+    - SUB-IDEA COG.CON.GENCONIC.CENTERMIN  (positive-definite quadratic part: global min of $F$ at the centre $\Rightarrow$ existence/single-point/empty trichotomy via $\min F$)
+  Time calibrated as T3: the structural insight (positive-definiteness + centre) is standard for a strong JEE aspirant, but option (C) requires an independent discriminant-in-$x$ computation. Trap = TRAP-EDGE because the $k=16$ boundary case is the whole game in (A)/(B).

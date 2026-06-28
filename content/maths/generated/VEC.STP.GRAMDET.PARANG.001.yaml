@@ -1,0 +1,76 @@
+schema_version: 1
+
+question_code: VEC.STP.GRAMDET.PARANG.001
+
+fingerprint:
+  topic: VEC
+  subtopic: STP
+  idea: GRAMDET
+  sub_idea: PARANG
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 150
+  R3_seconds: 120
+  R4_seconds: 90
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathbf{a},\mathbf{b},\mathbf{c}$ be unit vectors such that the angle between every pair equals $60^{\circ}$. Let $V = [\mathbf{a}\ \mathbf{b}\ \mathbf{c}]$ denote their scalar triple product. Which of the following is/are correct?
+
+  - (A) The volume of the parallelepiped formed by $\mathbf{a},\mathbf{b},\mathbf{c}$ equals $\tfrac{1}{2}$
+  - (B) $V^{2} = \tfrac{1}{2}$
+  - (C) $|\mathbf{a}+\mathbf{b}+\mathbf{c}| = \sqrt{6}$
+  - (D) $\mathbf{a},\mathbf{b},\mathbf{c}$ are coplanar
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  For vectors specified only through their pairwise dot products, the square of the scalar triple product equals the Gram determinant: $[\mathbf{a}\ \mathbf{b}\ \mathbf{c}]^{2} = \det G$ where $G_{ij} = \mathbf{a}_{i}\!\cdot\!\mathbf{a}_{j}$. This converts angle data directly into volume (and the sum-norm into a quadratic form on the same Gram matrix).
+
+  ### Working
+  Each unit vector contributes $1$ to the diagonal; each $60^{\circ}$ pair contributes $\cos 60^{\circ} = \tfrac12$ off-diagonal. Hence
+  $$V^{2} = \det\begin{pmatrix}1 & \tfrac12 & \tfrac12 \\ \tfrac12 & 1 & \tfrac12 \\ \tfrac12 & \tfrac12 & 1\end{pmatrix} = 1\!\cdot\!\tfrac34 - \tfrac12\!\cdot\!\tfrac14 + \tfrac12\!\cdot\!\bigl(-\tfrac14\bigr) = \tfrac12.$$
+  So **(B)** is true.
+
+  The parallelepiped volume is $|V| = \sqrt{1/2} = \tfrac{1}{\sqrt 2} \ne \tfrac12$, so **(A)** is false.
+
+  For the sum-norm,
+  $$|\mathbf{a}+\mathbf{b}+\mathbf{c}|^{2} = 3 + 2\bigl(\mathbf{a}\!\cdot\!\mathbf{b} + \mathbf{b}\!\cdot\!\mathbf{c} + \mathbf{c}\!\cdot\!\mathbf{a}\bigr) = 3 + 2\cdot\tfrac{3}{2} = 6,$$
+  giving $|\mathbf{a}+\mathbf{b}+\mathbf{c}| = \sqrt 6$. So **(C)** is true.
+
+  Since $V^{2} = \tfrac12 \ne 0$, the three vectors are linearly independent and therefore **not** coplanar; **(D)** is false.
+
+  Correct options: **(B), (C)**.
+
+wrong_paths:
+  - path: "Confuses $V^{2}=\\tfrac12$ with the volume itself and writes parallelepiped volume $=\\tfrac12$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL: student computes the Gram determinant correctly but forgets that the parallelepiped volume is $|V| = \\sqrt{V^{2}}$, not $V^{2}$."
+  - path: "Reads $V^{2} \\ne 0$ but mistakenly concludes the vectors are coplanar because they share a common pairwise angle / 'symmetric' configuration."
+    landed_on_option: "D"
+    diagnosis: "Confuses geometric symmetry with linear dependence. The Gram determinant being non-zero is precisely the test for linear independence."
+  - path: "Expands $|\\mathbf{a}+\\mathbf{b}+\\mathbf{c}|^{2}$ as $3 + (\\mathbf{a}\\cdot\\mathbf{b}+\\mathbf{b}\\cdot\\mathbf{c}+\\mathbf{c}\\cdot\\mathbf{a})$, dropping the factor of $2$, getting $\\tfrac{9}{2}$ and rejecting (C)."
+    landed_on_option: "Misses C"
+    diagnosis: "Common algebra slip in expanding $(\\mathbf{a}+\\mathbf{b}+\\mathbf{c})\\cdot(\\mathbf{a}+\\mathbf{b}+\\mathbf{c})$: forgets that each cross-term appears twice."
+
+review_notes: |
+  Standard JEE-level Gram determinant problem. Taxonomy extension required: VEC topic was not yet populated. Proposed VEC.STP (scalar triple product) subtopic with idea GRAMDET (Gram determinant relating triple-product square to angle data) and sub-idea PARANG (equal pairwise angles configuration). Difficulty T2 — direct application once the Gram-determinant identity is known; T3 for a student who must rederive it. (B) and (C) are the two correct options matching the key.

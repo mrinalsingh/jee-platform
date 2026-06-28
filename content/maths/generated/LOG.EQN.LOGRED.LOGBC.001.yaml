@@ -1,0 +1,80 @@
+schema_version: 1
+
+question_code: LOG.EQN.LOGRED.LOGBC.001
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: LOGRED
+  sub_idea: LOGBC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608b_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a>b>1$ satisfy
+  $$\log_{8}a+\log_{8}b=(\log_{8}a)(\log_{8}b),\qquad \log_{a}b+\log_{b}a=\tfrac{10}{3}.$$
+  Define $N=\displaystyle\prod_{j=0}^{5}\bigl(2^{2^{j}}+1\bigr)+1.$ Which of the following is/are correct?
+
+  - (A) $a=8^{4}$
+  - (B) $b=16$
+  - (C) $\log_{a}N=\log_{8}a+\log_{8}b$
+  - (D) $\log_{ab}N=4$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  Symmetrize the log system with $X=\log_8 a,\ Y=\log_8 b$: the two given equations become $X+Y=XY$ and $\dfrac{X^2+Y^2}{XY}=\tfrac{10}{3}$, a one-variable quadratic in the symmetric sum $s=X+Y=XY$. Independently, the product $\prod_{j=0}^{5}(2^{2^j}+1)$ telescopes via $(2-1)\prod(2^{2^j}+1)=2^{64}-1$, giving $N=2^{64}$ in closed form. The two pieces combine through base-change.
+
+  ### Working
+  Let $X=\log_8 a,\ Y=\log_8 b$. The first equation gives $X+Y=XY=:s$. The second equation is
+  $$\frac{X}{Y}+\frac{Y}{X}=\frac{X^2+Y^2}{XY}=\frac{s^2-2s}{s}=s-2=\frac{10}{3},$$
+  so $s=\tfrac{16}{3}$ and $X,Y$ are the roots of $3t^2-16t+16=0$, i.e.\ $t=4$ or $t=\tfrac{4}{3}$. Since $a>b>1$ forces $X>Y>0$, we get $X=4,\ Y=\tfrac{4}{3}$, hence
+  $$a=8^{4}\ \text{(A)},\qquad b=8^{4/3}=2^{4}=16\ \text{(B)}.$$
+
+  For $N$: using the telescoping identity $(2-1)\prod_{j=0}^{5}(2^{2^j}+1)=2^{2^{6}}-1=2^{64}-1$, so $\prod_{j=0}^{5}(2^{2^j}+1)=2^{64}-1$ and $N=2^{64}$.
+
+  Then
+  $$\log_{a}N=\frac{\log_{2}N}{\log_{2}a}=\frac{64}{\log_{2}8^{4}}=\frac{64}{12}=\frac{16}{3}=X+Y=\log_{8}a+\log_{8}b\ \text{(C)}.$$
+  And $ab=8^{4}\cdot 16=2^{12}\cdot 2^{4}=2^{16}$, so
+  $$\log_{ab}N=\frac{64}{16}=4\ \text{(D)}.$$
+  All four statements hold.
+
+wrong_paths:
+  - path: "Reads the first equation as $\\log_8 a+\\log_8 b=\\log_8(ab)$ and tries to multiply $ab$ directly without setting $s=X+Y=XY$, then guesses $a=8^4,b=8$ from the symmetric look."
+    landed_on_option: "Picks (A) only; misses (B), (C), (D)."
+    diagnosis: "Skips the symmetric reduction $X+Y=XY$ that pins both roots; lands on the larger root and never extracts $b=16$. TRAP-PARTIAL: gets one correct option but fails the rest."
+  - path: "Solves the system correctly to get $X=4,Y=\\tfrac43$ but does not recognize the telescoping product, leaving $N$ as a messy expression and skipping (C), (D)."
+    landed_on_option: "Picks (A), (B) only."
+    diagnosis: "Misses the key identity $(2-1)\\prod(2^{2^j}+1)=2^{2^{n+1}}-1$ that makes $N=2^{64}$ and unlocks the base-change in (C) and (D). TRAP-PARTIAL."
+  - path: "Mishandles the $+1$ in $N=\\prod(2^{2^j}+1)+1$ and writes $N=2^{64}-1+1=2^{64}$ but then computes $\\log_a N=\\dfrac{64}{\\log_2 8^{4/3}}=\\dfrac{64}{4}=16$ by base-changing through $b$ instead of $a$."
+    landed_on_option: "Rejects (C); keeps (A), (B), (D)."
+    diagnosis: "Confuses the base in the change-of-base formula, dividing by $\\log_2 b$ instead of $\\log_2 a$. TRAP-PARTIAL."
+  - path: "Treats $\\log_a b+\\log_b a=\\tfrac{10}{3}$ as $\\log_a b\\cdot\\log_b a=\\tfrac{10}{3}$ (i.e.\\ confuses sum with product of reciprocals)."
+    landed_on_option: "Gets $1=\\tfrac{10}{3}$, contradiction; bails and picks only (D) from a guess."
+    diagnosis: "Forgets $\\log_a b\\cdot\\log_b a=1$ identically; the equation is a sum of reciprocals $u+1/u=10/3$, not a product."
+
+review_notes: |
+  Fuses two distinct ideas at JEE Advanced level: (i) symmetric reduction of a log system using $X=\log_8 a,Y=\log_8 b$ with the cute identity $X+Y=XY$, and (ii) the classical Fermat-style telescoping product $\prod(2^{2^j}+1)=2^{2^{n+1}}-1$. All four options come out true, which itself is a meta-trap (students often assume MCQ-MC has at most three correct). T4 because the telescoping recognition + ordering constraint $a>b>1$ both need to land. Consider downgrading to T3 if the telescoping product is felt to be too well-known in the cohort.

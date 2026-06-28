@@ -1,0 +1,75 @@
+schema_version: 1
+
+question_code: SOT.DIO.DIVSTR.EXPMSET.001
+
+fingerprint:
+  topic: SOT
+  subtopic: DIO
+  idea: DIVSTR
+  sub_idea: EXPMSET
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For a positive integer $m$ let $d(m)$ be the number of positive divisors of $m$ and $\sigma(m)$ the sum of its positive divisors; a divisor is a *perfect square* (resp. *perfect cube*) if it equals $k^{2}$ (resp. $k^{3}$) for some $k\in\mathbb{N}$. Let $N$ be the least positive integer for which $d(N)=24$ and exactly $4$ of the divisors of $N$ are perfect squares. Then
+
+  - (A) $\sigma(N)=1170$
+  - (B) $N$ is divisible by $7$
+  - (C) $N$ has exactly $2$ divisors that are perfect cubes
+  - (D) the number of ordered pairs $(s,t)$ of positive integers with $st=N$ and $\gcd(s,t)=1$ equals $6$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  If $N=\prod p_i^{e_i}$, then $d(N)=\prod(e_i+1)$ and the number of perfect-square divisors equals $\prod\big(\lfloor e_i/2\rfloor+1\big)$. Imposing both constraints pins down the multiset of exponents; minimising $N$ then assigns the largest exponent to the smallest prime.
+
+  ### Working
+  Write $N=\prod p_i^{e_i}$. The conditions become
+  $$\prod(e_i+1)=24,\qquad \prod\!\big(\lfloor e_i/2\rfloor+1\big)=4.$$
+  Check exponent multisets giving $d(N)=24$: $\{23\},\{11,1\},\{7,2\},\{5,3\},\{5,1,1\},\{3,2,1\},\{2,1,1,1,1\},\{3,1,1,1\}$. Only $\{3,2,1\}$ gives perfect-square count $2\cdot 2\cdot 1=4$.
+
+  So $N=p^{3}q^{2}r$ with distinct primes; to minimise, assign the largest exponent to the smallest prime: $N=2^{3}\cdot 3^{2}\cdot 5=360$.
+
+  - **(A)** $\sigma(360)=(1+2+4+8)(1+3+9)(1+5)=15\cdot 13\cdot 6=1170$. True.
+  - **(B)** $360$ is not divisible by $7$. False.
+  - **(C)** Perfect-cube divisors require each exponent in the divisor to be a multiple of $3$. From $2^{3}\cdot 3^{2}\cdot 5$, allowed exponents on $2$ are $\{0,3\}$, on $3$ only $\{0\}$, on $5$ only $\{0\}$: divisors $1$ and $8$. Exactly two. True.
+  - **(D)** Ordered coprime factorisations $st=N$ correspond to partitions of the prime set $\{2,3,5\}$ into $(s\text{-primes},\,t\text{-primes})$; there are $2^{3}=8$, not $6$. False.
+
+  Correct options: **(A), (C)**.
+
+wrong_paths:
+  - path: "Student takes the smallest $N$ as $N=2\\cdot 3^{2}\\cdot 5^{3}=2250$ (assigning the largest exponent to the largest prime) and computes $\\sigma=3\\cdot 13\\cdot 156=6084\\neq 1170$, then rules out (A)."
+    landed_on_option: "Marks (C) only (or marks (D) erroneously after a coprime-count slip)."
+    diagnosis: "Failure to minimise: to minimise $\\prod p_i^{e_i}$ with a fixed exponent multiset, the largest exponent must go on the smallest prime. A classic ordering trap."
+  - path: "Student picks the look-alike $N=420=2^{2}\\cdot 3\\cdot 5\\cdot 7$ because $d(420)=3\\cdot2\\cdot2\\cdot2=24$, and notes $420$ is divisible by $7$."
+    landed_on_option: "Marks (B) (and possibly (D), since coprime ordered factorisations of $420$ number $2^{4}=16$, still $\\neq 6$)."
+    diagnosis: "Misses the second constraint: $420$ has only $2$ perfect-square divisors ($1$ and $4$), not $4$. TRAP-PARTIAL — only one of the two simultaneous conditions was enforced."
+  - path: "Student takes $N=360$ correctly but counts coprime ordered factorisations as $\\binom{3}{0}+\\binom{3}{1}+\\binom{3}{2}=6$ (forgetting one term) instead of $2^{3}=8$."
+    landed_on_option: "Marks (D) in addition to (A), (C)."
+    diagnosis: "Combinatorial undercount of subsets — every subset of the prime-support gives a coprime split, so the count is $2^{\\omega(N)}$, not a partial binomial sum."
+
+review_notes: |
+  Number-theoretic MCQ-MC; relies on the exponent-multiset characterisation of $d$ and the floor-based count of perfect-square divisors. Required new taxonomy: SOT.DIO.DIVSTR (divisor-structure problems) with sub-idea EXPMSET (exponent-multiset matching). Verify that DIVSTR/EXPMSET are added to the taxonomy file before import. Difficulty T3 — standard hard JEE Advanced; key trap is partial-condition satisfaction (the 420 look-alike) and the minimisation-direction error.

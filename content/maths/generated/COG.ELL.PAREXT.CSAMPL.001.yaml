@@ -1,0 +1,80 @@
+schema_version: 1
+
+question_code: COG.ELL.PAREXT.CSAMPL.001
+
+fingerprint:
+  topic: COG
+  subtopic: ELL
+  idea: PAREXT
+  sub_idea: CSAMPL
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $(x,y)$ lie on the ellipse $\mathcal{E}:\dfrac{x^{2}}{9}+\dfrac{y^{2}}{16}=1$. Which of the following statements are correct?
+
+  - (A) $\max(4x+3y)=12\sqrt{2}$
+  - (B) $\max(xy)=12$
+  - (C) range of $x^{2}-y^{2}$ is $[-16,\,9]$
+  - (D) $\min(x^{2}+y^{2})=16$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  Parametrise the ellipse as $(x,y)=(3\cos t,\,4\sin t)$ and reduce every quantity to a trigonometric expression in $t$; then read off ranges using amplitude / double-angle / $\sin^{2}t\in[0,1]$. The traps all reward plugging in the semi-axis values $a=3,\,b=4$ blindly.
+
+  ### Working
+  Write $(x,y)=(3\cos t,\,4\sin t)$.
+
+  **(A)** $4x+3y = 12\cos t+12\sin t = 12\sqrt{2}\sin(t+\tfrac{\pi}{4})$, so $\max=12\sqrt{2}$. (Equivalently, by Cauchy–Schwarz on $\bigl(\tfrac{x}{3}\bigr)^{2}+\bigl(\tfrac{y}{4}\bigr)^{2}=1$.) **True.**
+
+  **(B)** $xy = 12\sin t\cos t = 6\sin 2t$, so $\max(xy)=6$, not $12$. **False.** ($12=a\cdot b$ is the semi-axis-product bait.)
+
+  **(C)** $x^{2}-y^{2} = x^{2}-16\bigl(1-\tfrac{x^{2}}{9}\bigr) = \tfrac{25}{9}x^{2}-16$. With $x^{2}\in[0,9]$ this sweeps $[-16,\,9]$. **True.**
+
+  **(D)** $x^{2}+y^{2} = 9\cos^{2}t+16\sin^{2}t = 9+7\sin^{2}t\in[9,16]$, so $\min=9$ (at $(\pm3,0)$) and $\max=16$ (at $(0,\pm4)$). The claim $\min=16$ swaps minor and major. **False.**
+
+  Hence the correct options are $(A)$ and $(C)$.
+
+wrong_paths:
+  - path: "For (A), substitute the corner $(3,4)$ of the bounding rectangle to get $4\\cdot3+3\\cdot4=24$, treating the ellipse as a box."
+    landed_on_option: "Rejects (A); marks only (C)."
+    diagnosis: "TRAP-PARTIAL — the student ignores the ellipse constraint and uses the semi-axes as if both coordinates can be maximal simultaneously, missing the Cauchy–Schwarz / amplitude bound $12\\sqrt 2$."
+  - path: "For (B), read $\\max(xy)$ as $a\\cdot b=3\\cdot 4=12$, the semi-axis product."
+    landed_on_option: "Marks (B) (incorrect)."
+    diagnosis: "Same semi-axis-product bait as a TRAP-NCERT-style shortcut; ignores that $xy=6\\sin 2t$ has amplitude $\\tfrac12 ab=6$, not $ab$."
+  - path: "For (D), reflexively pick the larger semi-axis squared ($b^{2}=16$) as the 'minimum distance from origin', mixing up nearest/farthest point on the ellipse."
+    landed_on_option: "Marks (D) (incorrect)."
+    diagnosis: "TRAP-PARTIAL — confuses the minor axis (nearest points $(\\pm 3,0)$, giving $\\min=9$) with the major axis; $16$ is the maximum, not the minimum, of $x^{2}+y^{2}$."
+  - path: "For (C), bound $x^{2}-y^{2}$ by $[-b^{2},a^{2}]=[-16,9]$ via the endpoints of the axes without checking that the parametric expression actually attains those endpoints."
+    landed_on_option: "Marks (C) for the right reason — luckily the endpoints are attained at $(0,\\pm4)$ and $(\\pm3,0)$."
+    diagnosis: "Even when the answer is right, the method is non-rigorous; the explicit reduction $\\tfrac{25}{9}x^{2}-16$ with $x^{2}\\in[0,9]$ is the clean justification."
+
+review_notes: |
+  Classic multi-correct ellipse-extrema item; every false option is a semi-axis-product or
+  major/minor swap trap. Requires the student to parametrise and reduce — pure substitution of
+  $a,b$ fails on (A), (B), (D). New taxonomy codes introduced (COG.ELL.PAREXT.CSAMPL); flag
+  needs_extension.

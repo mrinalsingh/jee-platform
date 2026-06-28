@@ -1,0 +1,72 @@
+schema_version: 1
+
+question_code: COG.CIR.CMNTAN.DRTAX.001
+
+fingerprint:
+  topic: COG
+  subtopic: CIR
+  idea: CMNTAN
+  sub_idea: DRTAX
+  answer_type: MCQ-SC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 120
+  R3_seconds: 90
+  R4_seconds: 60
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $C_{1}:x^{2}+y^{2}=1$ and $C_{2}:(x-c)^{2}+y^{2}=4$, and let $N(c)$ denote the number of common tangents to $C_{1}$ and $C_{2}$. Exactly one of the following is correct:
+
+  - (A) $c=4$: there are exactly $4$ common tangents
+  - (B) $c=3$: there are exactly $4$ common tangents
+  - (C) $c=2$: there are exactly $3$ common tangents
+  - (D) $c=0$ (concentric): there are $2$ common tangents
+
+answer:
+  type: MCQ-SC
+  correct_options: [A]
+
+solution: |
+  ### The IDEA
+  For two circles with radii $r_{1},r_{2}$ and centre-distance $d$, the count of common tangents is governed entirely by the position of $d$ relative to $r_{1}+r_{2}$ and $|r_{1}-r_{2}|$:
+  $$d>r_{1}+r_{2}\Rightarrow 4,\quad d=r_{1}+r_{2}\Rightarrow 3,\quad |r_{1}-r_{2}|<d<r_{1}+r_{2}\Rightarrow 2,\quad d=|r_{1}-r_{2}|\Rightarrow 1,\quad d<|r_{1}-r_{2}|\Rightarrow 0.$$
+
+  ### Working
+  Here $r_{1}=1,\ r_{2}=2$, so $r_{1}+r_{2}=3$ and $|r_{1}-r_{2}|=1$. With centre-distance $d=|c|$ the taxonomy reads
+  $$d>3\Rightarrow 4,\ \ d=3\Rightarrow 3,\ \ 1<d<3\Rightarrow 2,\ \ d=1\Rightarrow 1,\ \ d<1\Rightarrow 0.$$
+  - $c=4$: $d=4>3$, so $N(4)=4$. **(A) is true.**
+  - $c=3$: $d=3$ gives external tangency, so $N(3)=3\ne 4$. **(B) is false.**
+  - $c=2$: $1<d=2<3$ (circles intersect at two points), so $N(2)=2\ne 3$. **(C) is false.**
+  - $c=0$: concentric circles with the unit circle strictly inside the radius-$2$ circle, so $N(0)=0\ne 2$. **(D) is false.**
+
+  Only statement (A) holds.
+
+wrong_paths:
+  - path: "Confuses external tangency ($d=r_1+r_2$) with non-tangency separation and counts $4$ tangents at $c=3$."
+    landed_on_option: "B"
+    diagnosis: "Boundary case error (TRAP-EDGE): forgets that the two external tangents coalesce into one at exact external tangency, dropping the count from $4$ to $3$."
+  - path: "At $c=2$ the circles intersect, but student counts the chord plus two external tangents as $3$ common tangents."
+    landed_on_option: "C"
+    diagnosis: "Conflates the radical axis / common chord with a common tangent. When circles cut, only the two external tangents exist; internal tangents are lost."
+  - path: "Treats concentric circles as having $2$ common tangents by analogy with parallel lines."
+    landed_on_option: "D"
+    diagnosis: "Misses that concentric circles of unequal radii share no common tangent at all — every line tangent to one cuts or misses the other."
+
+review_notes: |
+  Source key in 0609e_Conic-Calc-Ineq with-key file is "(A)", and the qhead label is "Exactly one correct"; encoded as MCQ-SC despite the orchestrator hint of MCQ-MC, because the source truth is single-correct. Standard two-circle common-tangent taxonomy; T2 / fast retrieval problem. New axes used: COG.CIR (circles), idea CMNTAN (common-tangent count), sub-idea DRTAX (distance-radius taxonomy). Mark needs_extension.

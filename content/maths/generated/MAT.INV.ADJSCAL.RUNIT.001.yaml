@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: MAT.INV.ADJSCAL.RUNIT.001
+
+fingerprint:
+  topic: MAT
+  subtopic: INV
+  idea: ADJSCAL
+  sub_idea: RUNIT
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A$ be a $3\times 3$ matrix with complex entries and $\det A\neq 0$, and let $\operatorname{adj}(B)$ denote the adjugate of a $3\times 3$ matrix $B$. Define
+  $$S=\{\,c\in\mathbb{C}\ :\ \det\!\big(\operatorname{adj}(cA)\big)=\det\!\big(\operatorname{adj}(A)\big)\,\}.$$
+  Then
+
+  - (A) every $c\in S$ satisfies $c^{12}=1$
+  - (B) the elements of $S$ have sum $0$ and product $-1$
+  - (C) every $c\in S$ satisfies $1+c+c^{2}=0$
+  - (D) $S$ consists of six complex numbers, each of modulus $1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  For an $n\times n$ matrix, $\operatorname{adj}(cA)=c^{\,n-1}\operatorname{adj}(A)$ and $\det(\operatorname{adj}A)=(\det A)^{n-1}$. Substituting $n=3$ reduces the set-condition to a pure scalar equation $c^{6}=1$, so $S$ is the group of $6$th roots of unity — independent of $A$.
+
+  ### Working
+  For a $3\times 3$ matrix, $\operatorname{adj}(cA)=c^{2}\operatorname{adj}(A)$. Hence
+  $$\det\!\big(\operatorname{adj}(cA)\big)=c^{6}\det\!\big(\operatorname{adj}A\big).$$
+  Since $\det(\operatorname{adj}A)=(\det A)^{2}\neq 0$, the defining condition becomes $c^{6}=1$. So $S=\{1,-1,\omega,\omega^{2},-\omega,-\omega^{2}\}$, the six $6$th roots of unity.
+
+  **(A)** $c^{6}=1\Rightarrow c^{12}=(c^{6})^{2}=1$. **True.**
+
+  **(B)** Sum of all $6$th roots of unity is $0$; product is $(-1)^{6-1}\cdot(\text{constant term of }x^{6}-1)=-(-1)=\ldots$ Direct check: $1\cdot(-1)\cdot\omega\cdot\omega^{2}\cdot(-\omega)\cdot(-\omega^{2})=(-1)\cdot\omega^{6}=-1$. **True.**
+
+  **(C)** $1+c+c^{2}=0$ holds only for the two primitive cube roots $\omega,\omega^{2}$, not for $c=1$ (gives $3$) or $c=-1$ (gives $1$). **False.**
+
+  **(D)** All $6$th roots of unity lie on the unit circle, and there are exactly six of them. **True.**
+
+  So the correct options are **(A), (B), (D)**.
+
+wrong_paths:
+  - path: "Forgets the exponent $n-1$ in $\\operatorname{adj}(cA)=c^{n-1}\\operatorname{adj}(A)$ and writes $\\operatorname{adj}(cA)=c\\operatorname{adj}(A)$, getting $c^{3}=1$, so $S=\\{1,\\omega,\\omega^{2}\\}$."
+    landed_on_option: "C (and rejects A, B, D)"
+    diagnosis: "Classic TRAP-PARTIAL: confuses scaling of $\\operatorname{adj}$ with scaling of the matrix itself. Cube-roots satisfy $1+c+c^{2}=0$ only for the non-trivial ones, but $c=1$ still satisfies $c^{3}=1$, so even this wrong path doesn't fully validate (C)."
+  - path: "Uses $\\det(\\operatorname{adj}A)=\\det A$ instead of $(\\det A)^{n-1}=(\\det A)^{2}$; concludes $c^{6}\\det A=\\det A$ so still $c^{6}=1$ — coincidentally right answer but for the wrong reason."
+    landed_on_option: "A, B, D (right answer, broken logic)"
+    diagnosis: "TRAP-NCERT: the identity $\\det(\\operatorname{adj}A)=(\\det A)^{n-1}$ is misremembered. Lucky here because $\\det A\\neq 0$ lets us cancel, but the method fails for general scaling problems."
+  - path: "Solves $c^{6}=1$ correctly but only lists real solutions $\\{1,-1\\}$, missing the complex sixth roots."
+    landed_on_option: "Marks only (A); rejects (B) since sum $=0$ but product of $\\{1,-1\\}$ is $-1$ — ambiguous; rejects (D) since only $2$ numbers found."
+    diagnosis: "TRAP-EDGE / incomplete root enumeration: student treats $c^{6}=1$ as a real polynomial equation and forgets that the question states $c\\in\\mathbb{C}$."
+
+review_notes: |
+  New taxonomy codes proposed: IDEA `ADJSCAL` (adjugate scaling identity $\operatorname{adj}(cA)=c^{n-1}\operatorname{adj}(A)$) under MAT.INV, and SUB-IDEA `RUNIT` (reduction to roots-of-unity equation). Trap is TRAP-PARTIAL because option (C) catches students who get $c^{3}=1$ via mis-applied adjugate scaling. Surface is SURF-SET because the problem is framed as describing a set $S$. T3 — single key identity plus careful root enumeration; ~3 minutes for an experienced JEE student.

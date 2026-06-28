@@ -1,0 +1,85 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.006
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=x^{4}+2px^{3}+x^{2}+2px+1$, where $p\in\mathbb R$. Which of the following statements is/are correct?
+
+  (A) $f$ has two distinct negative real roots iff $p>\tfrac34$.
+
+  (B) At $p=0$, $f$ has exactly two distinct real roots.
+
+  (C) $f$ has no real roots iff $-\tfrac34<p<\tfrac34$.
+
+  (D) $f$ has at least one negative real root iff $p\ge\tfrac34$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C, D]
+
+solution: |
+  ### The IDEA
+  $f$ is a palindromic quartic ($a_0=a_4=1$, $a_1=a_3=2p$, $a_2=1$). The standard trick: divide by $x^{2}$ and substitute $y=x+\tfrac1x$. This reduces the quartic to a quadratic in $y$, and the location of real $x$-roots is controlled by $|y|\ge 2$ (with $y\ge 2$ giving positive $x$ and $y\le -2$ giving negative $x$).
+
+  ### Working
+  Divide by $x^{2}$:
+  $$\frac{f(x)}{x^{2}} = \left(x^{2}+\frac1{x^{2}}\right) + 2p\left(x+\frac1x\right) + 1 = (y^{2}-2) + 2py + 1 = y^{2}+2py-1.$$
+  So $f(x)=0\iff y^{2}+2py-1=0\iff y=-p\pm\sqrt{p^{2}+1}.$
+
+  Let $y_{+}=-p+\sqrt{p^{2}+1}$ and $y_{-}=-p-\sqrt{p^{2}+1}$. Since $y_{+}y_{-}=-1$, they have opposite signs: $y_{+}>0$, $y_{-}<0$.
+
+  A real $y$ corresponds to a real $x$ iff $|y|\ge 2$; $y\ge 2$ gives positive $x$, $y\le -2$ gives negative $x$.
+
+  **Negative real roots.** Need $y_{-}\le -2$, i.e. $-p-\sqrt{p^{2}+1}\le -2$, i.e. $\sqrt{p^{2}+1}\ge 2-p$.
+  - If $p\ge 2$, RHS $\le 0$, automatic.
+  - If $p<2$, square: $p^{2}+1\ge p^{2}-4p+4\iff p\ge \tfrac34$.
+
+  Hence **at least one negative real root iff $p\ge\tfrac34$** — option (D) correct. At $p=\tfrac34$, $y_{-}=-2$, giving the double root $x=-1$; for $p>\tfrac34$, $y_{-}<-2$ gives two distinct negative real roots — option (A) correct.
+
+  **No real roots.** $f$ has a real root iff $\max(|y_{+}|,|y_{-}|)\ge 2$. The map $p\mapsto -p$ swaps $y_{+}\leftrightarrow -y_{-}$, so by symmetry $f$ has a real root iff $|p|\ge\tfrac34$. Equivalently, **no real root iff $-\tfrac34<p<\tfrac34$** — option (C) correct.
+
+  In particular at $p=0$: $f(x)=x^{4}+x^{2}+1>0$ for all $x$, so $f$ has **no** real roots, not "exactly two" — option (B) is false.
+
+  **Correct: (A), (C), (D).**
+
+wrong_paths:
+  - path: "Treat 'two distinct negative real roots iff $p>\\tfrac34$' as requiring strict inequality $p>\\tfrac34$ but then incorrectly extend to 'at least one negative real root iff $p>\\tfrac34$' (boundary $p=\\tfrac34$ slips out)."
+    landed_on_option: "A only (drop D)"
+    diagnosis: "Edge-case confusion (TRAP-EDGE): at $p=\\tfrac34$ the negative root is a double root $x=-1$ — it is still a real negative root, so (D) uses $\\ge$ while (A) uses strict $>$. Conflating the two boundary conditions kills option (D)."
+  - path: "At $p=0$ compute $f(x)=x^{4}+x^{2}+1$ and confuse it with $(x^{2}+x+1)(x^{2}-x+1)$; mistakenly think one factor has real roots."
+    landed_on_option: "A, B, C, D"
+    diagnosis: "Discriminant slip: each factor $x^{2}\\pm x+1$ has discriminant $-3<0$, so no real roots. Student who only checks the factorization but not the discriminants marks (B) true."
+  - path: "Use $y=x+1/x$ but forget the constraint $|y|\\ge 2$ for $y$ to come from a real $x$. Then any real solution of $y^{2}+2py-1=0$ is taken to give a real $x$-root of $f$, making 'no real roots' impossible."
+    landed_on_option: "A, D only (drop C)"
+    diagnosis: "Misses the central feature of the $y=x+1/x$ substitution: the range of $y$ over $x\\in\\mathbb R\\setminus\\{0\\}$ is $(-\\infty,-2]\\cup[2,\\infty)$. Without this gate, (C) looks false."
+
+review_notes: |
+  Classic palindromic quartic + sign-of-roots problem. Maps cleanly to ALG.QUA.ROOTLOC.SIGNLOC: the deep idea is locating real roots by sign via the $y=x+1/x$ substitution plus the $|y|\ge 2$ gate. SURF-PARAM because everything is in the parameter $p$. TRAP-EDGE because the (A) vs (D) distinction hinges on the $p=\tfrac34$ boundary (double root vs distinct roots). Time calibration: T3 — standard JEE Adv palindromic-quartic technique with the four-option boundary analysis adding a careful sweep.

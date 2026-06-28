@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: PRB.COMP.BAYESDIE.MAXPMF.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: BAYESDIE
+  sub_idea: MAXPMF
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 210
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608b_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $M$ be the maximum of two numbers chosen uniformly at random (without replacement) from $\{1,2,\dots,7\}$. A biased die $B$ has six faces $1,2,\dots,6$ with $P(\text{face }k\mid B)=P(M=k+1)$ for $k=1,\dots,6$. A box contains die $B$ and a fair die $F$; one die is picked uniformly at random and rolled, producing the face $X$. Which of the following is/are correct?
+
+  - (A) $P(\text{face }k\mid B)=\dfrac{k}{21}$
+  - (B) $P(F\mid X=2)=\dfrac{7}{11}$
+  - (C) $P(X=k)<\dfrac{1}{6}\iff k\le 3$
+  - (D) $P(F\mid X=5)=\dfrac{7}{13}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  The maximum of two distinct draws from $\{1,\dots,7\}$ has $P(M=m)=\dfrac{m-1}{\binom{7}{2}}$ because for the max to equal $m$ we must pick $m$ and one of the $m-1$ smaller values. Marginalising $X$ over the die-choice and using Bayes' rule gives the posterior $P(F\mid X=k)$.
+
+  ### Working
+  Since $\binom72=21$, $$P(M=m)=\frac{m-1}{21},\qquad m=2,3,\dots,7.$$
+  Hence $P(\text{face }k\mid B)=P(M=k+1)=\dfrac{k}{21}$ for $k=1,\dots,6$, confirming **(A)** (and indeed $\sum_{k=1}^{6}\tfrac{k}{21}=1$).
+
+  The unconditional pmf of $X$ is
+  $$P(X=k)=\tfrac12\cdot\frac{k}{21}+\tfrac12\cdot\frac16=\frac{2k+7}{84}.$$
+  Bayes' rule gives
+  $$P(F\mid X=k)=\frac{\tfrac12\cdot\tfrac16}{P(X=k)}=\frac{7}{2k+7}.$$
+  At $k=2$: $P(F\mid X=2)=\dfrac{7}{11}$, so **(B)** is true.
+  At $k=5$: $P(F\mid X=5)=\dfrac{7}{17}\ne\dfrac{7}{13}$, so **(D)** is false.
+
+  Finally, $P(X=k)<\tfrac16=\tfrac{14}{84}\iff 2k+7<14\iff k<3.5\iff k\le 3$, so **(C)** is true.
+
+  Correct options: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Computing $P(M=m)$ with ordered pairs ($7\\cdot 6=42$ instead of $\\binom72=21$) gives $P(\\text{face }k\\mid B)=\\tfrac{2(k)}{42}=\\tfrac{k}{21}$ — same answer by accident — but then mistakenly writes $\\tfrac{2k}{42}\\ne\\tfrac{k}{21}$ and rejects (A)."
+    landed_on_option: "Rejects (A)"
+    diagnosis: "TRAP-PARTIAL: ordered/unordered counting confusion; the student doesn't simplify and concludes (A) is wrong even though it is correct."
+  - path: "Forgets the prior $\\tfrac12$ and computes $P(F\\mid X=k)=\\dfrac{1/6}{k/21+1/6}=\\dfrac{7}{2k+7}$ accidentally matching, but for $k=5$ instead writes $\\dfrac{7}{2(5)+3}=\\tfrac{7}{13}$ via an arithmetic slip $2k+7\\to 2k+3$."
+    landed_on_option: "Accepts (D)"
+    diagnosis: "TRAP-PARTIAL: arithmetic slip in the denominator $2k+7$ at $k=5$ produces $13$ instead of $17$; (D) is the manufactured distractor."
+  - path: "Reads the inequality $P(X=k)<\\tfrac16$ as strict $k<3$ instead of $k\\le 3$, missing the boundary check $2(3)+7=13<14$."
+    landed_on_option: "Rejects (C)"
+    diagnosis: "TRAP-EDGE: off-by-one on the integer boundary; failing to test $k=3$ explicitly costs the correct option."
+  - path: "Uses the wrong sample-space size for $M$: assumes $M\\in\\{1,\\dots,7\\}$ uniformly, so $P(\\text{face }k\\mid B)=P(M=k+1)=\\tfrac17$ for each $k=1,\\dots,6$, giving a constant die."
+    landed_on_option: "Rejects (A), miscomputes (B) and (C)"
+    diagnosis: "Conceptual: confuses the distribution of the max with the marginal of one draw; ignores that $P(M=m)\\propto m-1$."
+
+review_notes: |
+  Multi-correct Bayesian inference item that combines (i) the pmf of the max of two draws without replacement, (ii) total probability over a mixture of dice, and (iii) Bayes' posterior. Surface is SURF-PARAM because the index $k$ parameterises four claims. Trap is TRAP-PARTIAL: three of four parts are true and the false one (D) is engineered by an arithmetic-slip distractor on the denominator $2k+7$. Difficulty T3 — standard JEE-Advanced multi-part probability; each part is short but four checks are needed. Idea code BAYESDIE (Bayes on a die-mixture) and sub-idea MAXPMF (pmf of the maximum of two distinct draws) are new.

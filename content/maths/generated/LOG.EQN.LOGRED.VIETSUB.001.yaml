@@ -1,0 +1,73 @@
+schema_version: 1
+
+question_code: LOG.EQN.LOGRED.VIETSUB.001
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: LOGRED
+  sub_idea: VIETSUB
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a>1$, and let $x_1,x_2$ be the positive real solutions of
+  $$x^{\log_a x}=\frac{(a^2x)^3}{a}.$$
+  Which of the following is/are correct?
+
+  (A) Both $x_i$ are rational powers of $a$.
+
+  (B) $x_1x_2=a^{3}$.
+
+  (C) At $a=2$, both $x_i>1$.
+
+  (D) $\log_a(x_1x_2)=3$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  Let $t=\log_a x$. The right-hand side is $(a^2x)^3/a=a^{6-1}x^3=a^5x^3$, so taking $\log_a$ of both sides of $x^{\log_a x}=a^5x^3$ gives
+  $$t\cdot t = 5+3t\quad\Longrightarrow\quad t^2-3t-5=0.$$
+  By Vieta, $t_1+t_2=3$ and $t_1t_2=-5$. Hence
+  $$\log_a(x_1x_2)=t_1+t_2=3\quad\Rightarrow\quad x_1x_2=a^3,$$
+  giving (B) and (D).
+
+  The roots $t_{1,2}=\dfrac{3\pm\sqrt{29}}{2}$ are irrational (since $29$ is not a perfect square), so $x_i=a^{t_i}$ are not rational powers of $a$; (A) is false.
+
+  At $a=2$: $t_2=(3-\sqrt{29})/2\approx-1.19<0$, so $x_2=2^{t_2}<1$; (C) is false.
+
+wrong_paths:
+  - path: "Solve for the $t$-values and notice they are $(3\\pm\\sqrt{29})/2$. Forget that 'rational power of $a$' refers to the exponent being rational and call these 'rational' because they are real algebraic; mark (A)."
+    landed_on_option: "A"
+    diagnosis: "Conflates 'rational exponent' with 'real/algebraic exponent'."
+  - path: "Compute $t_1+t_2=3$, conclude $x_1+x_2=a^3$ by mis-applying Vieta to the exponents; this matches the numerical value claimed in (B) and (D), but a careless student also stamps (C) thinking both roots produce $x_i>1$ because 'sum is positive.'"
+    landed_on_option: "C"
+    diagnosis: "Sign-blind on individual roots when only the sum is positive; one root of the quadratic in $t$ is negative."
+  - path: "Try to argue (A) by writing $x_i = a^{(3\\pm\\sqrt{29})/2}$ and noting the exponents are 'half-integers up to $\\sqrt{29}$', i.e. of the form $p/2$, hence rational. Selects (A) along with (B), (D)."
+    landed_on_option: "A"
+    diagnosis: "Treats $(3+\\sqrt{29})/2$ as rational because of the visible $/2$, ignoring the irrational $\\sqrt{29}$."
+
+review_notes: |
+  Standard log-substitution-to-quadratic followed by Vieta on the sum/product of exponents. The distractor (A) bites students who don't separate 'rational exponent' from 'real exponent'; (C) bites students who only check that $t_1+t_2>0$ and don't notice that the smaller root $t_2$ can be negative when $|t_2|<|t_1|$ — for any $a>1$, $a^{t_2}<1$. The structural answer pair (B)+(D) is forced by Vieta and is independent of $a$, while (C) is a genuine sign/parameter check at a specific $a$. Sub-idea VIETSUB is proposed as a new 6-char code under LOG.EQN.LOGRED for 'Vieta on the substituted log-quadratic' (distinct from LOGBC base-change reduction).

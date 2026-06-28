@@ -1,0 +1,96 @@
+schema_version: 1
+
+question_code: CAL.DER.TANGREC.MIDLOCUS.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DER
+  idea: TANGREC
+  sub_idea: MIDLOCUS
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 180
+
+source_metadata:
+  jee_authenticity_score: 8.3
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T3
+    jee_authenticity_score: 8.3
+    reviewed_at: "2026-06-14"
+    notes: "Vieta double root + locus + horiz tangent + min chord"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613d_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{C}$ be the curve $y=x^{3}-3x$. For each real $t$, the tangent to $\mathcal{C}$ at $P=(t,\,t^{3}-3t)$ meets $\mathcal{C}$ again at a point $Q$ (assume $t\neq 0$ so that $Q\neq P$). Let $M$ be the midpoint of $PQ$. Which of the following statements is/are correct?
+
+  - (A) The locus of $M$, as $t$ varies, is $y=28x^{3}-3x$
+  - (B) The chord $PQ$ passes through a point that is independent of $t$
+  - (C) The locus of $M$ has exactly two points at which the tangent (to the locus) is horizontal
+  - (D) Among all such chords $PQ$, the chord of smallest length occurs at $t=\pm 1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  For a cubic $y=x^{3}-3x$, the tangent at $P=(t,t^{3}-3t)$ meets the curve at a point whose $x$-coordinate is determined by a double-root factorisation: the contact contributes a factor $(x-t)^{2}$, and Vieta on the resulting cubic locates the third intersection at $x_{Q}=-2t$. From $Q=(-2t,-8t^{3}+6t)$, all four claims reduce to one-line algebra on $M=\tfrac{1}{2}(P+Q)$ and on $|PQ|^{2}$.
+
+  ### Working
+  Slope at $P$: $m=3t^{2}-3$. Tangent line:
+  $$y=(3t^{2}-3)(x-t)+t^{3}-3t=(3t^{2}-3)x-2t^{3}.$$
+  Intersecting with $\mathcal{C}$:
+  $$x^{3}-3x=(3t^{2}-3)x-2t^{3}\;\Longleftrightarrow\;x^{3}-3t^{2}x+2t^{3}=0\;\Longleftrightarrow\;(x-t)^{2}(x+2t)=0,$$
+  so $x_{Q}=-2t$ and $Q=(-2t,\,-8t^{3}+6t)$.
+
+  **(A) Locus of $M$.** $M=\bigl(-\tfrac{t}{2},\tfrac{-7t^{3}+3t}{2}\bigr)$. Put $X=-t/2$ so $t=-2X$; then
+  $$Y=\tfrac{-7(-2X)^{3}+3(-2X)}{2}=\tfrac{56X^{3}-6X}{2}=28X^{3}-3X.$$
+  So the locus is $y=28x^{3}-3x$. **TRUE.**
+
+  **(B) Fixed point on $PQ$?** The chord is $y=(3t^{2}-3)x-2t^{3}$. For $(x_{0},y_{0})$ to lie on it for every $t$, the coefficients of $t^{3}$ and $t^{2}$ must vanish: $-2=0$ and $3x_{0}=0$, which is impossible. **FALSE.**
+
+  **(C) Horizontal tangents on locus.** $y=28x^{3}-3x\Rightarrow y'=84x^{2}-3=0\Rightarrow x=\pm\tfrac{1}{2\sqrt{7}}$. Exactly two points. **TRUE.**
+
+  **(D) Shortest chord.**
+  $$|PQ|^{2}=(3t)^{2}+(9t^{3}-9t)^{2}=9t^{2}\bigl[1+9(t^{2}-1)^{2}\bigr].$$
+  Let $u=t^{2}>0$; minimise $g(u)=9u[1+9(u-1)^{2}]$. Then
+  $$g'(u)=9\bigl[1+9(u-1)(3u-1)\bigr]=0\;\Longrightarrow\;27u^{2}-36u+10=0\;\Longrightarrow\;u=\tfrac{6\pm\sqrt{6}}{9}.$$
+  Neither equals $1$, so the minimum does **not** occur at $t=\pm 1$. **FALSE.**
+
+wrong_paths:
+  - path: "Drops the $(x-t)^{2}$ double-root insight and treats $x=t$ as the only intersection of tangent with curve, then concludes the chord must pass through a fixed point by analogy with the focal-chord property of a parabola."
+    landed_on_option: "B"
+    diagnosis: "TRAP-PARTIAL: imports a parabola intuition (chord-of-contact has fixed point) without checking the cubic case. The chord $y=(3t^{2}-3)x-2t^{3}$ has both $t^{2}$ and $t^{3}$ coefficients, so it cannot pass through a single fixed point."
+  - path: "Sets $|PQ|^{2}=9t^{2}[1+9(t^{2}-1)^{2}]$, sees the inner bracket minimised at $t^{2}=1$, and forgets the outer $9t^{2}$ factor — concluding the chord is shortest at $t=\\pm 1$."
+    landed_on_option: "D"
+    diagnosis: "TRAP-PARTIAL: minimises a factor of the product rather than the product itself. Correct critical equation is $27u^{2}-36u+10=0$, whose roots are $\\tfrac{6\\pm\\sqrt{6}}{9}\\ne 1$."
+  - path: "Finds locus $y=28x^{3}-3x$ correctly but solves $y'=0$ as $84x^{2}=3\\Rightarrow x^{2}=\\tfrac{1}{28}$ then rejects the two real roots as 'no horizontal tangent' due to a sign slip."
+    landed_on_option: "A only (misses C)"
+    diagnosis: "TRAP-PARTIAL: arithmetic slip on $y'=84x^{2}-3$. The two real critical points $x=\\pm\\tfrac{1}{2\\sqrt{7}}$ are genuine horizontal tangents."
+
+review_notes: |
+  Vieta double-root + locus elimination + horizontal-tangent count + shortest-chord optimisation, all on the same family of chords of $y=x^{3}-3x$. New SUB-IDEA MIDLOCUS proposed under existing IDEA TANGREC ("tangent meets curve again") — covers the midpoint-locus + chord-length variant, distinct from the iterate-$\varphi$ flavour of CUBREMEET. Calibrated T3 (jee_authenticity 8.3): four independent sub-tasks on one configuration, with partial-marking trap at (D) where minimising a factor leaves $t=\pm 1$ on the table.

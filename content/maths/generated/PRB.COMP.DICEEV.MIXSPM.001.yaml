@@ -1,0 +1,75 @@
+schema_version: 1
+
+question_code: PRB.COMP.DICEEV.MIXSPM.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: DICEEV
+  sub_idea: MIXSPM
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Three fair dice are rolled, giving $216$ equally likely ordered outcomes. Which of the following statements is/are correct?
+
+  - (A) $P(\text{sum}=5)=\dfrac{1}{36}$
+  - (B) $P(\text{product}=90)=\dfrac{1}{36}$
+  - (C) $P(\text{no face shows }6)=\dfrac{125}{216}$
+  - (D) $P(\text{sum}=18)=\dfrac{1}{216}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  For ordered outcomes on three dice the sample space has $6^3=216$ equally likely points. For events defined by sum or product, list the unordered face-patterns satisfying the condition and multiply each by the number of distinct orderings; for "no six" the trials are independent so $(5/6)^3$ applies directly.
+
+  ### Working
+  **Sum $=5$:** Unordered triples in $\{1,\dots,6\}^3$ with sum $5$ are $\{1,1,3\}$ and $\{1,2,2\}$. Each pattern has $\dfrac{3!}{2!}=3$ ordered arrangements, giving $3+3=6$ ordered outcomes. Hence $P=\dfrac{6}{216}=\dfrac{1}{36}$. **(A) holds.**
+
+  **Product $=90$:** Factor $90=2\cdot 3^2\cdot 5$. The factor $5$ forces one die to show $5$. The remaining product is $18$, which on faces in $\{1,\dots,6\}$ must come from $\{3,6\}$ (since $2\cdot 9$ and $1\cdot 18$ exceed the face-range). So the multiset of faces is $\{3,5,6\}$ — all distinct — giving $3!=6$ ordered outcomes. Thus $P=\dfrac{6}{216}=\dfrac{1}{36}$. **(B) holds.**
+
+  **No face shows $6$:** Each die independently lands in $\{1,\dots,5\}$ with probability $\dfrac{5}{6}$, so $P=\left(\dfrac{5}{6}\right)^{3}=\dfrac{125}{216}$. **(C) holds.**
+
+  **Sum $=18$:** The maximum sum is $6+6+6=18$, achieved only by $(6,6,6)$, so $P=\dfrac{1}{216}$. **(D) holds.**
+
+  All four options are correct.
+
+wrong_paths:
+  - path: "For sum $=5$, counts only the two unordered patterns $\\{1,1,3\\}$ and $\\{1,2,2\\}$ as $2$ outcomes out of $216$, giving $P=1/108$."
+    landed_on_option: "Rejects (A)"
+    diagnosis: "Confuses unordered face-patterns with ordered outcomes on the $216$-point sample space — the classic TRAP-PARTIAL on dice-sum questions. Each pattern with one repeat contributes $3$ orderings, not $1$."
+  - path: "For product $=90$, also lists $\\{2,5,9\\}$ or $\\{1,5,18\\}$ as candidates and concludes more triples exist, getting $P>1/36$, or alternatively misses one factorization and gets $P<1/36$."
+    landed_on_option: "Rejects (B)"
+    diagnosis: "Fails to enforce the face-constraint $\\{1,\\dots,6\\}$ on every factor: $9$ and $18$ are not valid die faces, so $\\{3,5,6\\}$ is the unique unordered triple."
+  - path: "Computes $P(\\text{no }6)=1-P(\\text{at least one }6)$ and mis-applies inclusion–exclusion as $1-3\\cdot\\tfrac{1}{6}=\\tfrac{1}{2}$ or simply $1-\\tfrac{1}{6}=\\tfrac{5}{6}$."
+    landed_on_option: "Rejects (C)"
+    diagnosis: "Treats the three single-die `shows a 6' events as mutually exclusive or as a single event. Independence gives $(5/6)^3$ directly; the complement is $91/216$, not $5/6$ or $1/2$."
+  - path: "For sum $=18$, lists $(6,6,6)$ plus phantom orderings such as $(5,6,7)$, giving $P=3/216$ or similar."
+    landed_on_option: "Rejects (D)"
+    diagnosis: "Forgets the upper bound $6$ on each die, treating sum $=18$ like sum $=10$ where many compositions exist. With face cap $6$, only $(6,6,6)$ works."
+
+review_notes: |
+  Standard JEE-Main / early-Advanced multi-correct probability check. Each option targets a distinct counting skill: bounded compositions (A), constrained factorization within face range (B), independence vs inclusion-exclusion (C), boundary-case enumeration (D). All four are correct — testing whether the student is willing to mark all four when each requires a small but different argument. Difficulty T2; T1 if dice-counting is fully drilled. Used new IDEA code DICEEV (dice multi-event probability) and SUB-IDEA MIXSPM (mixed sum / product / max / no-face slot) — taxonomy extension needed.

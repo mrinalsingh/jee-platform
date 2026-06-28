@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: ALG.BIN.RECIPSUM.REFLSYM.001
+
+fingerprint:
+  topic: ALG
+  subtopic: BIN
+  idea: RECIPSUM
+  sub_idea: REFLSYM
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a_n=\displaystyle\sum_{r=0}^{n}\dfrac{1}{\binom{n}{r}}$. Which of the following is/are TRUE?
+
+  (A) $a_{10}=\dfrac{4097}{1260}$
+
+  (B) $\displaystyle\sum_{r=0}^{10}\dfrac{r}{\binom{10}{r}}=5\,a_{10}$
+
+  (C) $\displaystyle\sum_{0\le i<j\le 10}\!\left(\dfrac{i}{\binom{10}{i}}+\dfrac{j}{\binom{10}{j}}\right)=50\,a_{10}$
+
+  (D) $\displaystyle\sum_{r=0}^{10}\dfrac{10-2r}{\binom{10}{r}}=0$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  Use the reflection symmetry $\binom{n}{r}=\binom{n}{n-r}$. Replacing $r\to n-r$:
+  $$\sum_{r=0}^{n}\frac{r}{\binom{n}{r}}=\sum_{r=0}^{n}\frac{n-r}{\binom{n}{r}}\implies 2\sum_{r=0}^{n}\frac{r}{\binom{n}{r}}=n\,a_n,\quad\text{so}\quad \sum_{r=0}^{n}\frac{r}{\binom{n}{r}}=\frac{n}{2}\,a_n.$$
+  With $n=10$ this is $5\,a_{10}$, proving **(B)**.
+
+  For **(D)**: $\displaystyle\sum_{r=0}^{10}\frac{10-2r}{\binom{10}{r}}=10\,a_{10}-2\cdot 5\,a_{10}=0$. **True.**
+
+  For **(C)**: write $u_r=r/\binom{10}{r}$. In the unordered-pair sum each index $r\in\{0,\dots,10\}$ appears in exactly $10$ pairs $\{r,j\}$ with $j\ne r$, hence
+  $$\sum_{0\le i<j\le 10}(u_i+u_j)=10\sum_{r=0}^{10}u_r=10\cdot 5\,a_{10}=50\,a_{10}.$$
+  **True.**
+
+  For **(A)**: direct computation gives
+  $a_{10}=2\left(1+\tfrac{1}{10}+\tfrac{1}{45}+\tfrac{1}{120}+\tfrac{1}{210}+\tfrac{1}{252}\right)-\tfrac{1}{252}\cdot 0=\dfrac{1433}{630}\neq\dfrac{4097}{1260}$. **False.**
+
+  Hence the correct options are **(B), (C), (D)**.
+
+wrong_paths:
+  - path: "Solver memorizes a partial-sum slip and gets $a_{10}=4097/1260$, then marks (A) true."
+    landed_on_option: "A"
+    diagnosis: "Arithmetic slip in partial sums of $1/\\binom{10}{r}$; computational error, not conceptual."
+  - path: "In (C) the student treats the unordered-pair count as $\\binom{10}{1}\\binom{9}{1}=90$ or $\\binom{11}{2}=55$, getting $45\\,a_{10}$ or $55\\,a_{10}$ instead of $50\\,a_{10}$, rejecting (C)."
+    landed_on_option: "rejects C"
+    diagnosis: "Miscounting how many unordered pairs each fixed index belongs to (should be 10, not 9 or 11)."
+  - path: "Student tries to evaluate $\\sum r/\\binom{10}{r}$ directly term-by-term, gets bogged down, never invokes reflection symmetry, and concludes (B) and (D) are 'not obviously true' so leaves them blank."
+    landed_on_option: "misses B and D"
+    diagnosis: "Failure to spot $r\\leftrightarrow n-r$ pairing symmetry — the central JEE move for reciprocal-binomial sums."
+
+review_notes: |
+  Multi-correct on reciprocal-binomial sums; central JEE trick is the reflection $r\\leftrightarrow n-r$.
+  Distractor (A) is a numerical look-alike; distractors against (C) come from miscounting pair multiplicities.
+  Time budget reflects that once the reflection is seen, (B) and (D) fall in seconds; (C) needs the multiplicity insight.
+  NEW taxonomy: idea RECIPSUM (reciprocal-binomial-coefficient sums), sub-idea REFLSYM (reflection symmetry $r\\leftrightarrow n-r$). Both are reusable across $\\sum 1/\\binom{n}{r}$ family problems.

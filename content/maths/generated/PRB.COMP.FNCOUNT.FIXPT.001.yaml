@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: PRB.COMP.FNCOUNT.FIXPT.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: FNCOUNT
+  sub_idea: FIXPT
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-NCERT
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f:\{1,2,3,4,5\}\to\{1,2,3,4,5\}$ be chosen uniformly at random from all $5^{5}$ such functions. An index $i$ is said to be a fixed point of $f$ if $f(i)=i$. Which of the following is/are correct?
+
+  - (A) $P(|\mathrm{image}(f)|=4)=\dfrac{1}{25}$
+  - (B) $P(f\text{ is a bijection})=\dfrac{24}{625}$
+  - (C) $P(f\text{ has exactly one fixed point})=\dfrac{256}{625}$
+  - (D) $P(f\text{ has no fixed point})=\dfrac{1024}{3125}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### The IDEA
+  Counting problems on the space of all functions $\{1,\dots,5\}\to\{1,\dots,5\}$ (sample space size $5^{5}=3125$) must distinguish "function" from "permutation": fixed-point and derangement-style conditions apply per index independently when $f$ is unrestricted, so the derangement formula $!n$ (which counts permutations) is the wrong reflex.
+
+  ### Working
+  Sample space: $|\Omega|=5^{5}=3125$.
+
+  **(B) Bijection.** A bijection is a permutation of $\{1,\dots,5\}$: $5!=120$ outcomes.
+  $$P=\frac{120}{3125}=\frac{24}{625}. \checkmark$$
+
+  **(D) No fixed point.** "No fixed point" means $f(i)\ne i$ for every $i$. Since $f$ is an arbitrary function, each $i$ independently chooses any of the $4$ values different from $i$:
+  $$\#=4^{5}=1024,\qquad P=\frac{1024}{3125}. \checkmark$$
+  The reflex $!5=44$ counts only derangement *permutations* — irrelevant here.
+
+  **(C) Exactly one fixed point.** Pick the fixed index $i_{0}$ in $5$ ways. The remaining $4$ indices must each avoid their own value (so they are not fixed points), giving $4^{4}$ choices each independently:
+  $$\#=5\cdot 4^{4}=5\cdot 256=1280,\qquad P=\frac{1280}{3125}=\frac{256}{625}. \checkmark$$
+
+  **(A) $|\mathrm{image}(f)|=4$.** Choose the $4$-element image in $\binom{5}{4}=5$ ways, then count surjections from a $5$-set onto a $4$-set:
+  $$\operatorname{Surj}(5,4)=4!\,S(5,4)=24\cdot 10=240.$$
+  Total $=5\cdot 240=1200$, so
+  $$P=\frac{1200}{3125}=\frac{48}{125}\ne\frac{1}{25}.$$
+  The bait $\binom{5}{4}/5^{4}=5/625=1/125\ne 1/25$ also fails; (A) is **false**.
+
+  Correct options: **(B), (C), (D)**.
+
+wrong_paths:
+  - path: "Apply the derangement formula: 'no fixed point' implies $f$ is a derangement, so $\\#=!5=44$ and $P=44/3125$."
+    landed_on_option: "Rejects (D); may flip to mark (A) as a guess."
+    diagnosis: "Confuses 'function with no fixed point' with 'derangement permutation'. Since $f$ need not be a bijection, each index independently picks from $4$ forbidden-self values, giving $4^{5}$, not $!5$. This is the canonical TRAP-NCERT reflex from the derangement chapter."
+  - path: "Exactly one fixed point: pick the fixed index ($5$ ways) and derange the other $4$, giving $5\\cdot !4 = 5\\cdot 9 = 45$; then $P=45/3125=9/625$."
+    landed_on_option: "Rejects (C)."
+    diagnosis: "Same derangement-vs-function confusion applied at the indices that must avoid being fixed. The remaining four indices need only avoid their own values; they are not forced to form a derangement of $\\{1,2,3,4\\}$ because $f$ is not constrained to be a permutation."
+  - path: "$|\\mathrm{image}|=4$: pick the missed value ($5$ ways), then each of $5$ inputs maps to the remaining $4$ values ($4^{5}$), getting $5\\cdot 4^{5}=5120$, so $P=5120/3125>1$; rescue by 'divide by $5^{4}$' to land on $5/625=1/125$, mistakenly read as $1/25$."
+    landed_on_option: "A"
+    diagnosis: "Forgets to enforce surjectivity onto the chosen $4$-set (so the missed value is actually missed). Correct count requires inclusion-exclusion (or Stirling): $\\binom{5}{4}\\cdot\\operatorname{Surj}(5,4)=1200$, giving $P=48/125$, not $1/25$. TRAP-PARTIAL: the bait number $1/25$ is suggestively clean but unsupported."
+
+review_notes: |
+  Multi-correct probability item on uniform random functions $\{1,\dots,5\}\to\{1,\dots,5\}$. The pedagogical core is distinguishing functions from permutations — derangements $!n$ apply only to bijections, while "no fixed point" on arbitrary functions is the independent product $4^{n}$. Option (A) is the surjection-onto-$4$-set distractor, counted by Stirling/inclusion-exclusion. New sub-idea code FIXPT proposed under a new IDEA FNCOUNT (function-space counting) inside PRB.COMP; taxonomy currently has only PRB.COMP.INCEXC.EXACTK, which is close but specifically for inclusion-exclusion "exactly k" events, not the broader function-vs-permutation discrimination this item tests.

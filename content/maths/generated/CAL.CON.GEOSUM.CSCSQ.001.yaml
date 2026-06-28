@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: CAL.CON.GEOSUM.CSCSQ.001
+
+fingerprint:
+  topic: CAL
+  subtopic: CON
+  idea: GEOSUM
+  sub_idea: CSCSQ
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $g(x)=\displaystyle\lim_{n\to\infty}\sum_{k=0}^{n}(\cos x)^{2k}$ for $x\in(0,2\pi)$ (wherever the limit exists in $\mathbb R$). Which of the following is/are correct?
+
+  (A) The global minimum of $g$ on its domain is attained at exactly three points.
+
+  (B) $\displaystyle\lim_{x\to\pi}g(x)$ exists in $\mathbb R$.
+
+  (C) The largest $c>0$ such that $g$ is continuous on $(0,c)$ is $c=\pi$.
+
+  (D) $g$ is bounded on every closed subinterval $[\alpha,\beta]\subset(0,\pi)$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  Recognize the infinite series as a geometric series in $r=\cos^{2}x$, which converges iff $\cos^{2}x<1$, i.e. iff $x\not\equiv 0\pmod{\pi}$. So the natural domain inside $(0,2\pi)$ is $(0,\pi)\cup(\pi,2\pi)$ and
+  $$g(x)=\frac{1}{1-\cos^{2}x}=\csc^{2}x.$$
+  Everything else is reading off properties of $\csc^{2}x$.
+
+  ### Working
+  **Limit at $\pi$ (B).** As $x\to\pi$, $\sin x\to 0$, so $\csc^{2}x\to+\infty$. The limit does not exist in $\mathbb R$, so $\pi$ is an essential (non-removable) singularity. **(B) is false.**
+
+  **Continuity span (C).** On $(0,\pi)$, $\sin x>0$, so $\csc^{2}x$ is a composition of continuous functions and is continuous. At $x=\pi$ the function is not even defined and blows up. So the largest $c>0$ for which $g$ is continuous throughout $(0,c)$ is $c=\pi$. **(C) is true.**
+
+  **Boundedness on closed subintervals of $(0,\pi)$ (D).** If $[\alpha,\beta]\subset(0,\pi)$ is closed, then $\sin x$ attains a positive minimum $m=\min_{[\alpha,\beta]}\sin x>0$ (continuous on a compact set, no zeros). Hence $\csc^{2}x\le 1/m^{2}$ on $[\alpha,\beta]$. **(D) is true.**
+
+  **Global minimum (A).** On the domain $(0,2\pi)\setminus\{\pi\}$, $\csc^{2}x\ge 1$ with equality iff $|\sin x|=1$, i.e. $x=\pi/2$ or $x=3\pi/2$. That is **two** points, not three. **(A) is false.**
+
+  **Answer: (C), (D).**
+
+wrong_paths:
+  - path: "Treats $x=\\pi$ as a removable discontinuity because $\\cos^{2}\\pi=1$ makes the sum 'collapse'; concludes the limit at $\\pi$ exists."
+    landed_on_option: "B"
+    diagnosis: "Confuses divergence of the geometric series at $r=1$ with a finite value. The partial sums $1+1+\\cdots+1=n+1$ diverge, so $g(\\pi)$ is undefined and the limit at $\\pi$ is $+\\infty$, not a real number."
+  - path: "Counts global minima by including $x=\\pi$ as a third minimizer, or counts endpoints of the open interval."
+    landed_on_option: "A"
+    diagnosis: "Forgets that $\\pi$ is excluded from the domain (series diverges) and that the interval $(0,2\\pi)$ is open. Only $\\pi/2$ and $3\\pi/2$ qualify."
+  - path: "Believes $g$ is unbounded on every subinterval of $(0,\\pi)$ because $\\csc^{2}x\\to\\infty$ near the boundary."
+    landed_on_option: "(D rejected)"
+    diagnosis: "Misreads 'closed subinterval $[\\alpha,\\beta]\\subset(0,\\pi)$': closed inside open means $\\alpha>0$ and $\\beta<\\pi$, so $\\sin x$ stays bounded away from zero by compactness."
+
+review_notes: |
+  Tests recognition of a geometric-series-defined function, plus careful reading of domain, continuity, and boundedness on a compact subinterval. The (D) trap (closed-in-open vs. closed-up-to-boundary) is the JEE-style edge-case trigger. Needs taxonomy extension: CAL.CON has no IDEA codes yet — proposing CAL.CON.GEOSUM (geometric-sum-defined function -> closed form) with sub-idea CSCSQ ($\csc^{2}$ from $1/(1-\cos^{2}x)$).

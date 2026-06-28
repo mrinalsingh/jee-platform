@@ -1,0 +1,123 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.009
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 330
+  R3_seconds: 240
+  R4_seconds: 180
+
+source_metadata:
+  jee_authenticity_score: 8.7
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.7
+    reviewed_at: "2026-06-14"
+    notes: "log-substitution + 4-condition location-of-roots"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613b_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a$ be a real parameter. The equation
+  $$ (\log_3 x)^2 - (a+2)\log_3 x + (2a-1) = 0 $$
+  has both of its real roots in $x$ lying strictly between $1$ and $27$.
+  Which of the following statement(s) is/are correct?
+
+  **(A)** The set of admissible $a$ is the open interval $\left(\tfrac{1}{2},\, 2\right)$.
+
+  **(B)** For every admissible $a$, the larger of the two $x$-roots is strictly greater than $9$.
+
+  **(C)** For every admissible $a$, the sum of the two $x$-roots equals $3^{\,a+2}$.
+
+  **(D)** The set of admissible $a$ is the open interval $(-2,\, 4)$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  Substitute $t = \log_3 x$. The window $1 < x < 27$ becomes $0 < t < 3$, and the problem reduces to
+  the classical location-of-roots task: find all $a$ such that the quadratic
+  $$ g(t) = t^2 - (a+2)t + (2a-1) $$
+  has *both* roots in the open interval $(0,3)$. This requires the FULL four-condition test
+  (sign of $g$ at each endpoint, non-negative discriminant, vertex inside the interval) — not just
+  the vertex condition.
+
+  ### Working
+  With leading coefficient $+1$, both roots lie in $(0,3)$ iff:
+
+  (i) $g(0) > 0$: $\;2a - 1 > 0 \Rightarrow a > \tfrac{1}{2}$.
+
+  (ii) $g(3) > 0$: $\;9 - 3(a+2) + (2a-1) = 2 - a > 0 \Rightarrow a < 2$.
+
+  (iii) Discriminant $\Delta \ge 0$: $\;\Delta = (a+2)^2 - 4(2a-1) = (a-2)^2 + 4 > 0$ for every real $a$. Automatic.
+
+  (iv) Vertex $\dfrac{a+2}{2} \in (0,3)$: $\;-2 < a < 4$.
+
+  Intersecting (i)–(iv): $a \in \left(\tfrac{1}{2}, 2\right)$. So **(A)** is TRUE and **(D)** is FALSE
+  (it reports only the vertex condition).
+
+  ### Option (B): size of the larger $x$-root
+  By Vieta on $g(t)$, the $t$-roots sum to $a+2$, so the larger is
+  $$ t^{*} = \frac{(a+2) + \sqrt{(a-2)^2 + 4}}{2}. $$
+  Claim: $t^{*} > 2$ on the admissible set $\left(\tfrac{1}{2}, 2\right)$. If $t^{*} = 2$, then
+  $\sqrt{(a-2)^2 + 4} = 2 - a$; squaring gives $(a-2)^2 + 4 = (2-a)^2$, i.e. $4 = 0$ — contradiction.
+  Continuity plus a check (e.g. $a = 1 \Rightarrow t^{*} = \tfrac{3 + \sqrt{5}}{2} \approx 2.618 > 2$)
+  forces $t^{*} > 2$ throughout. Hence $x_{\max} = 3^{\,t^{*}} > 3^{2} = 9$. **(B)** is TRUE.
+
+  ### Option (C): Vieta confusion
+  By Vieta on the $t$-quadratic, $t_1 + t_2 = a+2$, so the **product** of the $x$-roots is
+  $x_1 x_2 = 3^{t_1} \cdot 3^{t_2} = 3^{t_1+t_2} = 3^{a+2}$.
+  The **sum** of the $x$-roots is $3^{t_1} + 3^{t_2}$, which is not generally equal to $3^{a+2}$.
+  Quick check at $a = 1$: $3^{a+2} = 27$, while $3^{t_1} + 3^{t_2} \approx 3^{0.38} + 3^{2.62} \approx 1.51 + 17.49 \approx 19.0$.
+  **(C)** is FALSE — it swaps sum and product.
+
+  ### Conclusion
+  Correct options: **(A)** and **(B)**.
+
+wrong_paths:
+  - path: "Applies ONLY the vertex condition $-2 < \\tfrac{a+2}{2} < 3$ (equivalently $-2 < a < 4$) and forgets the two endpoint-sign tests $g(0)>0$, $g(3)>0$. Reports the admissible set as $(-2,4)$."
+    landed_on_option: "D (and rejects A)"
+    diagnosis: "TRAP-PARTIAL on the 4-condition root-location test — drops $g(0)>0$ and $g(3)>0$. The vertex/discriminant pair is necessary but far from sufficient for 'both roots in an interval'. Lands on D, the answer engineered to bait this exact omission."
+  - path: "Reads 'sum of $x$-roots' as Vieta's $-(\\text{linear coeff})$ applied to the original log-quadratic: confuses the $t$-sum $a+2$ with the $x$-sum and accepts (C), since $3^{t_1+t_2}=3^{a+2}$ does hold for the PRODUCT $x_1 x_2$."
+    landed_on_option: "A, B, C"
+    diagnosis: "Vieta-on-the-wrong-quantity: the identity $3^{t_1+t_2}=3^{a+2}$ is the $x$-PRODUCT, not the $x$-sum. Picks C as a 'bonus' true statement and gets penalised under JEE-Advanced multi-correct partial marking."
+  - path: "Computes the location interval $(1/2,2)$ correctly but on (B) only verifies $t^{*} > 2$ at a single value of $a$ (e.g. $a = 1$) and worries about the unchecked endpoints, so flags (B) as 'not always true' and rejects it."
+    landed_on_option: "A only"
+    diagnosis: "Conservatism about a borderline option: misses the algebraic impossibility argument ($\\sqrt{(a-2)^2+4}=2-a \\Rightarrow 4=0$) that rules out $t^{*}=2$ everywhere on the open admissible set. Drops B."
+
+review_notes: |
+  Classical log-substitution into a parameter-quadratic with the full 4-condition location-of-roots
+  test. Fingerprint sits squarely on ALG.QUA.ROOTLOC.SIGNLOC: after $t = \log_3 x$ the entire problem
+  is sign-location on a real quadratic with window $(0,3)$. The trap is TRAP-PARTIAL — option D is
+  engineered to catch students who apply only the vertex/discriminant pair, and option C swaps Vieta
+  sum vs. product after exponentiation. Difficulty T4 reflects the multi-step fusion (log substitution
+  + sign-location + Vieta-exponent care + algebraic-impossibility argument for (B)).

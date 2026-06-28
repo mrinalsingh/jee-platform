@@ -1,0 +1,88 @@
+schema_version: 1
+
+question_code: PRB.DSC.UNIFENUM.DETCOLLAPSE.001
+
+fingerprint:
+  topic: PRB
+  subtopic: DSC
+  idea: UNIFENUM
+  sub_idea: DETCOLLAPSE
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 420   # ~7 min — first time: must see the det collapses, then hand-tally 27 outcomes
+  R2_seconds: 300   # ~5 min — knows to reduce to |p-q+r|; tally still careful
+  R3_seconds: 180   # ~3 min — fluent reduction, organised count by symmetry
+  R4_seconds: 120   # ~2 min — exam pace; checks each option against a quick distribution
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathbf{u}=(1,1,0)$, $\mathbf{v}=(0,1,1)$ and $\mathbf{w}=(p,q,r)$, where $p,q,r$ are chosen independently and uniformly from $\{0,1,2\}$. The parallelepiped on $\mathbf{u},\mathbf{v},\mathbf{w}$ has volume $V=\big|\,[\mathbf{u}\ \mathbf{v}\ \mathbf{w}]\,\big|$. Which of the following are correct?
+
+  - **(A)** $P(\mathbf{u},\mathbf{v},\mathbf{w}\ \text{are coplanar})=\dfrac{1}{3}$
+  - **(B)** $P(V=1)=\dfrac{10}{27}$
+  - **(C)** $P(V\ge 2)=\dfrac{11}{27}$
+  - **(D)** $P(V\le 1)=\dfrac{1}{2}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### Collapse the triple product
+  The scalar triple product is the determinant of the matrix with rows $\mathbf{u},\mathbf{v},\mathbf{w}$:
+  $$
+  [\mathbf{u}\ \mathbf{v}\ \mathbf{w}]
+  =\det\!\begin{pmatrix}1&1&0\\0&1&1\\p&q&r\end{pmatrix}
+  = 1\cdot(r-q)-1\cdot(0-p)+0 = p-q+r .
+  $$
+  So $V=\lvert p-q+r\rvert$, evaluated over the $3^3=27$ equally-likely triples $(p,q,r)\in\{0,1,2\}^3$.
+
+  ### The distribution of $D=p-q+r$
+  Here $p+r$ ranges over $0..4$ and $q$ over $0..2$, so $D=p-q+r$ ranges over $-2..4$. Tally how many of the $27$ outcomes give each value of $D$ (using the counts of $p+r$: value $0,1,2,3,4$ occurs $1,2,3,2,1$ times respectively, and each $q$ once):
+
+  | $D$ | $-2$ | $-1$ | $0$ | $1$ | $2$ | $3$ | $4$ |
+  |---|---|---|---|---|---|---|---|
+  | count | $1$ | $3$ | $6$ | $7$ | $6$ | $3$ | $1$ |
+
+  (Total $1+3+6+7+6+3+1=27$.) Now read off $V=|D|$.
+
+  ### Evaluate each option
+  - **Coplanar** $\iff D=0$: $6$ outcomes, so $P=\dfrac{6}{27}=\dfrac{2}{9}\neq\dfrac{1}{3}$. **(A) is false.**
+  - $V=1 \iff D=\pm 1$: $7+3=10$ outcomes, so $P(V=1)=\dfrac{10}{27}$. **(B) is true.**
+  - $V\ge 2 \iff |D|\ge 2$: $(1+3)+(6+1)=$ for $D\in\{-2,2,3,4\}$ that is $1+6+3+1=11$ outcomes, so $P(V\ge 2)=\dfrac{11}{27}$. **(C) is true.**
+  - $V\le 1 \iff |D|\le 1$: $6+10=16$ outcomes, so $P=\dfrac{16}{27}\neq\dfrac{1}{2}$. **(D) is false.**
+
+  As a check, $\dfrac{6}{27}+\dfrac{10}{27}+\dfrac{11}{27}=\dfrac{27}{27}=1$ (coplanar, $V=1$, $V\ge2$ partition the sample space). Correct options: **(B), (C)**.
+
+wrong_paths:
+  - path: "Estimates the coplanarity probability by symmetry of the seven values $D\\in\\{-2,\\dots,4\\}$ as 'one of seven equally likely, but the middle is favored,' guessing $1/3$ — or miscounts $D=0$ as $9$ instead of $6$ outcomes, giving $9/27=1/3$."
+    landed_on_option: "Marks (A)."
+    diagnosis: "Treats the seven values of $D$ as if (near-)equally likely instead of using the true triangular-style counts $1,3,6,7,6,3,1$; the correct coplanar probability is $6/27=2/9$, not $1/3$. TRAP-PARTIAL near-miss."
+  - path: "Computes $P(V\\le 1)$ by adding $D=0$ and $D=\\pm 1$ but drops one of the $\\pm 1$ tails (counts only $D=0,1$, i.e. $6+7=13$, or rounds $16/27\\approx 0.59$ down to $1/2$)."
+    landed_on_option: "Marks (D)."
+    diagnosis: "Off-by-one in the symmetric count of $|D|=1$, or forces the clean-looking $1/2$. Correct value is $16/27$. TRAP-PARTIAL near-miss baiting the 'nice fraction'."
+  - path: "Forgets the absolute value and works with the signed $D=p-q+r$ directly, e.g. computes $P(D=1)=7/27$ for 'V=1' and $P(D\\ge 2)=10/27$ for 'V\\ge2'."
+    landed_on_option: "Rejects (B) and (C) as wrong, possibly marks nothing or only near-miss (A)/(D)."
+    diagnosis: "Volume is $|[\\mathbf u\\,\\mathbf v\\,\\mathbf w]|$, so the sign must be folded in: $V=1$ needs $D=\\pm1$ (10 outcomes) and $V\\ge2$ needs $|D|\\ge2$ (11 outcomes). Dropping $|\\cdot|$ undercounts both correct options."
+
+review_notes: |
+  - Core skill: recognise that the parallelepiped volume / scalar triple product collapses to the signed linear form $p-q+r$, then this becomes a pure discrete-uniform counting problem over $\{0,1,2\}^3$ (27 outcomes). The geometry (coplanarity, volume) is surface dressing over a finite sample space.
+  - NEW taxonomy needed: PRB has only PRB.COMP so far (inclusion-exclusion on event probabilities), which does not cover classical equally-likely enumeration. Proposed PRB.DSC / UNIFENUM / DETCOLLAPSE — see extension_note. If MS prefers to file this under VEC (scalar triple product) or MAT (determinant), the surface is shared but the tested IDEA is the probability enumeration, so PRB is the better TOPIC.
+  - Difficulty T2: each step is standard (one 3x3 determinant, one careful 27-outcome tally). The only failure modes are arithmetic/counting slips, which the option design (TRAP-PARTIAL) deliberately rewards — A and D are 'nice-fraction' near-misses to $2/9$ and $16/27$.
+  - Distractor check: A,B,C,D are independently checkable; key is exactly {B,C}. The three probabilities $6/27,10/27,11/27$ sum to 1, giving a self-consistency check authored into the solution.
+  - Authored times are estimates pending empirical calibration; the binding constraint at exam pace is an error-free 27-outcome tally, not any conceptual hurdle.

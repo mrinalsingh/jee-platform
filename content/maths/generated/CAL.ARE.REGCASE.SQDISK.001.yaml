@@ -1,0 +1,81 @@
+schema_version: 1
+
+question_code: CAL.ARE.REGCASE.SQDISK.001
+
+fingerprint:
+  topic: CAL
+  subtopic: ARE
+  idea: REGCASE
+  sub_idea: SQDISK
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A(r)=\bigl|\{(x,y):|x|+|y|\le 2,\ x^{2}+y^{2}\ge r^{2}\}\bigr|$ denote the area of the part of the square $|x|+|y|\le 2$ that lies outside the closed disk of radius $r$ centred at the origin. Which of the following statements is/are correct?
+
+  - (A) $A(1)=8-\pi$
+  - (B) $A(\sqrt{2})=8-2\pi$
+  - (C) $A(r)=0$ for all $r\ge 2$
+  - (D) $A(\sqrt{3})=8-3\pi+12\arccos\sqrt{\tfrac{2}{3}}-4\sqrt{2}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  The square $|x|+|y|\le 2$ has area $8$, inscribed-circle radius $\sqrt{2}$ (perpendicular distance from $O$ to each edge $x+y=\pm 2$, $-x+y=\pm 2$) and circumscribed-circle radius $2$. The value of $A(r)=\text{area(square)}-\text{area(square}\cap\text{disk)}$ therefore falls into three regimes according to where $r$ sits relative to $\sqrt{2}$ and $2$.
+
+  ### Working
+  **Regime 1: $0\le r\le \sqrt{2}$.** The disk lies entirely inside the square, so
+  $$A(r)=8-\pi r^{2}.$$
+  - At $r=1$: $A(1)=8-\pi$, confirming **(A)**.
+  - At $r=\sqrt{2}$: $A(\sqrt{2})=8-2\pi$, confirming **(B)** (the disk is inscribed, touching but not crossing the edges).
+
+  **Regime 2: $\sqrt{2}<r<2$.** The disk now pokes out through each of the four edges of the square. By symmetry the four circular caps cut off by the four edges are congruent. The cap beyond the edge $x+y=2$ is bounded by the chord at distance $\sqrt{2}$ from $O$, so its area is
+  $$r^{2}\arccos\!\frac{\sqrt{2}}{r}-\sqrt{2}\sqrt{r^{2}-2}.$$
+  The area of the disk that lies inside the square is therefore
+  $$\pi r^{2}-4\!\left(r^{2}\arccos\!\frac{\sqrt{2}}{r}-\sqrt{2}\sqrt{r^{2}-2}\right),$$
+  whence
+  $$A(r)=8-\pi r^{2}+4 r^{2}\arccos\!\frac{\sqrt{2}}{r}-4\sqrt{2}\sqrt{r^{2}-2}.$$
+  At $r=\sqrt{3}$: $r^{2}=3$, $\sqrt{r^{2}-2}=1$, $\arccos\sqrt{2/3}$ remains, so
+  $$A(\sqrt{3})=8-3\pi+12\arccos\sqrt{\tfrac{2}{3}}-4\sqrt{2},$$
+  confirming **(D)**. Note that the naive "disk-inside" formula would give $8-3\pi<0$, a useful signal that the wrong regime was used.
+
+  **Regime 3: $r\ge 2$.** The disk now contains the entire square (since the square's farthest point from $O$ is at distance $2$), so $A(r)=0$, confirming **(C)**. The disk-inside formula $8-\pi r^{2}$ already turned negative for $r>\sqrt{8/\pi}$, another regime-boundary warning.
+
+  All four statements are true.
+
+wrong_paths:
+  - path: "Use the all-regime formula $A(r)=8-\\pi r^{2}$ even for $r>\\sqrt{2}$."
+    landed_on_option: "Accepts (A), (B), (C is wrong since $8-\\pi\\cdot 4=8-4\\pi\\ne 0$ but the candidate may still tick C from intuition); rejects (D)."
+    diagnosis: "Failure to detect that the disk has crossed the inscribed-circle threshold and now pokes out — classic TRAP-EDGE on the regime boundary $r=\\sqrt{2}$."
+  - path: "Compute (C) by checking only $r=\\sqrt{2}$, where the disk merely touches the edges, and conclude the disk already covers the square."
+    landed_on_option: "Marks (C) but with the wrong threshold $r\\ge\\sqrt{2}$ instead of $r\\ge 2$; may then reject (B)."
+    diagnosis: "Confuses 'disk touches all edges' with 'disk contains all vertices'. The vertices are at distance $2$, not $\\sqrt{2}$, from the origin."
+  - path: "For $r=\\sqrt{3}$ use the circular-segment area $\\tfrac12 r^{2}(\\theta-\\sin\\theta)$ with $\\theta=2\\arccos(\\sqrt2/r)$ but forget the factor $4$ for the four edges."
+    landed_on_option: "Lands on $A(\\sqrt3)=8-\\pi\\cdot 3+3\\arccos\\sqrt{2/3}-\\sqrt 2$, a value that matches none of the options; user rejects (D) wrongly."
+    diagnosis: "Symmetry-counting slip: only one cap area subtracted instead of four. This is the standard TRAP-PARTIAL on symmetric area problems."
+
+review_notes: |
+  Calibrated as T4: needs careful regime detection at $r=\sqrt{2}$ and $r=2$, plus a circular-cap area formula for the middle regime. Uses a fresh CAL.ARE.REGCASE.SQDISK code (taxonomy extension needed) — semantics: area of square-minus-disk by parameter case analysis. If the taxonomy already has a generic "area-by-cases" code, prefer that and retag.

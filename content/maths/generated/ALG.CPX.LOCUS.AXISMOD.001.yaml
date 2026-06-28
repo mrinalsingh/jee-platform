@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: ALG.CPX.LOCUS.AXISMOD.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: LOCUS
+  sub_idea: AXISMOD
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $S=\{z\in\mathbb{C}\setminus\{0\}:\ |z^2-4i|=|z^2+4i|\ \text{and}\ |z|^4-4|z|^2-5=0\}$.
+
+  **(A)** $|S|=4$
+
+  **(B)** $\displaystyle\prod_{z\in S} z=-25$
+
+  **(C)** $\displaystyle\sum_{z\in S} z=2\sqrt 5$
+
+  **(D)** every $z\in S$ is real
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  $|z^2-4i|=|z^2+4i|$ says $z^2$ is equidistant from $4i$ and $-4i$, so $z^2\in\mathbb{R}$. Then $\operatorname{Im}(z^2)=2xy=0$ forces $z$ to lie on a coordinate axis (either real or purely imaginary).
+
+  ### Working
+  The modulus condition is a quadratic in $u=|z|^2$:
+  $$u^2-4u-5=(u-5)(u+1)=0.$$
+  Since $u=|z|^2\ge 0$, we must take $u=5$ (rejecting $u=-1$ — the admissibility trap), so $|z|=\sqrt 5$.
+
+  Combining with "$z$ on a coordinate axis" gives
+  $$S=\{\sqrt 5,\ -\sqrt 5,\ i\sqrt 5,\ -i\sqrt 5\}.$$
+
+  - $|S|=4$ — **(A) correct**.
+  - Product $=(\sqrt 5)(-\sqrt 5)(i\sqrt 5)(-i\sqrt 5)=(-5)\cdot(-i^2\cdot 5)=(-5)(5)=-25$ — **(B) correct**.
+  - Sum $=\sqrt 5-\sqrt 5+i\sqrt 5-i\sqrt 5=0\ne 2\sqrt 5$ — **(C) false**.
+  - Two elements $\pm i\sqrt 5$ are non-real — **(D) false**.
+
+  **Answer: (A), (B).**
+
+wrong_paths:
+  - path: "Solve $u^2-4u-5=0$ and keep both roots $u=5,-1$, then for $u=-1$ write $|z|^2=-1\\Rightarrow |z|=i$ and conclude 8 elements lie on the two axes."
+    landed_on_option: "A wrongly rejected, leading to no boxed (A) selection"
+    diagnosis: "Forgetting that $|z|^2\\ge 0$ admits only $u=5$ (TRAP-EDGE on the modulus admissibility)."
+  - path: "Read $|z^2-4i|=|z^2+4i|$ as '$z$ equidistant from $\\pm 2\\sqrt i$' and conclude $z$ is real only, missing the imaginary-axis branch."
+    landed_on_option: "D"
+    diagnosis: "Mis-translates the locus on $z^2$ as a locus on $z$; loses the $z=iy$ branch where $z^2=-y^2\\in\\mathbb R$."
+  - path: "Compute sum by taking only the real elements $\\sqrt 5,-\\sqrt 5$ and the magnitude $|i\\sqrt 5+(-i\\sqrt 5)|$ wrongly added as $2\\sqrt 5$."
+    landed_on_option: "C"
+    diagnosis: "Confuses 'sum of moduli' with 'sum of elements'; mirrors the option's bait value $2\\sqrt 5$."
+
+review_notes: |
+  Multi-correct on complex-locus + modulus quadratic. Uses SURF-SET (problem framed via a set $S$) and TRAP-EDGE (the $u=-1$ extraneous root from modulus quadratic). Idea = LOCUS on $z^2$ equidistant from conjugate points giving $z^2\in\mathbb R$; sub-idea AXISMOD = combining "axis of $z$" with a fixed modulus $|z|=\sqrt 5$. Both LOCUS and AXISMOD are new under ALG.CPX — flag for taxonomy extension (no existing ALG.CPX subtopic codes were defined in the supplied list).

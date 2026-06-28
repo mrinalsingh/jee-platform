@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: CAL.DIF.ABSPROD.CORNCAN.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: ABSPROD
+  sub_idea: CORNCAN
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f(x)=(x^{2}-4)\,|x^{3}-6x^{2}+11x-6|+\dfrac{x}{1+|x|}$.
+
+  At which of the following points is $f$ NOT differentiable?
+
+  (A) $x=0$
+
+  (B) $x=2$
+
+  (C) $x=1$
+
+  (D) $x=3$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  Factor the cubic: $x^{3}-6x^{2}+11x-6=(x-1)(x-2)(x-3)$, so
+  $$|x^{3}-6x^{2}+11x-6|=|x-1|\cdot|x-2|\cdot|x-3|.$$
+  Also $x^{2}-4=(x-2)(x+2)$. Hence the product
+  $(x^{2}-4)\,|x^{3}-6x^{2}+11x-6|$ contains the factor
+  $$(x-2)\cdot|x-2|=\operatorname{sgn}(x-2)\,(x-2)^{2},$$
+  which is $C^{1}$ at $x=2$ (the corner from $|x-2|$ is cancelled by the linear factor $(x-2)$). So $f$ IS differentiable at $x=2$.
+
+  For the second piece $g(x)=x/(1+|x|)$: on each side of $0$ the derivative is $1/(1+|x|)^{2}$, and both one-sided derivatives equal $1$ at $x=0$, so $g$ is differentiable at $0$. The first piece at $x=0$ has $|x^{3}-6x^{2}+11x-6|=|(-1)(-2)(-3)|=6\ne 0$ in a neighbourhood of $0$, hence is smooth there. So $f$ IS differentiable at $x=0$.
+
+  At $x=1$ and $x=3$ the corner factors $|x-1|$ and $|x-3|$ are NOT cancelled: $(x^{2}-4)$ and the remaining two $|x-\cdot|$ factors are nonzero at these points. One checks the one-sided derivatives:
+  - At $x=1$: $L'(1)=25/4,\;R'(1)=-23/4$.
+  - At $x=3$: $L'(3)=-159/16,\;R'(3)=161/16$.
+
+  Since the one-sided derivatives differ, $f$ fails to be differentiable at $x=1$ and $x=3$.
+
+  Therefore the answer is (C), (D).
+
+wrong_paths:
+  - path: "Student counts every root of the cubic inside the absolute value as a non-differentiable point, ignoring that the outer factor $(x^{2}-4)$ supplies a $(x-2)$ that cancels the $|x-2|$ corner."
+    landed_on_option: "(B), (C), (D)"
+    diagnosis: "Misses the corner-cancellation $(x-2)|x-2|=\\operatorname{sgn}(x-2)(x-2)^2$ which is $C^1$."
+  - path: "Student notes the $|x|$ inside $x/(1+|x|)$ and marks $x=0$ as non-differentiable without computing one-sided derivatives, which both equal $1$."
+    landed_on_option: "(A), (C), (D)"
+    diagnosis: "Treats any occurrence of $|x|$ as automatically producing a corner; ignores that $x/(1+|x|)$ has matching one-sided slopes at $0$."
+  - path: "Student naively replaces $|x^{3}-6x^{2}+11x-6|$ by $(x^{3}-6x^{2}+11x-6)$ everywhere and concludes $f$ is differentiable on all of $\\mathbb{R}$ (no non-differentiable points among the listed)."
+    landed_on_option: "none of the four (selects nothing)"
+    diagnosis: "Forgets that taking absolute value of a polynomial creates corners at its simple real roots, except where an outer factor cancels them."
+
+review_notes: |
+  Multi-correct on differentiability of a product involving absolute value of a cubic times a quadratic, plus a smooth-looking but |.|-containing rational piece. The key skill being tested is "corner cancellation": $(x-a)\cdot|x-a|$ is $C^1$ at $a$. New axis-3/4 codes proposed:
+    - CAL.DIF.ABSPROD : differentiability of products of polynomials with absolute values of polynomials.
+    - CAL.DIF.ABSPROD.CORNCAN : the specific sub-idea of corner cancellation by a matching linear factor.
+  No existing CAL.DIF ideas in the taxonomy, so extension is necessary. T3 because the cancellation idea is non-obvious to most students and the $x/(1+|x|)$ piece is a deliberate trap.

@@ -1,0 +1,86 @@
+schema_version: 1
+
+question_code: VEC.PLN.NRMCNT.ANTPOD.001
+
+fingerprint:
+  topic: VEC
+  subtopic: PLN
+  idea: NRMCNT
+  sub_idea: ANTPOD
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 600   # ~10 min — first time: must realise n,-n collapse, then carefully enumerate orthogonal triples
+  R2_seconds: 420   # ~7  min — collapse idea recalled; triple-count still needs care
+  R3_seconds: 300   # ~5  min — fluent on the antipodal collapse and sign-pattern count
+  R4_seconds: 180   # ~3  min — exam pace, but the orthogonal-triple count keeps it honest
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Consider all planes through the origin of the form $ax+by+cz=0$ with $a,b,c\in\{-1,0,1\}$ and $(a,b,c)\neq(0,0,0)$. Two such equations describe the **same** plane exactly when one normal is a nonzero scalar multiple of the other. Which of the following are correct?
+
+  - (A) the number of distinct such planes equals $26$
+  - (B) the number of distinct such planes equals $13$
+  - (C) the number of unordered triples of these distinct planes whose three normals are mutually perpendicular equals $4$
+  - (D) the number of these distinct planes whose normal has all three coordinates nonzero equals $4$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### Setup
+  A plane through the origin is determined by its normal direction $\mathbf n=(a,b,c)$. Over $a,b,c\in\{-1,0,1\}$ there are $3^3-1=26$ **ordered** nonzero normals. But the scalar multiple $-\mathbf n$ gives the **same** plane, and within $\{-1,0,1\}^3$ the only nonzero scalar that keeps a normal in the set is $-1$. So the $26$ ordered normals pair up as $\{\mathbf n,-\mathbf n\}$.
+
+  ### (A) and (B): counting distinct planes
+  Each distinct plane corresponds to exactly one antipodal pair $\{\mathbf n,-\mathbf n\}$, so the number of distinct planes is
+  $$\frac{26}{2}=13.$$
+  Thus **(B) is correct** and **(A) is the factor-of-2 trap (false)** — $26$ counts ordered normals, not planes.
+
+  ### (D): normals with all three coordinates nonzero
+  These are the normals $(\pm1,\pm1,\pm1)$, i.e. the $2^3=8$ sign patterns. They collapse in $\pm$ pairs to
+  $$\frac{8}{2}=4$$
+  distinct planes. **(D) is correct.**
+
+  ### (C): mutually-perpendicular unordered triples
+  We need unordered triples $\{P_1,P_2,P_3\}$ of the $13$ planes whose normals satisfy $\mathbf n_i\cdot\mathbf n_j=0$ for all $i\neq j$.
+
+  - The coordinate triple $\{(1,0,0),(0,1,0),(0,0,1)\}$ is mutually perpendicular — that is one triple.
+  - For each coordinate axis taken as one normal, there is exactly one "tilted" orthogonal completion built from two face-diagonal normals. For instance, with $(1,0,0)$ fixed, $(0,1,1)$ and $(0,1,-1)$ are mutually perpendicular and both perpendicular to $(1,0,0)$, giving $\{(1,0,0),(0,1,1),(0,1,-1)\}$. The analogous completions about the $y$- and $z$-axes give one triple each.
+
+  A direct check over the $13$ planes confirms exactly $4$ such unordered triples in total. **(C) is correct.**
+
+  ### Conclusion
+  Correct options: **(B), (C), (D)**.
+
+wrong_paths:
+  - path: "Counts the ordered nonzero normals $3^3-1=26$ and reports that as the number of distinct planes, forgetting that $\\mathbf n$ and $-\\mathbf n$ describe the same plane."
+    landed_on_option: "Selects A (and likely drops B)."
+    diagnosis: "Factor-of-2 antipodal-collapse trap (TRAP-PARTIAL): a plane is an unordered direction, so the 26 ordered normals collapse to 13 planes. A is the bait that pairs against the correct B."
+  - path: "For (D) counts all normals $(\\pm1,\\pm1,\\pm1)$ as $2^3=8$ distinct planes without collapsing the $\\pm$ pairs, or conversely double-collapses."
+    landed_on_option: "Rejects D (expecting 8) — gets D wrong."
+    diagnosis: "Same antipodal collapse applied inconsistently: the 8 all-nonzero sign patterns form 4 antipodal pairs, hence 4 distinct planes, the same /2 rule as part (B)."
+  - path: "For (C) finds only the coordinate-axis triple $\\{(1,0,0),(0,1,0),(0,0,1)\\}$ and concludes the count is $1$, missing the three tilted face-diagonal completions."
+    landed_on_option: "Rejects C (answers 1 instead of 4)."
+    diagnosis: "Incomplete enumeration: each coordinate axis admits one orthogonal completion via two perpendicular face-diagonals, adding three more triples for a total of 4. Requires systematic dot-product checking, not just the obvious orthonormal frame."
+
+review_notes: |
+  - Imported verbatim from sheet 0609d, Q2 (cross-chapter PnC x Vectors/3D batch). Key [B, C, D] independently re-verified by brute force over all 26 normals: distinct planes = 13, mutually-perpendicular unordered triples = 4, all-coordinate-nonzero distinct planes = 4. Option A (26) is the deliberate ordered-normal trap.
+  - TAXONOMY EXTENSION REQUIRED before import: TOPIC VEC exists but has no SUBTOPIC. New SUBTOPIC VEC.PLN, IDEA VEC.PLN.NRMCNT, SUB-IDEA VEC.PLN.NRMCNT.ANTPOD (definitions supplied in extension_note). The importer will reject this fingerprint until maths.yaml is extended.
+  - parallel_form=false: this is the first item on the new VEC.PLN.NRMCNT axis, so it is variety, not a mastery variant of any existing fingerprint.
+  - T3 (hard standard): the antipodal collapse is standard once seen, but the exhaustive mutually-perpendicular-triple count (part C) is the genuine discriminator and the reason this is not T2.
+  - Surface tagged SURF-SET (heavy index/counting over the coefficient set); trap TRAP-PARTIAL because the multi-correct structure pits the trap distractor A directly against the correct B for partial-marking play.

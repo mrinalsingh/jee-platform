@@ -1,0 +1,96 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.004
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $P$ be the set of all real $a$ for which the inequality
+  $$4^{x}-a\cdot 2^{x}-a+3\le 0$$
+  has at least one real solution $x$. Then which of the following are TRUE?
+
+  (A) At $a=2$ the inequality has a unique solution $x$.
+
+  (B) $P=[2,\infty)$.
+
+  (C) At $a=3$ the solution set is unbounded below.
+
+  (D) At $a=3$ the solution set is a bounded interval.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Substitute $t=2^{x}>0$ and convert the exponential inequality into a quadratic in $t$:
+  $$h(t):=t^{2}-a\,t+(3-a)\le 0.$$
+  We need this to hold for **some** $t>0$. So the question becomes: for which $a$ does the
+  parabola $h(t)$ go below zero in the region $t>0$? This is a textbook "positive-root location"
+  problem dressed in exponential clothing.
+
+  ### Working
+  **Discriminant.** $\Delta = a^{2}-4(3-a)=a^{2}+4a-12=(a+6)(a-2)$. Real $t$-roots require
+  $\Delta\ge 0$, i.e. $a\ge 2$ or $a\le -6$.
+
+  **Sign of larger root.** The roots are $t_{\pm}=\dfrac{a\pm\sqrt{\Delta}}{2}$.
+
+  - If $a\le -6$: then $\sqrt{\Delta}\le|a|=-a$, so $t_{+}\le\dfrac{a+(-a)}{2}=0$. No positive
+    $t$ — inequality has no real $x$.
+  - If $a\ge 2$: then $t_{+}\ge \dfrac{a}{2}>0$, so there is a positive $t$ in $[t_-,t_+]$
+    where $h\le 0$ — real $x$ exists.
+
+  Hence $P=[2,\infty)$. **(B) is true.**
+
+  **At $a=2$:** $h(t)=t^{2}-2t+1=(t-1)^{2}\le 0 \iff t=1 \iff 2^{x}=1 \iff x=0$. Unique
+  solution. **(A) is true.**
+
+  **At $a=3$:** $h(t)=t^{2}-3t=t(t-3)\le 0 \iff t\in[0,3]$. Since $t=2^{x}>0$, we get
+  $t\in(0,3]$, i.e. $x\in(-\infty,\log_{2}3]$. This is **unbounded below**, so **(C) is true**,
+  and the set is **not** a bounded interval, so **(D) is false**.
+
+  **Answer: (A), (B), (C).**
+
+wrong_paths:
+  - path: "Solves $\\Delta\\ge 0$ and stops, getting $a\\in(-\\infty,-6]\\cup[2,\\infty)$ as $P$ without checking that a positive root exists."
+    landed_on_option: "B marked false"
+    diagnosis: "Forgets the substitution constraint $t=2^{x}>0$. The $a\\le -6$ branch yields only non-positive $t$, so it must be discarded."
+  - path: "At $a=3$ solves $t(t-3)\\le 0$ as $t\\in[0,3]$ and reads $x\\in[\\log_{2}0,\\log_{2}3]$ as a bounded interval."
+    landed_on_option: "D"
+    diagnosis: "Treats $t=0$ as attainable for $2^{x}$; in fact $2^{x}>0$ strictly, so the lower endpoint becomes $x\\to-\\infty$ and the set is unbounded."
+  - path: "At $a=2$ writes $h(t)=(t-1)^{2}\\le 0$ and concludes there is no solution (mistaking the perfect square for strict positivity)."
+    landed_on_option: "A marked false"
+    diagnosis: "Misses the equality case $(t-1)^{2}=0$ giving the unique $t=1$, hence unique $x=0$. TRAP-PARTIAL on boundary equality."
+
+review_notes: |
+  Calibration: T3 (hard standard) — straightforward substitution but four independent option
+  checks each requiring a sign/edge argument. Sub-idea SIGNLOC fits: it is the sign of the larger
+  root of a parameterized quadratic that determines $P$. Surface SURF-PARAM (parameter $a$
+  drives the inequality). Trap TRAP-PARTIAL captures the boundary-equality and strict-positivity
+  pitfalls.

@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: ALG.BIN.WTDSUM.KSHIFT.001
+
+fingerprint:
+  topic: ALG
+  subtopic: BIN
+  idea: WTDSUM
+  sub_idea: KSHIFT
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For $(1+x)^{10}$, let
+  $$R=\sum_{k=0}^{10}\frac{1}{k+1}\binom{10}{k},\qquad P=\sum_{k=1}^{10}k\binom{10}{k},\qquad Q=\sum_{k=0}^{10}k^{2}\binom{10}{k}.$$
+
+  - (A) $R=\dfrac{2048}{11}$
+  - (B) $P=5120$
+  - (C) $Q=28160$
+  - (D) $\displaystyle\sum_{k=1}^{10}\frac{1}{k+1}\binom{10}{k}=\dfrac{2047}{11}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  Weighted binomial sums of the form $\sum k\binom{n}{k}$ and $\sum k^{2}\binom{n}{k}$ are evaluated by the absorption identity $k\binom{n}{k}=n\binom{n-1}{k-1}$ (and applying it twice for the $k^2$ sum). Sums of the form $\sum\frac{1}{k+1}\binom{n}{k}$ come from integrating $(1+x)^{n}$ on $[0,1]$, which gives $\frac{2^{n+1}-1}{n+1}$ — be careful about whether $k=0$ is included.
+
+  ### Working
+  **(B) $P$:** Using $k\binom{10}{k}=10\binom{9}{k-1}$,
+  $$P=\sum_{k=1}^{10}k\binom{10}{k}=10\sum_{j=0}^{9}\binom{9}{j}=10\cdot 2^{9}=5120.$$
+  So (B) is correct.
+
+  **(C) $Q$:** Apply absorption twice:
+  $$k^{2}\binom{10}{k}=k\cdot 10\binom{9}{k-1}=10\bigl[(k-1)+1\bigr]\binom{9}{k-1}=10\Bigl(9\binom{8}{k-2}+\binom{9}{k-1}\Bigr).$$
+  Hence
+  $$Q=10\bigl(9\cdot 2^{8}+2^{9}\bigr)=10\cdot 2^{8}(9+2)=10\cdot 11\cdot 256=28160.$$
+  (Equivalently $Q=n(n+1)2^{n-2}$ with $n=10$.) So (C) is correct.
+
+  **(A) $R$:** Integrate $(1+x)^{10}$ on $[0,1]$:
+  $$R=\sum_{k=0}^{10}\frac{1}{k+1}\binom{10}{k}=\int_{0}^{1}(1+x)^{10}\,dx=\frac{2^{11}-1}{11}=\frac{2047}{11}\ne\frac{2048}{11}.$$
+  So (A) is **false** — the "$-1$" was dropped.
+
+  **(D)** The sum in (D) starts at $k=1$, so we subtract the $k=0$ term $\frac{1}{1}\binom{10}{0}=1$:
+  $$\sum_{k=1}^{10}\frac{1}{k+1}\binom{10}{k}=R-1=\frac{2047-11}{11}=\frac{2036}{11}\ne\frac{2047}{11}.$$
+  So (D) is **false**.
+
+  **Correct options: (B), (C).**
+
+wrong_paths:
+  - path: "Compute $R=\\int_0^1(1+x)^{10}dx=\\frac{(1+x)^{11}}{11}\\Big|_0^1$ but evaluate the upper limit as $\\frac{2^{11}}{11}$ and forget to subtract the lower-limit $\\frac{1}{11}$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-EDGE: ignoring the lower-limit contribution in the FTC step yields $\\frac{2048}{11}$ instead of $\\frac{2047}{11}$. The off-by-one in the constant of integration is the very error (A) is designed to catch."
+  - path: "Assume the displayed sum in (D) equals $R$ because the summand looks identical and treat the lower index $k=1$ vs $k=0$ as cosmetic."
+    landed_on_option: "D"
+    diagnosis: "TRAP-EDGE / TRAP-PARTIAL: the $k=0$ term $\\frac{1}{1}\\binom{10}{0}=1$ is non-trivial; dropping it changes the value by $1=\\frac{11}{11}$, giving $\\frac{2036}{11}$ not $\\frac{2047}{11}$."
+  - path: "Compute $Q=\\sum k^2\\binom{10}{k}$ by writing $k^2\\binom{10}{k}=k\\cdot10\\binom{9}{k-1}$ and then carelessly summing $10\\sum k\\binom{9}{k-1}=10\\cdot 9\\cdot 2^{8}=23040$, forgetting that $k=(k-1)+1$."
+    landed_on_option: "Neither B nor C (lands on a value 23040, so student marks only B)"
+    diagnosis: "Single application of absorption captures only the $9\\binom{8}{k-2}$ piece and misses the extra $\\binom{9}{k-1}$ contribution; the correct expansion needs $k=(k-1)+1$ to split into two falling-index sums."
+
+review_notes: |
+  Classic binomial-sum multi-correct. Two true statements (B, C) test the absorption identity $k\binom{n}{k}=n\binom{n-1}{k-1}$ once and twice. The two false statements (A, D) are EDGE traps: an off-by-one in the FTC (A) and a missing $k=0$ term in the sum (D). Time budget is short because every part collapses by a one-line identity once seen; difficulty T3 reflects the combination of absorption + integration + careful boundary bookkeeping. New axis-3 code `WTDSUM` (weighted binomial sums) and axis-4 `KSHIFT` (k-absorption / index shift) — both proposed as taxonomy extensions; no existing ALG.BIN ideas listed in the taxonomy.

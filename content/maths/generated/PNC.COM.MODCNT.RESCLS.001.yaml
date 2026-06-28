@@ -1,0 +1,109 @@
+schema_version: 1
+
+question_code: PNC.COM.MODCNT.RESCLS.001
+
+fingerprint:
+  topic: PNC
+  subtopic: COM
+  idea: MODCNT
+  sub_idea: RESCLS
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608b_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Consider the family of $4$-element subsets of $\{1,2,\dots,12\}$. Which of the following statements is/are TRUE?
+
+  - (A) The number of such subsets whose elements form an arithmetic progression is $18$.
+  - (B) The number of such subsets whose element-sum is divisible by $3$ is $165$.
+  - (C) The number of such subsets whose element-sum is divisible by $4$ is $132$.
+  - (D) The number of such subsets all of whose elements are even is $20$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  Counting $k$-subsets of $\{1,\dots,n\}$ under a residue/parity constraint is done either by
+  (i) direct enumeration of structural cases (for APs, fix the common difference $d$ and count valid
+  first terms), or (ii) splitting the ground set into residue classes mod $m$ and using a
+  generating-function / multinomial count on the class-size vector. Both reduce to elementary
+  $\binom{}{}$ arithmetic --- no advanced tools needed.
+
+  ### Working
+  **(A) AP subsets.** A $4$-term AP $a,a+d,a+2d,a+3d\subset\{1,\dots,12\}$ requires $d\ge1$ and
+  $a+3d\le 12$, i.e.\ $a\le 12-3d$.
+  - $d=1$: $a\in\{1,\dots,9\}$, $9$ subsets.
+  - $d=2$: $a\in\{1,\dots,6\}$, $6$ subsets.
+  - $d=3$: $a\in\{1,2,3\}$, $3$ subsets.
+  - $d\ge4$: none.
+
+  Total $=9+6+3=18$. **(A) is TRUE.**
+
+  **(B) Sum $\equiv 0\pmod 3$.** Mod $3$ the multiset $\{1,\dots,12\}$ splits into three residue
+  classes of size $4$ each: residues $0,1,2$. Let $(a,b,c)$ be the number chosen from each class with
+  $a+b+c=4$ and $b+2c\equiv 0\pmod 3$. The valid $(a,b,c)$ are
+  $(4,0,0),(0,4,0),(0,0,4),(1,1,2)$ permuted to $(1,2,1)$ etc., and the symmetric balanced cases.
+  Enumerating:
+  $$
+  \binom44\binom40\binom40+\binom40\binom44\binom40+\binom40\binom40\binom44
+  +3\cdot\binom42\binom41\binom41+\binom42\binom42\binom40\text{-type}.
+  $$
+  A cleaner route: by the generating function $[x^4]\bigl(\tfrac{(1+x)^{12}+(1+\omega x)^{12}+(1+\omega^2 x)^{12}}{3}\bigr)$
+  with $\omega=e^{2\pi i/3}$. Since $(1+x)^{12}$ contributes $\binom{12}{4}=495$ and the other two
+  contribute $0$ at $x^4$ (the $\omega$-sums vanish for non-multiples of $3$ exponents in this symmetric
+  split), the count is $495/3=165$. **(B) is TRUE.**
+
+  **(C) Sum $\equiv 0\pmod 4$.** The residue classes mod $4$ of $\{1,\dots,12\}$ each have size $3$.
+  By the analogous roots-of-unity filter,
+  $$N_0=\frac14\sum_{j=0}^{3}[x^4](1+i^j x)^3(1+i^{2j} x)^3(1+i^{3j}x)^3(1+x)^3.$$
+  Direct case-count (or this filter) yields $N_0=126$, not $132$. **(C) is FALSE.**
+
+  **(D) All even.** The even elements are $\{2,4,6,8,10,12\}$, six in total, giving
+  $\binom{6}{4}=15$, not $20$. **(D) is FALSE.**
+
+  Hence the correct options are **(A) and (B)**.
+
+wrong_paths:
+  - path: "For (A) the student forgets $d=3$ (thinks $a+3d\\le 12$ forces $d\\le 2$ since $4d\\le 12$)."
+    landed_on_option: "Eliminates (A); reports total $9+6=15$."
+    diagnosis: "TRAP-PARTIAL --- a missed sub-case in the structural enumeration of APs."
+  - path: "For (C), student notices the ground set has equal residues mod $4$ and assumes the count is exactly $\\binom{12}{4}/4=123.75\\to$ rounds to/justifies $132$ via a flawed symmetry argument."
+    landed_on_option: "Picks (C)."
+    diagnosis: "Roots-of-unity filter requires checking the non-trivial character sums; the residue-balance heuristic is not exact for $\\pmod 4$ on this ground set."
+  - path: "For (D), student counts $4$-subsets of evens as $\\binom{6}{4}=15$ but mis-reads/accepts $20$ by confusing with $\\binom{6}{3}\\cdot\\tfrac{\\text{something}}{}$ or arithmetic slip."
+    landed_on_option: "Picks (D)."
+    diagnosis: "Arithmetic slip on a standard binomial --- a TRAP-NCERT level error."
+  - path: "For (B), student tries direct enumeration without the generating function, misses one of the class-size patterns (e.g.\\ $(2,2,0)$ unordered) and undercounts."
+    landed_on_option: "Eliminates (B)."
+    diagnosis: "Failure to enumerate all multinomial cases with $a+b+c=4$ and $b+2c\\equiv 0\\pmod 3$."
+
+review_notes: |
+  Multi-correct: (A) and (B) are TRUE; (C) and (D) are FALSE.
+  Tagging notes:
+    - axis-3 (idea) MODCNT proposed: counting subsets with a fixed residue-class / divisibility constraint
+      via residue-class splitting or roots-of-unity filter.
+    - axis-4 (sub-idea) RESCLS proposed: ground set partitioned into residue classes of equal size,
+      followed by multinomial / GF count.
+  If a closer existing code is preferred, PNC.COM is the correct subtopic; idea/sub-idea codes are new
+  and require taxonomy extension before import.

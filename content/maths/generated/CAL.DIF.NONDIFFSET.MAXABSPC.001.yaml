@@ -1,0 +1,91 @@
+schema_version: 1
+
+question_code: CAL.DIF.NONDIFFSET.MAXABSPC.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: NONDIFFSET
+  sub_idea: MAXABSPC
+  answer_type: NUM-INT
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For $x\in\mathbb{R}$ let $u(x)=\big\lvert x^{2}-2\lvert x\rvert\big\rvert$ and $f(x)=\max\{\,u(x),\ \lvert x\rvert\,\}$. Let $m$ be the number of points of $\mathbb{R}$ at which exactly one of $u$ and $f$ fails to be differentiable, and let $\displaystyle J=\int_{-3}^{3} f(x)\,dx$. The value of $m\cdot J$ equals \underline{\hspace{2.2cm}}.
+
+answer:
+  type: NUM-INT
+  value: 56
+
+solution: |
+  ### The IDEA
+  When taking absolute values and max of piecewise functions, non-differentiable points come from (i) zeros of the inner expression where the sign flips, and (ii) crossing points of the two functions inside the $\max$ where the slopes differ. Build the non-differentiability set for each function, then take the symmetric difference for "exactly one fails."
+
+  ### Working
+  Since both $u$ and $f$ are even, work on $x\ge 0$ and reflect.
+
+  **Non-differentiability of $u$.** For $x\ge 0$, $u(x)=|x^{2}-2x|=|x(x-2)|$. This is non-differentiable where $x^{2}-2x=0$ with a sign change of slope, i.e.\ at $x=0$ and $x=2$. By evenness, the full set is $\{-2,0,2\}$.
+
+  **Non-differentiability of $f=\max(u,|x|)$.** $f$ inherits non-differentiability from $u$ and from $|x|$, but only at points where that function attains the max; in addition $f$ is non-differentiable at points where $u(x)=|x|$ with unequal slopes.
+
+  For $x\ge 0$, solve $u(x)=x$:
+  - On $0\le x\le 2$: $u(x)=2x-x^{2}$, equation $2x-x^{2}=x\Rightarrow x(1-x)=0\Rightarrow x=0,1$.
+  - On $x\ge 2$: $u(x)=x^{2}-2x$, equation $x^{2}-2x=x\Rightarrow x(x-3)=0\Rightarrow x=3$.
+
+  At $x=1$ slopes are $u'=2-2x=0$ and $(|x|)'=1$: kink. At $x=3$ slopes are $u'=2x-2=4$ and $1$: kink. Also $x=0$ inherited.
+
+  Now, between crossings, determine which function is larger to see which kinks of $u$ survive in $f$:
+  - $0<x<1$: at $x=0.5$, $u=0.75>0.5=|x|$, so $f=u$; $u$'s kink at $x=0$ (already on the list) is shared.
+  - $1<x<2$: at $x=1.5$, $u=0.75<1.5=|x|$, so $f=|x|$; thus the kink of $u$ at $x=2$ is **hidden** (both one-sided derivatives of $f$ near $x=2$ equal $1$).
+  - $x>3$: $u=x^{2}-2x>x$, so $f=u$ there; the $|x|$ slope $1$ vs $u'=2x-2$ at $x=3$ gives the kink listed.
+
+  So on $x\ge 0$, $f$ is non-differentiable at $\{0,1,3\}$. By evenness, the full set is $\{-3,-1,0,1,3\}$.
+
+  **Symmetric difference.**
+  - $u$'s set: $\{-2,0,2\}$.
+  - $f$'s set: $\{-3,-1,0,1,3\}$.
+  - Common: $\{0\}$.
+  - Exactly one fails: $\{-3,-2,-1,1,2,3\}$, giving $m=6$.
+
+  **The integral.** Using evenness,
+  $$J=\int_{-3}^{3}f(x)\,dx=2\int_{0}^{3}f(x)\,dx=2\left(\int_{0}^{1}(2x-x^{2})\,dx+\int_{1}^{3}x\,dx\right).$$
+  Compute: $\int_{0}^{1}(2x-x^{2})\,dx=1-\tfrac13=\tfrac23$ and $\int_{1}^{3}x\,dx=\tfrac{9-1}{2}=4$. So $J=2\left(\tfrac23+4\right)=\tfrac{28}{3}$.
+
+  **Final.** $m\cdot J=6\cdot\tfrac{28}{3}=56$.
+
+wrong_paths:
+  - path: "Includes $x=0$ in the 'exactly one' set because student notes only that $f$ is non-differentiable at $0$ and forgets $u$ is also non-differentiable at $0$; gets $m=7$ and answer $7\\cdot 28/3$, then rounds or reports $65$ or $\\tfrac{196}{3}$."
+    landed_on_option: "65 or 196/3 (non-integer flag should warn student)"
+    diagnosis: "TRAP-EDGE: failure to test BOTH functions at the shared kink; the symmetric difference rule excludes shared points."
+  - path: "Misses the hidden kink: includes $x=\\pm 2$ in $f$'s non-diff set without checking that $|x|>u$ on $(1,2)$, concluding $f$'s set is $\\{-3,-2,-1,0,1,2,3\\}$. Then $u$'s set is $\\{-2,0,2\\}$, symmetric difference $\\{-3,-1,1,3\\}$ gives $m=4$, answer $4\\cdot 28/3$."
+    landed_on_option: "112/3 (non-integer)"
+    diagnosis: "A kink of an inner function is inherited by $\\max$ only where that function is the active branch; student forgot to test which is larger on $(1,2)$."
+  - path: "Sets up integral as $\\int_{-3}^{3}u(x)\\,dx$ instead of $f$, getting $J=2\\int_{0}^{3}|x^{2}-2x|\\,dx=2(\\tfrac{4}{3}+\\tfrac{4}{3})=\\tfrac{16}{3}$ then reports $6\\cdot \\tfrac{16}{3}=32$."
+    landed_on_option: "32"
+    diagnosis: "Confuses $u$ and $f$ in the integral; must use the max, which equals $u$ on $[0,1]$ and $|x|$ on $[1,3]$."
+  - path: "Misses $x=\\pm 3$ in $f$'s non-diff set by not noticing the slope mismatch where the curves recross; gets $f$'s set $=\\{-1,0,1\\}$, symmetric difference $=\\{-2,-1,1,2\\}$, $m=4$, answer $\\tfrac{112}{3}$."
+    landed_on_option: "112/3 (non-integer)"
+    diagnosis: "Failure to check all intersections of $u$ and $|x|$ across the domain; only spotted the inner one at $x=\\pm 1$."
+
+review_notes: |
+  Calibrated as T3: standard JEE technique (build non-diff sets, symmetric difference, piecewise integral) but with three concurrent pitfalls (shared kink at $0$, hidden kink at $\pm 2$, far kink at $\pm 3$). Two-stage answer ($m$ and $J$ combined) prevents partial-credit shortcuts. New axis-3/4 codes proposed: CAL.DIF.NONDIFFSET (non-differentiability set of composed abs/max) and sub-idea MAXABSPC (max of absolute-value piecewise) — needs taxonomy extension.

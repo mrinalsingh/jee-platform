@@ -1,0 +1,76 @@
+schema_version: 1
+
+question_code: SET.FUN.RNGDISC.RECIPSYM.001
+
+fingerprint:
+  topic: SET
+  subtopic: FUN
+  idea: RNGDISC
+  sub_idea: RECIPSYM
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $y=\dfrac{x^{2}+x+1}{x^{2}-x+1}$, $x\in\mathbb{R}$. Which of the following statements are correct?
+
+  - (A) range $=\left[\tfrac{1}{3},\,3\right]$
+  - (B) $\min y=-\tfrac{1}{3}$
+  - (C) $y$ attains all values of $\left[\tfrac{1}{3},\,3\right]$ except $y=1$
+  - (D) $(\max y)(\min y)=1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, D]
+
+solution: |
+  ### The IDEA
+  To find the range of a rational function $y=\dfrac{P(x)}{Q(x)}$ whose numerator and denominator are quadratics in $x$, rewrite the relation as a quadratic in $x$ with $y$ as a parameter and demand the discriminant be non-negative (real-$x$ condition). A bonus symmetry $x\mapsto -x$ here sends $y\mapsto 1/y$, forcing the extrema to be reciprocals.
+
+  ### Working
+  Cross-multiplying $y(x^{2}-x+1)=x^{2}+x+1$ gives
+  $$(y-1)x^{2}-(y+1)x+(y-1)=0.$$
+  For real $x$ the discriminant must satisfy
+  $$(y+1)^{2}-4(y-1)^{2}\ge 0 \;\Longrightarrow\; 3y^{2}-10y+3\le 0 \;\Longrightarrow\; y\in\left[\tfrac{1}{3},\,3\right].$$
+  At $y=1$ the equation degenerates to $-2x=0$, giving $x=0$; thus $y=1$ is attained. The endpoints $y=\tfrac{1}{3}$ (at $x=-1$) and $y=3$ (at $x=1$) are attained.
+
+  Hence (A) is **true** (range $=[\tfrac{1}{3},3]$) and (C) is **false** ($y=1$ is in the range).
+
+  For (D), note $y(-x)=\dfrac{x^{2}-x+1}{x^{2}+x+1}=\dfrac{1}{y(x)}$. So if $m=\min y$ is attained at $x=x_{0}$, then $1/m$ is attained at $x=-x_{0}$ and must equal $\max y$. Hence $(\max y)(\min y)=3\cdot\tfrac{1}{3}=1$, so (D) is **true**.
+
+  Finally $\min y=+\tfrac{1}{3}>0$, not $-\tfrac{1}{3}$; (B) is **false**.
+
+  Correct: (A), (D).
+
+wrong_paths:
+  - path: "Student solves $3y^2-10y+3\\le 0$ but mis-factors / drops a sign and reads $y\\in[-\\tfrac13,3]$, declaring $\\min y=-\\tfrac13$."
+    landed_on_option: "B"
+    diagnosis: "Sign error in the discriminant inequality; ignores that both numerator and denominator $x^2\\pm x+1>0$ for all real $x$, which forces $y>0$ (TRAP-PARTIAL — correct method, wrong endpoint)."
+  - path: "Student treats the equation $(y-1)x^2-(y+1)x+(y-1)=0$ as a genuine quadratic, divides by $(y-1)$, and then excludes $y=1$ from the range."
+    landed_on_option: "C"
+    diagnosis: "Fails to check the degenerate case $y=1$: the equation becomes linear $-2x=0$ with solution $x=0$, so $y=1$ is attained. Classic TRAP-EDGE on the leading-coefficient vanishing."
+  - path: "Student computes endpoints $\\tfrac13$ and $3$ but does not notice the $x\\mapsto -x$ symmetry, so fails to recognise (D) as a structural consequence and only marks (A)."
+    landed_on_option: "A only"
+    diagnosis: "Misses the multiplicative reciprocal symmetry $y(-x)=1/y(x)$; arithmetically $(\\max)(\\min)=1$ still holds but the student doesn't verify it (TRAP-PARTIAL)."
+
+review_notes: |
+  Classic JEE range-by-discriminant problem with a clean reciprocal symmetry $x\to -x \Rightarrow y\to 1/y$. T2 timing: the discriminant route is mechanical; (D) requires noticing the symmetry. Taxonomy extension: SET.FUN.RNGDISC.RECIPSYM is new — RNGDISC = "range via discriminant of quadratic-in-x for fixed y", RECIPSYM = "x->-x reciprocal symmetry forces max*min = 1". Verify if existing tag fits better before importer run.

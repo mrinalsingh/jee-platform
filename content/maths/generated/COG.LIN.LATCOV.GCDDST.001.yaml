@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: COG.LIN.LATCOV.GCDDST.001
+
+fingerprint:
+  topic: COG
+  subtopic: LIN
+  idea: LATCOV
+  sub_idea: GCDDST
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 140
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  At every lattice point of the plane a disc of radius $r$ is drawn. Let $r_{\min}$ be the smallest $r$ such that every straight line of slope $\tfrac{2}{5}$ meets at least one disc. Which of the following are correct?
+
+  - (A) $r_{\min}=\dfrac{1}{\sqrt{29}}$
+  - (B) $r_{\min}=\dfrac{1}{2\sqrt{29}}$
+  - (C) $r_{\min}=\dfrac{1}{2\sqrt{7}}$
+  - (D) For a line of slope $\dfrac{p}{q}$ written in lowest terms, $r_{\min}=\dfrac{1}{2\sqrt{p^{2}+q^{2}}}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  A line of rational slope $p/q$ (in lowest terms) is met by some disc of radius $r$ centred at a lattice point iff the distance from the line to the nearest lattice point is $\le r$. Because $\gcd(p,q)=1$, the linear form $qx-py$ evaluated at lattice points $(i,j)$ takes every integer value, so the nearest-lattice distance equals $\operatorname{dist}(t,\mathbb{Z})/\sqrt{p^{2}+q^{2}}$ where $t$ is the line's constant term. Its worst case over all such lines is $\tfrac{1/2}{\sqrt{p^{2}+q^{2}}}$.
+
+  ### Working
+  Write any line of slope $\tfrac{2}{5}$ as
+  $$2x-5y+t=0,\qquad t\in\mathbb{R}.$$
+  The distance from the lattice point $(i,j)$ to this line is
+  $$d(i,j)=\frac{\lvert 2i-5j+t\rvert}{\sqrt{2^{2}+5^{2}}}=\frac{\lvert (2i-5j)+t\rvert}{\sqrt{29}}.$$
+  Since $\gcd(2,5)=1$, the integer $2i-5j$ runs through every value of $\mathbb{Z}$ as $(i,j)$ varies over lattice points. Therefore the smallest such distance (for a fixed $t$) equals
+  $$\frac{\operatorname{dist}(t,\mathbb{Z})}{\sqrt{29}},$$
+  i.e. the distance from $t$ to the nearest integer, divided by $\sqrt{29}$.
+
+  To guarantee every line is met, $r$ must dominate the worst case of this over $t$. The function $\operatorname{dist}(t,\mathbb{Z})$ peaks at $t\in\mathbb{Z}+\tfrac12$ with value $\tfrac12$. Hence
+  $$r_{\min}=\frac{1/2}{\sqrt{29}}=\frac{1}{2\sqrt{29}}.\qquad\boxed{\text{(B)}}$$
+
+  The identical argument with slope $\tfrac{p}{q}$ in lowest terms (so $\gcd(p,q)=1$) replaces $2,5$ by $q,p$ and gives
+  $$r_{\min}=\frac{1}{2\sqrt{p^{2}+q^{2}}}.\qquad\boxed{\text{(D)}}$$
+  Option (A) drops the factor $\tfrac12$ from the worst-case $\operatorname{dist}(t,\mathbb{Z})$ step; option (C) uses the wrong denominator $\sqrt{2\cdot 5 -3}=\sqrt7$ in place of $\sqrt{2^{2}+5^{2}}=\sqrt{29}$.
+
+wrong_paths:
+  - path: "Computes the distance correctly but forgets that the worst case of $\\operatorname{dist}(t,\\mathbb{Z})$ is $\\tfrac12$, not $1$, and so reports $r_{\\min}=1/\\sqrt{29}$."
+    landed_on_option: "A"
+    diagnosis: "Classic partial-credit trap (TRAP-PARTIAL): the student gets the $\\sqrt{29}$ denominator right but uses the spacing of the integers (=1) instead of the half-spacing $\\tfrac12$ that bounds $\\operatorname{dist}(t,\\mathbb{Z})$."
+  - path: "Tries to compute the distance between two consecutive parallel lines of slope $\\tfrac25$ through lattice points and mis-evaluates $\\sqrt{p^{2}+q^{2}}$ as $\\sqrt{pq-3}=\\sqrt 7$."
+    landed_on_option: "C"
+    diagnosis: "Wrong denominator; confuses the perpendicular-distance formula (whose denominator is $\\sqrt{A^{2}+B^{2}}$ for $Ax+By+C=0$) with an ad-hoc number."
+  - path: "Forgets the lowest-terms condition in (D) and rejects it because it would 'fail' for slope $\\tfrac{2}{4}$."
+    landed_on_option: "rejects D"
+    diagnosis: "Misses that $\\tfrac{2}{4}$ is not in lowest terms; once reduced to $\\tfrac12$ the formula gives the correct $\\tfrac{1}{2\\sqrt5}$, matching the slope $\\tfrac12$ case."
+
+review_notes: |
+  Subtopic LIN ("lines / point-line distance") and idea LATCOV ("lattice-line covering radius") with sub-idea GCDDST ("gcd-controlled distance") are new under COG — please confirm or merge into an existing umbrella when COG is populated. Core JEE method: point-line distance + gcd argument; difficulty T4 because the lattice/gcd jump is non-routine but every step uses Class XI tools. Time budget reflects R1 needing the insight, later rounds collapsing once the formula is internalised.

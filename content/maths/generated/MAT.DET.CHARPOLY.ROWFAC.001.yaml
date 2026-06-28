@@ -1,0 +1,97 @@
+schema_version: 1
+
+question_code: MAT.DET.CHARPOLY.ROWFAC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: CHARPOLY
+  sub_idea: ROWFAC
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-EIGEN
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A(x)=\begin{bmatrix}3-x & 2 & 2\\ 2 & 4-x & 1\\ -2 & -4 & -1-x\end{bmatrix}$ and let
+  $T=\{x\in\mathbb R:\det A(x)=0\}$. Which of the following is/are correct?
+
+  (A) $\det A(x)=0$ has a triple real root
+
+  (B) $|T|=2$
+
+  (C) Sum of roots of $\det A(x)=0$ (counted with multiplicity) equals $6$
+
+  (D) At $x=3$, $\dim\ker A(3)=1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### The IDEA
+  $A(x)=M-xI$ where $M=\begin{bmatrix}3&2&2\\2&4&1\\-2&-4&-1\end{bmatrix}$, so
+  $\det A(x)$ is (up to sign) the characteristic polynomial of $M$. Rather than expand the
+  $3\times 3$ determinant directly, a single row operation kills the pivot column and exposes
+  the factorisation cleanly.
+
+  ### Working
+  Replace $R_1$ by $R_1+R_3$. The new first row is $(1-x,\,-2,\,1-x)$. Expanding along
+  this row (or proceeding by inspection) gives
+  $$\det A(x)=-x(x-3)^2.$$
+  Hence the equation $\det A(x)=0$ has roots $x=0$ (simple) and $x=3$ (double). So
+  $T=\{0,3\}$ and $|T|=2$ — option **(B)**.
+
+  Sum of roots with multiplicity $=0+3+3=6$, which also equals $\operatorname{tr}M=3+4-1$
+  (a sanity check from the characteristic-polynomial identity
+  $\det(M-xI)=-x^3+(\operatorname{tr}M)x^2-\cdots$). Option **(C)** holds.
+
+  At $x=3$:
+  $$A(3)=\begin{bmatrix}0&2&2\\2&1&1\\-2&-4&-4\end{bmatrix}.$$
+  Row $3 = -R_1 - 2R_2$, while $R_1,R_2$ are independent, so $\operatorname{rank}A(3)=2$
+  and $\dim\ker A(3)=3-2=1$ — option **(D)**.
+
+  Since the cubic factors as $-x(x-3)^2$ with a simple and a double root, it is not a
+  triple root, so **(A)** is false.
+
+wrong_paths:
+  - path: "Student sees the double root $x=3$, miscounts and claims a triple root because the cubic 'almost has' a repeated factor; or confuses 'repeated root' with 'triple root'."
+    landed_on_option: "A"
+    diagnosis: "Confusing multiplicity 2 with multiplicity 3; failing to track that $-x(x-3)^2$ has roots $\\{0,3,3\\}$, not $\\{3,3,3\\}$."
+  - path: "Student computes $\\det A(x)$ correctly as $-x(x-3)^2$ but counts the sum of DISTINCT roots ($0+3=3$) for (C), and only counts the size of $T$ as $|T|=2$ — then incorrectly rejects (C)."
+    landed_on_option: "B, D"
+    diagnosis: "Conflates 'sum of roots with multiplicity' with 'sum of distinct roots'; misses that the standard Vieta sum uses multiplicities."
+  - path: "Student tries to compute $\\dim\\ker A(3)$ by spotting two zeros in column 1 of $A(3)$ and concludes rank $=1$, hence $\\dim\\ker=2$, rejecting (D)."
+    landed_on_option: "B, C"
+    diagnosis: "Visual rank guess from a single column; fails to check that rows 1 and 2 are actually independent (rows $\\ne$ scalar multiples), giving rank $2$ not $1$."
+  - path: "Student expands $\\det A(x)$ without the row-reduction shortcut, makes a sign error, and obtains $-x(x^2-6x+9)+\\varepsilon$ — concludes roots are $\\{0,3\\}$ both simple, so $T=\\{0,3\\}$ (true) but sum with multiplicity $=3$, rejecting (C)."
+    landed_on_option: "B, D"
+    diagnosis: "Algebraic error in direct cofactor expansion; misses the double root at $x=3$ and therefore the sum-of-roots calculation."
+
+review_notes: |
+  - New IDEA code CHARPOLY (characteristic polynomial of a 3x3 matrix appearing as $M-xI$)
+    and SUB-IDEA code ROWFAC (factor det via a single row operation) — neither exists under
+    MAT.DET in the current taxonomy. Flag for taxonomy extension.
+  - Trap TRAP-EIGEN fits: the surface is "find roots of det(A-xI)=0", classic eigenvalue trap
+    where students forget multiplicity and the rank-nullity link.
+  - Difficulty T3: hard standard. Single row-op trick + careful multiplicity tracking +
+    rank check at $x=3$. Real JEE Adv multi-correct flavour.
+  - Surface SURF-SET because the question is phrased via the set $T$ and asks for $|T|$.

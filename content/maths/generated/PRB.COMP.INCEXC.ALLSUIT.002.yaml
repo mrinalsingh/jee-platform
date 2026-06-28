@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: PRB.COMP.INCEXC.ALLSUIT.002
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: INCEXC
+  sub_idea: ALLSUIT
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  A $5$-card hand is dealt from a standard $52$-card deck. Let $E$ be the event that all four suits are present in the hand. Which of the following statements is/are correct?
+
+  - (A) $|E| = \binom{4}{1}\binom{13}{2}\binom{13}{1}^3 = 685464$
+  - (B) $P(E) = \dfrac{2197}{8330}$
+  - (C) $P(E) = 1 - P(\text{some suit missing})$ by inclusion--exclusion
+  - (D) Dropping the factor $\binom{4}{1}$, the expression $\binom{13}{2}\binom{13}{1}^3$ already counts $|E|$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  With $5$ cards and $4$ suits, "all suits present" forces the suit-size pattern $2{-}1{-}1{-}1$. Count it directly by choosing the doubled suit, or apply inclusion--exclusion on the event "some suit missing."
+
+  ### Working
+  **Direct count.** Pick which suit supplies two cards: $\binom{4}{1}=4$ ways. Pick its two cards: $\binom{13}{2}=78$. Pick one card from each of the other three suits: $\binom{13}{1}^3=13^3=2197$. Hence
+  $$|E|=4\cdot 78\cdot 2197 = 685464,$$
+  which validates **(A)**.
+
+  **Probability.** $\binom{52}{5}=2598960$, so
+  $$P(E)=\frac{685464}{2598960}=\frac{2197}{8330},$$
+  which validates **(B)**.
+
+  **Inclusion--exclusion.** Let $A_i$ be the event that suit $i$ is absent. Then
+  $$P(\text{some suit missing}) = \sum P(A_i)-\sum P(A_i\cap A_j)+\sum P(A_i\cap A_j\cap A_k),$$
+  and $P(E)=1-P(\text{some suit missing})$:
+  $$P(E)=1-\frac{4\binom{39}{5}-\binom{4}{2}\binom{26}{5}+\binom{4}{3}\binom{13}{5}}{\binom{52}{5}}=\frac{2197}{8330}.$$
+  Hence **(C)** is the correct logical setup.
+
+  **Why (D) is wrong.** $\binom{13}{2}\binom{13}{1}^3$ tacitly fixes a specific suit as the doubled one. Without the $\binom{4}{1}$ multiplier, three out of four valid suit-distributions are missed, undercounting by a factor of $4$ and giving $\tfrac{2197}{33320}$ instead.
+
+wrong_paths:
+  - path: "Student fixes (say) spades as the doubled suit and writes $|E|=\\binom{13}{2}\\binom{13}{1}^3=171366$, then $P=\\tfrac{2197}{33320}$."
+    landed_on_option: "(D)"
+    diagnosis: "TRAP-PARTIAL: forgetting the $\\binom{4}{1}$ symmetry factor over which suit is doubled. The (2,1,1,1) pattern has 4 ordered choices of the doubled suit; the count without $\\binom{4}{1}$ undercounts by 4."
+  - path: "Student tries to enforce 'all four suits present' by multiplying $13^4$ (one card per suit) by $48$ (any fifth card) and gets $13^4\\cdot 48 = 1370928$, double the right answer."
+    landed_on_option: "rejects (A)"
+    diagnosis: "Double counting: the fifth card together with the suit-mate from its suit can be picked in two orders ('which of the two is the singleton'). Forgetting to divide by 2 inflates the count by a factor of 2."
+  - path: "Student forgets that 'all suits present' with only 5 cards must be 2-1-1-1, tries patterns like 1-1-1-2 separately and double counts, or considers impossible patterns."
+    landed_on_option: "rejects (B)"
+    diagnosis: "Failure to lock in the unique compositional pattern; with 5 cards and 4 non-empty suits the partition is unique up to which suit is doubled."
+
+review_notes: |
+  Standard JEE-Advanced probability item testing two interchangeable counting methods (direct symmetry + inclusion-exclusion). The TRAP-PARTIAL distractor (D) is a classic "forgot the symmetry factor" slip; the IE option (C) is logically equivalent setup, not numerically derived in the stem. Reused taxonomy code PRB.COMP.INCEXC; introduced new sub-idea ALLSUIT for the "all categories present" archetype since EXACTK targets "exactly k" rather than "all present."

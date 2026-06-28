@@ -1,0 +1,114 @@
+schema_version: 1
+
+question_code: MAT.SYS.DETCLS.RANKCON.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SYS
+  idea: DETCLS
+  sub_idea: RANKCON
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 360   # ~6 min — first exposure to the det-classification + rank-consistency logic
+  R2_seconds: 240   # ~4 min — idea recalled; must still factor the circulant and check both RHS
+  R3_seconds: 150   # ~2.5 min — fluent, sees the multiplicity trap immediately
+  R4_seconds: 105   # ~1.75 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For a real parameter $\lambda$ consider the three planes
+  $$
+  P_1:\ \lambda x+y+z=1,\qquad P_2:\ x+\lambda y+z=1,\qquad P_3:\ x+y+\lambda z=1,
+  $$
+  and let
+  $$
+  D(\lambda)=\det\!\begin{pmatrix}\lambda&1&1\\ 1&\lambda&1\\ 1&1&\lambda\end{pmatrix}
+  $$
+  be the determinant of their coefficient matrix. Which of the following are correct?
+
+  - **(A)** $D(\lambda)=(\lambda-1)^{2}(\lambda+2)$ for every $\lambda$.
+  - **(B)** Among the integers $\lambda\in\{-3,-2,\dots,3\}$, the system $P_1\cap P_2\cap P_3$ fails to have a unique point of intersection for exactly two values of $\lambda$.
+  - **(C)** The equation $D(\lambda)=0$ has exactly three distinct real solutions.
+  - **(D)** At $\lambda=1$ the system has infinitely many solutions for the right-hand side $(1,1,1)$, but the same coefficient matrix with right-hand side $(1,2,3)$ has no solution.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  The coefficient matrix is circulant. Its determinant $D(\lambda)$ classifies the geometry of the
+  three planes: $D(\lambda)\neq 0$ gives a unique intersection point, while $D(\lambda)=0$ splits
+  into two sub-cases — *coincident / infinitely many* or *parallel-distinct / inconsistent* —
+  separated by comparing the rank of the coefficient matrix with that of the augmented matrix.
+
+  ### Factor the determinant — option (A)
+  Add all three rows: every column sums to $\lambda+2$, so $(\lambda+2)$ is a factor. Pulling it out
+  and reducing,
+  $$
+  D(\lambda)=(\lambda+2)\big(\lambda^2-2\lambda+1\big)=(\lambda+2)(\lambda-1)^2.
+  $$
+  So **(A)** is **true** (the factored form holds identically in $\lambda$).
+
+  ### Where uniqueness fails — option (B)
+  A unique point of intersection requires $D(\lambda)\neq 0$, i.e. $\lambda\notin\{-2,\,1\}$.
+  Among the integers $\lambda\in\{-3,-2,-1,0,1,2,3\}$, uniqueness fails at exactly $\lambda=-2$ and
+  $\lambda=1$ — **two** values. So **(B)** is **true**.
+
+  ### The multiplicity trap — option (C)
+  $D(\lambda)=(\lambda-1)^2(\lambda+2)$ has a **double** root at $\lambda=1$ and a simple root at
+  $\lambda=-2$, hence only **two** distinct real solutions. "Degree $3 \Rightarrow 3$ distinct roots"
+  ignores the repeated root, so **(C)** is **false**.
+
+  ### Consistency at $\lambda=1$ — option (D)
+  At $\lambda=1$ all three coefficient rows are $(1,1,1)$, so the coefficient matrix has rank $1$.
+  - With RHS $(1,1,1)$: the augmented matrix also has rank $1$ (all three planes are the one plane
+    $x+y+z=1$) — **infinitely many** solutions.
+  - With RHS $(1,2,3)$: the augmented matrix has rank $2$ (three **parallel, distinct** planes
+    $x+y+z=1,2,3$) $\neq 1$ — **inconsistent**, no solution.
+
+  So **(D)** is **true**.
+
+  ### Answer
+  Correct options: **(A), (B), (D)**. No machinery beyond JEE syllabus (determinant expansion and
+  rank/consistency of a linear system) is used.
+
+wrong_paths:
+  - path: "Reads 'D(λ) is a cubic of degree 3' and concludes it must have 3 distinct real roots, overlooking that λ=1 is a double root of (λ-1)²(λ+2). Marks (C) as correct."
+    landed_on_option: "C (incorrectly selected)"
+    diagnosis: "Multiplicity trap: confuses 'three roots counted with multiplicity' with 'three distinct real roots'. The repeated factor (λ-1)² yields only two distinct solutions {1, -2}."
+  - path: "Checks consistency at λ=1 only for the symmetric RHS (1,1,1), sees infinitely many solutions, and assumes the same coefficient matrix is consistent for any RHS. Rejects (D) thinking the 'no solution' claim is wrong."
+    landed_on_option: "D (incorrectly rejected)"
+    diagnosis: "Fails to re-run the rank/consistency test for the asymmetric RHS (1,2,3): rank of augmented matrix jumps from 1 to 2, so the system is inconsistent. Consistency of a rank-deficient system depends on the RHS, not on the coefficient matrix alone."
+  - path: "Counts the integers in {-3,...,3} at which D=0 by treating each linear factor as a separate failure value but also miscounts λ=-2 or double-counts the repeated root λ=1, arriving at 'one value' or 'three values'. Rejects (B)."
+    landed_on_option: "B (incorrectly rejected)"
+    diagnosis: "Off-by-one in enumerating the singular integers: D(λ)=0 exactly at λ∈{1,-2}, both of which lie in {-3,...,3}, so uniqueness fails at precisely two values. Mishandling the double root or the sign of -2 produces the wrong tally."
+
+review_notes: |
+  - Inspired by 0609d Q1 (cross-chapter PnC/Prob/MatDet/Vec3D batch). This is a Matrices & Determinants
+    item living on MAT.SYS: a parametrized 3×3 linear system classified by its coefficient determinant.
+  - **Taxonomy extension required (needs_extension=true):** MAT.SYS currently has no IDEA. I introduce
+    IDEA `DETCLS` ("classify a parametrized system by D(parameter)") and SUB-IDEA `RANKCON`
+    ("rank/consistency comparison at the singular parameter, beware multiplicity trap"). Add both to
+    maths.yaml under keys MAT.SYS (ideas) and MAT.SYS.DETCLS (sub_ideas) before importing.
+  - surface = SURF-PARAM (the parameter λ is the real unknown driving the classification).
+    trap = TRAP-PARTIAL: the four options are tuned for partial marking — (C) is the multiplicity bait
+    and (D) the RHS-dependence bait, so a student who half-understands consistency loses marks.
+  - T2: the factorisation and rank check are standard JEE fare; the difficulty is in not falling for the
+    two traps under time pressure, not in any deep technique.
+  - Authored times are estimates and should be recalibrated empirically.

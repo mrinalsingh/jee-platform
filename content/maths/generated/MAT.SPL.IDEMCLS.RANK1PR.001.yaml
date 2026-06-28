@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: MAT.SPL.IDEMCLS.RANK1PR.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: IDEMCLS
+  sub_idea: RANK1PR
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 270
+  R4_seconds: 210
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $P=\begin{bmatrix}-2 & -1\\ 6 & 3\end{bmatrix}$. A square matrix $X$ is called \emph{idempotent} if $X^{2}=X$. Which of the following statements is/are TRUE?
+
+  - (A) $P$ is idempotent, and so is $\begin{bmatrix}\frac{1+\sqrt5}{2} & i\\ i & \frac{1-\sqrt5}{2}\end{bmatrix}$
+  - (B) $\operatorname{tr}P=1,\ \det P=0$, and $P^{2025}=P$
+  - (C) Exactly $4$ of the $2\times 2$ idempotent matrices are diagonal
+  - (D) The only $2\times 2$ idempotent matrices are $O$ and $I$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  For a $2\times 2$ matrix $X$, $X^{2}=X$ means $X$ is a projection. By Cayley-Hamilton, $X^{2}-(\operatorname{tr}X)X+(\det X)I=O$, so $X^{2}=X$ forces $(\operatorname{tr}X)X-(\det X)I=X$, i.e.\ a non-trivial idempotent ($X\ne O,I$) must have $\operatorname{tr}X=1$ and $\det X=0$ (rank-$1$ projection). Diagonal idempotents reduce to entry-wise $d_i^{2}=d_i$, hence $d_i\in\{0,1\}$.
+
+  ### Working
+  **Check $P$:** $P^{2}=\begin{bmatrix}-2 & -1\\ 6 & 3\end{bmatrix}\begin{bmatrix}-2 & -1\\ 6 & 3\end{bmatrix}=\begin{bmatrix}4-6 & 2-3\\ -12+18 & -6+9\end{bmatrix}=\begin{bmatrix}-2 & -1\\ 6 & 3\end{bmatrix}=P$. So $P$ is idempotent. Also $\operatorname{tr}P=-2+3=1$, $\det P=(-2)(3)-(-1)(6)=0$.
+
+  **Check the golden matrix $G=\begin{bmatrix}\phi & i\\ i & \bar\phi\end{bmatrix}$** where $\phi=\tfrac{1+\sqrt5}{2}$, $\bar\phi=\tfrac{1-\sqrt5}{2}$: $\operatorname{tr}G=\phi+\bar\phi=1$, $\det G=\phi\bar\phi-i^{2}=\tfrac{1-5}{4}+1=0$. With $\operatorname{tr}=1,\det=0$, Cayley-Hamilton gives $G^{2}=G$. So **(A)** is true.
+
+  **Power of $P$:** From $P^{2}=P$, induction gives $P^{n}=P$ for all $n\ge 1$. In particular $P^{2025}=P$, so **(B)** is true.
+
+  **Diagonal idempotents:** $\operatorname{diag}(d_1,d_2)$ is idempotent iff $d_i^{2}=d_i$, so $d_i\in\{0,1\}$. The four matrices are $O$, $I$, $\operatorname{diag}(1,0)$, $\operatorname{diag}(0,1)$. So **(C)** is true.
+
+  **Refutation of (D):** $P$ itself (and $G$) is a non-trivial idempotent, so **(D)** is false.
+
+  Hence the correct options are **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student computes only $P^{2}=P$ and concludes $P$ is the only non-trivial example, missing the golden matrix verification and the diagonal count; picks just (B)."
+    landed_on_option: "B"
+    diagnosis: "Partial check — verifies one matrix in (A) but does not test the second; also overlooks the full classification needed for (C). TRAP-PARTIAL."
+  - path: "Student remembers that the only idempotent matrices among scalar/normal matrices are $O$ and $I$ (true for scalar multiples of $I$) and over-generalises this to all $2\\times 2$ matrices."
+    landed_on_option: "D"
+    diagnosis: "Confuses the classification of scalar idempotents with the full $2\\times 2$ case; ignores rank-$1$ projections like $P$. TRAP-NCERT (textbook over-statement)."
+  - path: "Student forgets that the zero matrix and identity are also diagonal idempotents and counts only $\\operatorname{diag}(1,0)$ and $\\operatorname{diag}(0,1)$, getting $2$ instead of $4$; rejects (C)."
+    landed_on_option: "drops C (picks only A, B)"
+    diagnosis: "Edge-case undercount — forgets the trivial idempotents $O$ and $I$ are diagonal. TRAP-EDGE."
+  - path: "Student computes $P^{2025}$ by raising eigenvalues $0,1$ to the $2025$-th power but mishandles the projector identity, concluding $P^{2025}=I$ or $O$ instead of $P$."
+    landed_on_option: "drops B"
+    diagnosis: "Mis-applies spectral powers without using $X^{2}=X\\Rightarrow X^{n}=X$. Eigenvalues are correct $(0,1)$ but recombination back to the matrix slips."
+
+review_notes: |
+  This is a multi-correct on the classification of 2x2 idempotents. Key axes:
+   - The two given matrices in (A) are both rank-1 projections (tr=1, det=0). The golden matrix is a clean Vieta-based decoy that requires the student to compute trace and determinant correctly.
+   - (B) tests the canonical $X^{2}=X\\Rightarrow X^{n}=X$ identity.
+   - (C) tests the diagonal idempotent count INCLUDING the trivial cases $O$, $I$.
+   - (D) is the textbook over-statement trap.
+  Proposed taxonomy extension: IDEA = IDEMCLS (idempotent classification for special matrices), SUB-IDEA = RANK1PR (rank-1 projection / $\\operatorname{tr}=1$, $\\det=0$ characterization). No existing IDEA in MAT.SPL captures the classification flavor (ORBSUM/CNJSP is about conjugation orbits).
+  Authored difficulty T3: hard standard — requires Cayley-Hamilton fluency and careful classification, but each piece is in-syllabus.

@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: MAT.DET.ROWPOLY.REPRT.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: ROWPOLY
+  sub_idea: REPRT
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let
+  $$D(x)=\det\!\begin{pmatrix}x^3 & x^4 & x^5\\ 1 & 1 & 1\\ 3 & 4 & 5\end{pmatrix},\qquad f(x)=(x-1)^2(x-2).$$
+  Which of the following are TRUE?
+
+  - **(A)** $D(1)=D'(1)=0$
+  - **(B)** $D''(1)\ne 0$
+  - **(C)** $D(x)=x^3(x-1)^2$
+  - **(D)** $f(x)\nmid D(x)$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  Expand the $3\times 3$ determinant along the first row and read off $D(x)$ as an explicit polynomial. Once you have $D(x)=x^3(x-1)^2$, every claim is a direct check on the factorisation: $x=1$ is a root of multiplicity exactly $2$, and $x=2$ is not a root.
+
+  ### Working
+  Expand by row 1:
+  $$D(x)=x^3(1\cdot 5-1\cdot 4)-x^4(1\cdot 5-1\cdot 3)+x^5(1\cdot 4-1\cdot 3)=x^3-2x^4+x^5=x^3(x-1)^2.$$
+  This proves **(C)**.
+
+  From $D(x)=x^3(x-1)^2$:
+  - $D(1)=0$ and $D'(x)=5x^4-8x^3+3x^2$, so $D'(1)=5-8+3=0$. Hence **(A)**.
+  - $D''(x)=20x^3-24x^2+6x$, so $D''(1)=20-24+6=2\ne 0$. The multiplicity at $x=1$ is exactly $2$. Hence **(B)**.
+  - $D(2)=2^3\cdot 1^2=8\ne 0$, so $(x-2)\nmid D(x)$, and therefore $f(x)=(x-1)^2(x-2)\nmid D(x)$. Hence **(D)**.
+
+  All four statements are true.
+
+  Structural remark: row 2 is $(p(1),q(1),r(1))$ with $p(x)=x^3,q(x)=x^4,r(x)=x^5$ and row 3 is $(p'(1),q'(1),r'(1))$. At $x=1$ row 1 matches row 2; differentiating $D$ once at $x=1$ makes row 1 match row 3. Both substitutions kill the determinant, which is the conceptual reason $(x-1)^2\mid D(x)$.
+
+wrong_paths:
+  - path: "Computes D(x) and stops at C; forgets to verify A, B, D individually and marks only (C)."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL — student finds the factorisation but does not test each option independently, treating the multi-correct as single-correct."
+  - path: "Sees the factor (x-1)^2 in D(x) and concludes f(x) = (x-1)^2(x-2) divides D(x), so marks (D) false."
+    landed_on_option: "A, B, C (omitting D)"
+    diagnosis: "Confuses 'shares the factor (x-1)^2' with 'is divisible by f(x)'; fails to test whether x=2 is a root of D."
+  - path: "Computes D(1)=0 but does not check D'(1); assumes simple root at x=1 and marks B false (thinks D''(1)=0)."
+    landed_on_option: "A, C, D (omitting B)"
+    diagnosis: "Confuses 'D(1)=0' with simple root; without computing D'(1) and D''(1) the multiplicity is unknown."
+
+review_notes: |
+  Tagging note: no existing IDEA/SUB-IDEA under MAT.DET covered 'determinant whose rows are p(x), p(1), p'(1)-style, giving a repeated-root factorisation'. Proposed extension: IDEA ROWPOLY (row entries are evaluations / derivatives of a common polynomial family, forcing a repeated-root factor of D(x)); SUB-IDEA REPRT (repeated-root multiplicity check via D, D', D'' at the candidate root). Trap TRAP-PARTIAL captures the common error of marking only the 'obvious' option in a multi-correct.

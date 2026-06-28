@@ -1,0 +1,72 @@
+schema_version: 1
+
+question_code: COG.PAR.NORMCO.FOOTAREA.001
+
+fingerprint:
+  topic: COG
+  subtopic: PAR
+  idea: NORMCO
+  sub_idea: FOOTAREA
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 360
+  R3_seconds: 240
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{P}:y^{2}=4x$ and $P=(a,0)$ with $a>0$. Where three distinct normals from $P$ to $\mathcal{P}$ exist, let their feet be $F_{0},F_{1},F_{2}$ and let $A(a)=[\triangle F_{0}F_{1}F_{2}]$. Which of the following are correct?
+
+  - (A) Three distinct normals from $(a,0)$ exist iff $a>2$.
+  - (B) $A(6)=16$.
+  - (C) $A(a)=2(a-2)^{3/2}$, strictly increasing and unbounded.
+  - (D) Three distinct normals exist whenever $a>0$, and $A(a)=(a-2)^{3/2}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Normals to $y^{2}=4x$ at the parametric point $(t^{2},2t)$ have the form $y+tx=2t+t^{3}$. Imposing passage through $(a,0)$ collapses to $t\bigl(t^{2}+(2-a)\bigr)=0$: the axis-normal $t=0$ is always a foot, and the other two real feet exist precisely when $a>2$. The three feet then assemble into an isosceles triangle whose area is a clean function of $a-2$.
+
+  ### Working
+  The normal at $(t^{2},2t)$ to $y^{2}=4x$ is $y+tx=2t+t^{3}$. Passing through $(a,0)$:
+  $$ta+0 = 2t+t^{3} \;\Longleftrightarrow\; t\bigl(t^{2}-(a-2)\bigr)=0.$$
+  Roots: $t=0$ (always; foot $(0,0)$) and $t=\pm\sqrt{a-2}$ (real and distinct iff $a>2$). So the number of distinct normals is $1$ if $a\le 2$ and $3$ if $a>2$ — never $2$. This makes (A) correct and refutes (D)'s claim that three normals exist for every $a>0$ (e.g. $a=1$ has only the axis-normal).
+
+  The three feet are $F_{0}=(0,0)$ and $F_{1,2}=(a-2,\,\pm 2\sqrt{a-2})$. Base $|F_{1}F_{2}|=4\sqrt{a-2}$ (vertical segment at $x=a-2$); height from $F_{0}$ to that base $=a-2$. Hence
+  $$A(a)=\tfrac12\cdot 4\sqrt{a-2}\cdot(a-2)=2(a-2)^{3/2},\quad a>2,$$
+  strictly increasing and unbounded — option (C). At $a=6$: $A(6)=2\cdot 4^{3/2}=16$ — option (B). The form $(a-2)^{3/2}$ in (D) drops the factor $2$ (giving $8\ne 16$ at $a=6$), so (D) is wrong on the area side too.
+
+  Correct set: (A), (B), (C).
+
+wrong_paths:
+  - path: "Student forgets that $t=0$ is always a root of $t(t^{2}-(a-2))=0$ and treats `three normals' as equivalent to `three nonzero roots', concluding three normals exist for every $a>0$ by counting both branches of $\\pm\\sqrt{a-2}$ for any sign of $a-2$ via complex extension."
+    landed_on_option: "(D)"
+    diagnosis: "Missing the vertex-foot t=0 collapses the threshold from a>2 to a>0; pairs with the dropped factor-of-2 in (D)'s area to form the classic partial-credit trap (TRAP-PARTIAL)."
+  - path: "Correct threshold $a>2$ and correct $A(a)=2(a-2)^{3/2}$, but at $a=6$ student computes $2\\cdot 4^{3/2}=2\\cdot 8=16$ correctly yet picks (D) too, thinking $(a-2)^{3/2}$ is `the same formula up to a constant'."
+    landed_on_option: "(A), (B), (C), (D)"
+    diagnosis: "Form-vs-coefficient confusion; failing to plug a=6 into (D)'s formula to see it gives 8, not 16."
+  - path: "Computes feet correctly but uses base $=2\\sqrt{a-2}$ (only one of the symmetric $y$-values) and height $a-2$, getting $A(a)=(a-2)^{3/2}$."
+    landed_on_option: "(D)"
+    diagnosis: "Halving the base of an isosceles triangle — classic factor-of-2 slip that reproduces exactly the bait formula in (D)."
+
+review_notes: |
+  Multi-correct from 0609e batch. Confirm taxonomy extension: TOPIC COG (Coordinate Geometry 2D) is in the master list but its subtopic axis has no codes registered yet; proposing SUBTOPIC PAR (parabola), IDEA NORMCO (normals — concurrent from external point), SUB-IDEA FOOTAREA (area of triangle formed by feet of normals). If a different convention is already in flight under COG/CONIC, retag accordingly. Trap classified as TRAP-PARTIAL because (D) shares the correct skeleton (form $(a-2)^{3/2}$, dependence on $a-2$) but breaks on both the existence threshold and the leading constant — the canonical partial-credit bait.

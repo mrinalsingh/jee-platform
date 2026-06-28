@@ -1,0 +1,92 @@
+schema_version: 1
+
+question_code: MAT.DET.VANFAC.BINCOEF.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: VANFAC
+  sub_idea: BINCOEF
+  answer_type: NUM-INT
+  surface: SURF-PLAIN
+  trap: TRAP-LENGTH
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 270
+  R4_seconds: 210
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let
+  $$g(x)=\begin{vmatrix}1 & 1 & 1\\ (1+x)^{6} & (1+x)^{7} & (1+x)^{8}\\ (1+x)^{12} & (1+x)^{14} & (1+x)^{16}\end{vmatrix}.$$
+  Let $m$ denote the multiplicity of the root $x=-1$ of $g(x)$, and let $T_{\text{low}}$ and $T_{\text{high}}$ denote, respectively, the sum of the three lowest-degree and the three highest-degree non-zero coefficients in the expansion of $g(x)$ as a polynomial in $x$. Find the value of $m+T_{\text{low}}+T_{\text{high}}$.
+
+answer:
+  type: NUM-INT
+  value: 652
+
+solution: |
+  ### The IDEA
+  When the rows of a determinant are powers of a common base, pull a common factor out of each row to reduce the determinant to a Vandermonde in the base. The remaining polynomial structure is then explicit, and coefficient sums can be read off directly from the binomial expansion.
+
+  ### Working
+  Set $u=1+x$. Factor $u^{6}$ from row 2 and $u^{12}$ from row 3:
+  $$g(x)=u^{18}\begin{vmatrix}1&1&1\\ 1&u&u^{2}\\ 1&u^{2}&u^{4}\end{vmatrix}.$$
+  The remaining determinant is a Vandermonde in $(1,u,u^{2})$:
+  $$\begin{vmatrix}1&1&1\\ 1&u&u^{2}\\ 1&u^{2}&u^{4}\end{vmatrix}=(u-1)(u^{2}-1)(u^{2}-u)=u(u-1)^{3}(u+1).$$
+  Substituting back $u=1+x$:
+  $$g(x)=(1+x)^{18}\cdot(1+x)\cdot x^{3}\cdot(x+2)=x^{3}(x+2)(1+x)^{19}.$$
+  Hence the multiplicity of $x=-1$ is $m=19$.
+
+  Now expand $h(x)=x^{3}(x+2)(1+x)^{19}=(x^{4}+2x^{3})(1+x)^{19}$. With $(1+x)^{19}=\sum_{k=0}^{19}\binom{19}{k}x^{k}$, the coefficient of $x^{j}$ in $h$ is $\binom{19}{j-4}+2\binom{19}{j-3}$ (taking $\binom{19}{k}=0$ for $k<0$ or $k>19$).
+
+  The polynomial has degree $23$ and lowest nonzero term $x^{3}$.
+
+  Lowest three coefficients (of $x^{3},x^{4},x^{5}$):
+  - coeff of $x^{3}$: $2\binom{19}{0}=2$
+  - coeff of $x^{4}$: $\binom{19}{0}+2\binom{19}{1}=1+38=39$
+  - coeff of $x^{5}$: $\binom{19}{1}+2\binom{19}{2}=19+342=361$
+  $T_{\text{low}}=2+39+361=402$.
+
+  Highest three coefficients (of $x^{23},x^{22},x^{21}$):
+  - coeff of $x^{23}$: $\binom{19}{19}=1$
+  - coeff of $x^{22}$: $\binom{19}{18}+2\binom{19}{19}=19+2=21$
+  - coeff of $x^{21}$: $\binom{19}{17}+2\binom{19}{18}=171+38=209$
+  $T_{\text{high}}=1+21+209=231$.
+
+  Therefore $m+T_{\text{low}}+T_{\text{high}}=19+402+231=\boxed{652}$.
+
+wrong_paths:
+  - path: "Factor $u^{6}$ from row 2 and $u^{12}$ from row 3 but forget to substitute $u=1+x$ back when reading off $m$ — student reports $m$ as the exponent of $u$ in the Vandermonde block (e.g.\\ $18$ or $20$)."
+    landed_on_option: "651 or 653 (off-by-one in $m$)"
+    diagnosis: "Bookkeeping slip: the Vandermonde gives $u^{18}\\cdot u(u-1)^{3}(u+1)=u^{19}(u-1)^{3}(u+1)$. Miscounting the exponent of $u$ after combining is a common length-trap error."
+  - path: "Compute the Vandermonde as $(u^{2}-1)(u^{2}-u)(u-1)$ but mishandle a sign, getting $g(x)=-x^{3}(x+2)(1+x)^{19}$; then all coefficient sums flip sign."
+    landed_on_option: "$19-402-231=-614$ (or $19+(-402)+(-231)$)"
+    diagnosis: "Sign error in Vandermonde $\\prod_{i<j}(a_{j}-a_{i})$ — students often reverse the order of factors."
+  - path: "Read 'three lowest occurring coefficients' as coefficients of $x^{0},x^{1},x^{2}$ (which are zero) and report $T_{\\text{low}}=0$."
+    landed_on_option: "$19+0+231=250$"
+    diagnosis: "Misinterpretation: 'lowest occurring' means the three lowest-degree nonzero terms, since $g$ has the factor $x^{3}$."
+  - path: "Forget the factor $(x+2)$ when expanding and use only $x^{3}(1+x)^{19}$, getting coefficients $\\binom{19}{j-3}$."
+    landed_on_option: "$19 + (1+19+171) + (1+19+171) = 401$"
+    diagnosis: "Dropped factor in the product expansion — a classic length-trap mistake when juggling multiple polynomial factors."
+
+review_notes: |
+  New taxonomy codes proposed:
+    IDEA  MAT.DET.VANFAC  — reduce a power-row determinant to a Vandermonde by factoring rows
+    SUB-IDEA MAT.DET.VANFAC.BINCOEF — and then read off binomial coefficients from the resulting product
+  T4 because: requires (a) seeing the Vandermonde structure after factoring, (b) careful arithmetic with binomial coefficients, (c) interpreting 'lowest/highest occurring coefficients' as nonzero ones. Three multi-step computations chained — fits T4 (hard non-standard).
+  Confirm whether the phrase 'three lowest occurring coefficients' is unambiguous; otherwise rephrase to 'three lowest-degree nonzero coefficients'.

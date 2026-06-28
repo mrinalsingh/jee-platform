@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: ALG.CPX.TRICRIT.SWAPLBL.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: TRICRIT
+  sub_idea: SWAPLBL
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A,B,C$ be distinct points in the plane with affixes $z_1,z_2,z_3\in\mathbb{C}$. Which of the following implications are correct?
+
+  - (A) $\sum z_i^{2}=\sum z_i z_j\ \Rightarrow\ A,B,C$ are collinear.
+  - (B) $|z_3-z_1|^{2}+|z_3-z_2|^{2}=|z_1-z_2|^{2}\ \Rightarrow\ C$ lies on the circle with diameter $AB$.
+  - (C) There exist real $\lambda_1,\lambda_2,\lambda_3$, not all zero, with $\sum\lambda_i=0$ and $\sum\lambda_i z_i=0\ \Rightarrow\ \triangle ABC$ is equilateral.
+  - (D) $\dfrac{1}{z_1-z_2}+\dfrac{1}{z_2-z_3}+\dfrac{1}{z_3-z_1}=0\ \Rightarrow\ \triangle ABC$ is equilateral.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  Two classical complex-number criteria are at play. The identity $z_1^{2}+z_2^{2}+z_3^{2}=z_1z_2+z_2z_3+z_3z_1$ (equivalently $\sum\tfrac{1}{z_i-z_j}=0$) characterises an **equilateral** triangle. A real affine dependence $\sum\lambda_i z_i=0,\ \sum\lambda_i=0,$ not all $\lambda_i$ zero, characterises **collinearity**. Options (A) and (C) deliberately swap the geometric labels of these two criteria.
+
+  ### Working
+  **(B)** $|z_3-z_1|^{2}+|z_3-z_2|^{2}=|z_1-z_2|^{2}$ is $CA^{2}+CB^{2}=AB^{2}$, the Pythagorean condition $\angle ACB=90^{\circ}$. By Thales' theorem $C$ lies on the circle of diameter $AB$. **True.**
+
+  **(D)** Multiply $\sum_{\text{cyc}}\tfrac{1}{z_i-z_j}=0$ by $(z_1-z_2)(z_2-z_3)(z_3-z_1)$:
+  $$ (z_2-z_3)(z_3-z_1)+(z_3-z_1)(z_1-z_2)+(z_1-z_2)(z_2-z_3)=0. $$
+  Expanding gives $z_1^{2}+z_2^{2}+z_3^{2}=z_1z_2+z_2z_3+z_3z_1$, which (writing $\omega=e^{2\pi i/3}$) factors as $(z_1+\omega z_2+\omega^{2}z_3)(z_1+\omega^{2}z_2+\omega z_3)=0$, the standard equilateral criterion. **True.**
+
+  **(A)** The hypothesis is the **same** equilateral identity as in (D); it forces $\triangle ABC$ equilateral (positive area), so the points are **not** collinear. The implication "$\Rightarrow$ collinear" is **false**.
+
+  **(C)** The condition "real $\lambda_i$, not all zero, with $\sum\lambda_i=0$ and $\sum\lambda_i z_i=0$" is the affine-dependence relation: it says one point is a real affine combination of the other two, i.e. $A,B,C$ are **collinear**, not equilateral. **False.**
+
+  Hence the correct options are $\boxed{(\text{B}),(\text{D})}$.
+
+wrong_paths:
+  - path: "Student recognises the identity $\\sum z_i^{2}=\\sum z_iz_j$ in (A) as something standard but recalls it as a 'collinearity' identity (confusing it with the affine-dependence relation), and marks (A) as true."
+    landed_on_option: "A"
+    diagnosis: "Swapped labels — exactly the trap the question sets. The identity characterises equilateral triangles, not collinearity."
+  - path: "Student reads $\\sum\\lambda_i z_i=0$ with $\\sum\\lambda_i=0$ as the centroid/equilateral condition (mis-remembering that for an equilateral triangle the centroid equals $(z_1+z_2+z_3)/3$), and marks (C) as true."
+    landed_on_option: "C"
+    diagnosis: "Confuses the affine-dependence criterion (collinearity) with an equilateral criterion. The hypothesis with arbitrary real $\\lambda_i$ summing to zero is purely affine and has nothing to do with rotation by $60^\\circ$."
+  - path: "Student fails to expand the fraction identity in (D), suspects it is a 'trick' that does NOT imply equilateral, and marks only (B)."
+    landed_on_option: "B only (misses D)"
+    diagnosis: "TRAP-PARTIAL: in multi-correct items, students who verify one option cleanly often stop and miss a second correct option whose verification requires algebraic manipulation."
+  - path: "Student mis-reads (B) as $CA^{2}+CB^{2}=AB$ (length, not length-squared) or applies the cosine rule incorrectly, decides Thales does not apply, and marks only (D)."
+    landed_on_option: "D only (misses B)"
+    diagnosis: "Careless reading of the squared-length condition; misses the direct Pythagorean recognition."
+
+review_notes: |
+  New axis-3 IDEA code TRICRIT (complex-number criteria distinguishing collinear / right-angled / equilateral triangles) and new axis-4 SUB-IDEA SWAPLBL (the standard 'criteria with swapped geometric labels' trap) proposed. The question is a clean discriminator-style item: the two true options are the genuine criteria, and the two false options re-state the same algebraic hypotheses with the WRONG geometric conclusion. Tagged TRAP-PARTIAL because the principal danger in this item is selecting only one of {B,D} or being fooled by the label-swap on (A)/(C). Calibrated T3 — standard JEE Advanced complex-numbers identity recognition, but the swap-trap pushes it above pure T2.

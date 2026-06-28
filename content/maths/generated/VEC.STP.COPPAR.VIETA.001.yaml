@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: VEC.STP.COPPAR.VIETA.001
+
+fingerprint:
+  topic: VEC
+  subtopic: STP
+  idea: COPPAR
+  sub_idea: VIETA
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathbf{a}=(1,1,0)$, $\mathbf{b}=(0,1,1)$, $\mathbf{c}(t)=(t,t^{2},1)$, and let $V(t)=[\mathbf{a}\ \mathbf{b}\ \mathbf{c}(t)]$ denote their scalar triple product. Which of the following is/are correct?
+
+  - (A) $\mathbf{a},\mathbf{b},\mathbf{c}(t)$ are coplanar $\iff t=\dfrac{1\pm\sqrt{5}}{2}$
+  - (B) $V(t)$ attains its greatest value $\dfrac{5}{4}$ at $t=\dfrac{1}{2}$
+  - (C) The two values of $t$ at which the vectors are coplanar sum to $1$
+  - (D) $V(t)=1$ exactly for $t=0$ and $t=1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  The scalar triple product $[\mathbf{a}\ \mathbf{b}\ \mathbf{c}(t)]$ is the determinant of the matrix whose rows are the three vectors. When the third vector depends polynomially on a parameter $t$, the triple product is itself a polynomial $V(t)$; coplanarity ($V=0$), extrema, level sets ($V=k$), and root-symmetry (Vieta) become routine polynomial questions.
+
+  ### Working
+  Expanding the determinant along the first column,
+  $$V(t)=\det\!\begin{pmatrix}1&1&0\\ 0&1&1\\ t&t^{2}&1\end{pmatrix}=1\cdot(1-t^{2})-1\cdot(0-t)+0=-t^{2}+t+1.$$
+
+  **(A)** Coplanar $\iff V(t)=0\iff t^{2}-t-1=0\iff t=\dfrac{1\pm\sqrt{5}}{2}$. True.
+
+  **(C)** By Vieta on $t^{2}-t-1=0$, the sum of roots is $-(-1)/1=1$. True.
+
+  **(B)** $V(t)=-t^{2}+t+1$ is a downward parabola; its vertex is at $t=\dfrac{1}{2}$, where $V\!\left(\dfrac{1}{2}\right)=-\dfrac{1}{4}+\dfrac{1}{2}+1=\dfrac{5}{4}$. Since the parabola opens downward, this vertex value is the global maximum. True.
+
+  **(D)** $V(t)=1\iff -t^{2}+t+1=1\iff t^{2}-t=0\iff t(t-1)=0\iff t\in\{0,1\}$. True.
+
+  All four options hold.
+
+wrong_paths:
+  - path: "Student sets up the determinant but makes a sign error in the cofactor expansion, getting $V(t)=t^2-t-1$ or $V(t)=-t^2-t+1$; the coplanarity roots then come out non-symmetric or the maximum is mis-located, so (B) is rejected while (A), (C) survive."
+    landed_on_option: "A, C only (misses B and D)"
+    diagnosis: "TRAP-PARTIAL: arithmetic slip in the $3\\times3$ determinant kills the analytic claims while the conceptual (root-sum) claim still survives, so the student locks in a partial-key."
+  - path: "Student solves coplanarity correctly but never checks (B) and (D) because they assume the question's 'extra' analytic claims are decoys; marks only (A), (C)."
+    landed_on_option: "A, C only"
+    diagnosis: "TRAP-PARTIAL: classic JEE multi-correct under-mark, treating analytic statements about $V(t)$ as unrelated to the coplanarity statement."
+  - path: "For (D), student writes $V(t)=1$ and forgets to subtract $1$ from the constant term, solving $-t^2+t+1=0$ instead; gets $t=(1\\pm\\sqrt{5})/2$ and rejects (D)."
+    landed_on_option: "A, B, C only (rejects D)"
+    diagnosis: "Equation-setup slip: conflates 'coplanar' ($V=0$) with the level set $V=1$, so the only two surviving roots are the golden-ratio pair, and (D) looks false."
+  - path: "For (B), student differentiates $V'(t)=-2t+1=0\\Rightarrow t=1/2$ but computes $V(1/2)=-1/4+1/2+1=5/4$ and then claims this is a minimum because they confuse downward-parabola vertex with minimum; rejects (B)."
+    landed_on_option: "A, C, D only"
+    diagnosis: "Concavity sign-error: ignores that the leading coefficient of $V(t)$ is negative, so the vertex is a maximum not a minimum."
+
+review_notes: |
+  Standard scalar-triple-product / parametrised-vector item. Difficulty T2: the determinant is small and each option is a one-line check, but the 4-of-4 multi-correct structure punishes under-marking. Authored-time R1 240s reflects the careful sign-checking the four options demand; later rounds drop sharply as the polynomial $V(t)=-t^2+t+1$ becomes recognisable instantly.
+  Taxonomy extension flagged: VEC.STP (scalar triple product) subtopic, idea COPPAR (coplanarity via parameter), sub-idea VIETA (Vieta + level-set readout from the resulting polynomial). All new codes <=6 chars.

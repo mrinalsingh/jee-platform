@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: CAL.DER.TANCNT.CUBPAR.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DER
+  idea: TANCNT
+  sub_idea: CUBPAR
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $N(a)$ denote the number of tangent lines that can be drawn from the point $(a,0)$ to the curve $y=x^{3}-3x$.
+
+  - (A) $N(1)=3$
+  - (B) $N(2)=2$
+  - (C) $N(2)=3$
+  - (D) $N(a)=1$ for all $a\in\mathbb{R}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C]
+
+solution: |
+  ### The IDEA
+  Tangents from an external point to a smooth curve are parametrised by the point of tangency. Counting tangents from $(a,0)$ to $y=f(x)$ reduces to counting real roots of the "passes-through-$(a,0)$" equation in the tangent-point parameter $t$. For a cubic, the resulting equation is itself a cubic in $t$, and the number of real roots is governed by the sign of the product of its critical values.
+
+  ### Working
+  The tangent to $y=x^{3}-3x$ at the point with parameter $t$ has slope $3t^{2}-3$ and equation
+  $$y-(t^{3}-3t)=(3t^{2}-3)(x-t).$$
+  Substituting the point $(a,0)$:
+  $$-(t^{3}-3t)=(3t^{2}-3)(a-t),$$
+  which simplifies to
+  $$g(t)\;:=\;2t^{3}-3a\,t^{2}+3a\;=\;0.$$
+  $N(a)$ equals the number of real roots of $g$. We have $g'(t)=6t^{2}-6at=6t(t-a)$, so critical points are $t=0$ and $t=a$, with
+  $$g(0)=3a,\qquad g(a)=-a^{3}+3a=a(3-a^{2}).$$
+  The cubic has three real roots iff its two critical values have opposite signs, i.e.
+  $$g(0)\,g(a)=3a^{2}(3-a^{2})<0\;\Longleftrightarrow\;|a|>\sqrt 3.$$
+  (When $|a|<\sqrt 3$ and $a\neq 0$, there is exactly one real root; the boundary cases $a=0$ and $|a|=\sqrt 3$ are degenerate, giving one tangent and two tangents respectively.)
+
+  - $a=1$: $|1|<\sqrt 3$, so $N(1)=1$. Hence **(A) is false**.
+  - $a=2$: $|2|>\sqrt 3$, so $N(2)=3$. Hence **(C) is true** and **(B) is false**.
+  - **(D)** is false since $N(2)=3\neq 1$.
+
+  Only **(C)** holds.
+
+wrong_paths:
+  - path: "Mis-set the tangency condition: assume the tangent at $t$ to a cubic from an external point on the x-axis always gives a cubic with 3 real roots whenever the discriminant looks positive, without checking the threshold $|a|>\\sqrt 3$. Concludes $N(a)=3$ for all $a$, in particular $N(1)=3$."
+    landed_on_option: "(A)"
+    diagnosis: "Skips the critical-value sign test. The cubic $2t^{3}-3at^{2}+3a$ has three real roots only when $g(0)g(a)<0$, which fails at $a=1$. TRAP-EDGE: the student misses the boundary $|a|=\\sqrt 3$ separating the 1-tangent and 3-tangent regimes."
+  - path: "Confuses the number of tangents with the number of intersections of a generic line with a cubic and writes $N(2)=2$ (one tangent plus one transversal hit)."
+    landed_on_option: "(B)"
+    diagnosis: "Double-counts the tangency point as the intersection multiplicity instead of parametrising distinct tangent lines. Each real root of $g(t)=0$ gives one distinct tangent line; at $a=2$ there are three real roots, not two."
+  - path: "Treats the cubic $y=x^{3}-3x$ as 'monotone enough' that from any external point there is exactly one tangent (analogy with a convex curve like a parabola)."
+    landed_on_option: "(D)"
+    diagnosis: "Ignores the inflection at $x=0$: $y=x^{3}-3x$ has two distinct convex/concave branches, so external points beyond $|a|=\\sqrt 3$ on the x-axis admit three tangents. TRAP-EDGE on the inflection."
+
+review_notes: |
+  Calibration: tangent-count problems for cubics are standard JEE Advanced fare (cf. parameter-cubic root-count problems). Difficulty T3: the candidate must (i) set up the tangency-from-external-point equation, (ii) recognise that the count of tangents = count of real roots of a cubic in $t$, (iii) apply the critical-value sign-product test, (iv) extract the threshold $|a|>\sqrt 3$ and evaluate at $a=1,2$. Multi-correct format with only one true option (C) is unusual but matches the source key.
+  Taxonomy: IDEA `TANCNT` (tangent-count from an external point) and SUB-IDEA `CUBPAR` (cubic / parameter-on-axis variant) are new under CAL.DER; needs taxonomy extension.
+  Trap: TRAP-EDGE flags the $|a|=\sqrt 3$ threshold that students often miss.

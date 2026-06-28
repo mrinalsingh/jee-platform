@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: COG.PAR.CHDAREA.ARCHQUAD.001
+
+fingerprint:
+  topic: COG
+  subtopic: PAR
+  idea: CHDAREA
+  sub_idea: ARCHQUAD
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{P}:y=x^{2}$ and let $L:y=x+2$ be a chord of $\mathcal{P}$. Which of the following are correct?
+
+  - (A) $y=x+2$ is tangent to $\mathcal{P}$.
+  - (B) The area of the region $\{(x,y):x^{2}\le y\le x+2\}$ equals $\dfrac{9}{2}$.
+  - (C) The tangent to $\mathcal{P}$ parallel to $L$ touches $\mathcal{P}$ at $(1,1)$.
+  - (D) The tangent to $\mathcal{P}$ parallel to $L$ is $y=x-\dfrac{1}{4}$, and the area enclosed between $\mathcal{P}$ and $L$ equals $\dfrac{4}{3}$ times the area of the triangle formed by the two chord endpoints and the point of tangency (Archimedes' parabolic quadrature).
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  For a chord of a parabola, the enclosed area between the parabola and the chord equals $\tfrac{1}{6}$ times the cube of the gap between the roots of the intersection equation; equivalently, by Archimedes' parabolic quadrature, it equals $\tfrac{4}{3}$ the area of the triangle whose vertices are the two chord endpoints and the point where the tangent parallel to the chord meets the parabola.
+
+  ### Working
+  Intersect $y=x^{2}$ with $y=x+2$: $x^{2}-x-2=0\Rightarrow x=-1,2$. So $L$ meets $\mathcal{P}$ at $(-1,1)$ and $(2,4)$ — it is a genuine chord, not a tangent. **(A) is false.**
+
+  Enclosed area:
+  $$\int_{-1}^{2}\big((x+2)-x^{2}\big)\,dx=\left[\tfrac{x^{2}}{2}+2x-\tfrac{x^{3}}{3}\right]_{-1}^{2}=\tfrac{9}{2}.$$
+  (Equivalently $\tfrac{1}{6}(\text{root-gap})^{3}=\tfrac{1}{6}\cdot 3^{3}=\tfrac{9}{2}$.) **(B) is true.**
+
+  Tangent parallel to $L$ has slope $1$: $2x=1\Rightarrow x=\tfrac{1}{2}$, contact $\bigl(\tfrac{1}{2},\tfrac{1}{4}\bigr)$, not $(1,1)$. **(C) is false.**
+
+  That tangent line is $y=1\cdot\bigl(x-\tfrac{1}{2}\bigr)+\tfrac{1}{4}=x-\tfrac{1}{4}$. The triangle with vertices $(-1,1)$, $(2,4)$, $\bigl(\tfrac{1}{2},\tfrac{1}{4}\bigr)$ has area
+  $$\tfrac{1}{2}\left|(-1)\bigl(4-\tfrac{1}{4}\bigr)+2\bigl(\tfrac{1}{4}-1\bigr)+\tfrac{1}{2}(1-4)\right|=\tfrac{27}{8}.$$
+  Then $\tfrac{4}{3}\cdot\tfrac{27}{8}=\tfrac{9}{2}$, matching the enclosed area — Archimedes' quadrature. **(D) is true.**
+
+wrong_paths:
+  - path: "Sees discriminant of $x^2-x-2$ is positive but mistakes 'two intersections' for tangency at a double root, or just reads 'chord' loosely and marks (A) as 'touches the parabola'."
+    landed_on_option: "A"
+    diagnosis: "Confuses 'meets the parabola' with 'tangent'. Tangency requires a repeated root; here roots are distinct ($-1,2$)."
+  - path: "Solves $2x = 1$ correctly to find slope-1 tangent point but plugs $x=1$ instead of $x=\\tfrac12$ (mis-reads $2x=1$ as $x=1$), getting contact $(1,1)$."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL — arithmetic slip in slope condition $f'(x)=$ chord-slope. Correct contact is $\\bigl(\\tfrac12,\\tfrac14\\bigr)$."
+  - path: "Computes the area by $\\int_{-1}^{2}(x^{2}-(x+2))dx$ (parabola minus line in wrong order), gets $-\\tfrac{9}{2}$, drops the sign and accepts, but then for (D) computes triangle area incorrectly and rejects Archimedes ratio."
+    landed_on_option: "B only (misses D)"
+    diagnosis: "Sign error in 'upper minus lower' for area between curves; on the chord interval the line is above the parabola. Often coupled with not knowing Archimedes' $4{:}3$ ratio, so (D) is dismissed as 'too special'."
+  - path: "Knows Archimedes' quadrature qualitatively but mis-identifies the tangent line as $y=x+\\tfrac14$ (sign error on the $-\\tfrac14$ intercept)."
+    landed_on_option: "B only (misses D due to line-equation mismatch)"
+    diagnosis: "Computes intercept $y-\\tfrac14 = 1\\cdot(x-\\tfrac12)$ as $y=x+\\tfrac14$ instead of $y=x-\\tfrac14$. Loses (D) on a literal-match of the stated tangent."
+
+review_notes: |
+  Multi-correct (B, D). Statement combines (i) chord-vs-tangent distinction on a parabola,
+  (ii) area-between-curves via the $\tfrac16(\text{root-gap})^3$ shortcut, (iii) tangent
+  parallel to chord, and (iv) Archimedes' parabolic quadrature $4{:}3$ ratio. Surface is
+  pure coordinate geometry; trap is TRAP-PARTIAL since each option requires an independent
+  verification — a student who gets (B) right but skips Archimedes will under-mark.
+  Note: subtopic 'PAR' (parabola) and idea 'CHDAREA' / sub-idea 'ARCHQUAD' are new under
+  COG (currently unpopulated in the taxonomy) — needs_extension=true.

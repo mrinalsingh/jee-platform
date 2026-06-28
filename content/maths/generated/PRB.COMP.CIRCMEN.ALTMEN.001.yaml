@@ -1,0 +1,120 @@
+schema_version: 1
+
+question_code: PRB.COMP.CIRCMEN.ALTMEN.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: CIRCMEN
+  sub_idea: ALTMEN
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 180
+
+source_metadata:
+  jee_authenticity_score: 8.7
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+  notes: "PnC x probability fusion on a cycle: alternating M-W forced + cyclic menage count of length 4."
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.7
+    reviewed_at: "2026-06-14"
+    notes: "PnC × probability fusion, multi-correct"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613a_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Eight persons, consisting of four married couples
+  $\{(M_1,W_1),(M_2,W_2),(M_3,W_3),(M_4,W_4)\}$, are seated uniformly at
+  random around a circular table with $8$ distinguishable chairs (so all
+  $7!$ rotationally distinct seatings are equally likely). Let $E$ be the
+  event that no two men sit in adjacent chairs and let $F$ be the event
+  that no husband sits adjacent to his own wife. Identify the TRUE
+  statement(s).
+
+  (A) $\Pr(E)=\dfrac{1}{35}$
+
+  (B) $\Pr(E\cap F)=\dfrac{1}{420}$
+
+  (C) $\Pr(F\mid E)=\dfrac{1}{6}$
+
+  (D) the number of circular seatings (rotations identified) that lie in
+  $E\cap F$ equals $144$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  Total circular seatings with rotations identified $= 7! = 5040$.
+
+  **Event $E$ (no two men adjacent).** On a cycle of length $8$ with $4$
+  men and $4$ women, "no two men adjacent" forces a perfectly alternating
+  $M\text{-}W\text{-}M\text{-}W\text{-}\dots$ pattern. Fixing one
+  woman at a reference seat (to identify rotations), the remaining $3$
+  women can fill the four lady-seats in $3!$ ways and the $4$ men can
+  fill the four man-seats in $4!$ ways, giving $3!\cdot 4! = 144$
+  alternating seatings. Hence
+  $$\Pr(E) \;=\; \frac{144}{5040} \;=\; \frac{1}{35},$$
+  so (A) is TRUE.
+
+  **Event $E\cap F$.** Within the alternating pattern, label the four
+  "lady-seats" cyclically as $L_1,L_2,L_3,L_4$ and the four "man-seats"
+  $M_{12},M_{23},M_{34},M_{41}$ between them. Fix $W_1$ at $L_1$; the
+  other $3$ women fill $L_2,L_3,L_4$ in $3! = 6$ ways. For each
+  women-layout, the man seated between ladies $W_i$ and $W_j$ must be
+  neither $M_i$ nor $M_j$ (the husband condition $F$). This is exactly
+  the cyclic ménage problem on a cycle of length $4$: by direct
+  enumeration (or the cyclic ménage recurrence) the number of admissible
+  men-permutations is $2$ per women-layout. Therefore $|E\cap F| = 6
+  \cdot 2 = 12$, and
+  $$\Pr(E\cap F) \;=\; \frac{12}{5040} \;=\; \frac{1}{420},$$
+  so (B) is TRUE.
+
+  **(C)** $\Pr(F\mid E) = \dfrac{|E\cap F|}{|E|} = \dfrac{12}{144} =
+  \dfrac{1}{12} \ne \dfrac{1}{6}$. FALSE.
+
+  **(D)** The count of circular seatings in $E\cap F$ is $12$, not $144$
+  (the value $144$ is $|E|$, not $|E\cap F|$). FALSE.
+
+  **Key: (A), (B).**
+
+wrong_paths:
+  - path: "Confuses $|E\\cap F|$ with $|E|$: reports $144$ as the count of seatings in $E\\cap F$, missing the ménage condition entirely."
+    landed_on_option: [D]
+    diagnosis: "Skips the husband-not-adjacent constraint and reuses the alternating count."
+  - path: "Computes $|E\\cap F|=24$ (treating the cyclic ménage as a linear derangement on $4$ men, giving $D_4=9$ or a naive $3!=6$ scaled wrongly) so $\\Pr(F\\mid E)=24/144=1/6$."
+    landed_on_option: [C]
+    diagnosis: "Mis-applies derangement / linear ménage formula to the cyclic-4 case instead of enumerating $2$ admissible men-permutations per women-layout."
+  - path: "Forgets to fix a woman to identify rotations: divides $4!\\cdot 4!$ by $8$ to get $72$ for $|E|$, leading to $\\Pr(E)=72/5040=1/70$, then a downstream $\\Pr(E\\cap F)$ error."
+    landed_on_option: []
+    diagnosis: "Mishandles the rotational-quotient by labelled seats vs unlabelled cycle."
+
+review_notes: |
+  Two correct (A,B); the (D) trap reuses $|E|=144$ as $|E\cap F|$, and the
+  (C) trap exploits the linear-vs-cyclic ménage confusion. The cyclic
+  ménage count of $2$ on a $4$-cycle is short enough that a top student
+  can enumerate it in 30s, but recognising it as the key obstacle is what
+  pushes the problem to T4.

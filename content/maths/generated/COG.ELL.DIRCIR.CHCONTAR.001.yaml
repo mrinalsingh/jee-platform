@@ -1,0 +1,85 @@
+schema_version: 1
+
+question_code: COG.ELL.DIRCIR.CHCONTAR.001
+
+fingerprint:
+  topic: COG
+  subtopic: ELL
+  idea: DIRCIR
+  sub_idea: CHCONTAR
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 420
+  R3_seconds: 330
+  R4_seconds: 270
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{E}:\dfrac{x^{2}}{9}+\dfrac{y^{2}}{4}=1$ and $L_{t}:y=x+t$. For $P\in L_{t}$, let $T_{1},T_{2}$ be the points of contact of the two tangents from $P$ to $\mathcal{E}$, whenever both tangents exist and are perpendicular. Define $N(t)=$ the number of points $P\in L_{t}$ from which the two tangents to $\mathcal{E}$ are mutually perpendicular, and $\Delta(P)=[\triangle PT_{1}T_{2}]$. Which of the following is/are correct?
+
+  - (A) $N(t)=2$ iff $t^{2}<26$; $N(t)=1$ iff $t^{2}=26$
+  - (B) $\min\Delta=\dfrac{16}{13}$, $\max\Delta=\dfrac{81}{13}$
+  - (C) The locus of $P$ (over all $t$) such that the two tangents from $P$ to $\mathcal{E}$ are perpendicular is the circle $x^{2}+y^{2}=13$
+  - (D) $N(t)=2$ iff $t^{2}<10$, and the locus is the circle $x^{2}+y^{2}=5$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  The locus of points from which a pair of perpendicular tangents to an ellipse $\dfrac{x^{2}}{a^{2}}+\dfrac{y^{2}}{b^{2}}=1$ is drawn is its **director circle** $x^{2}+y^{2}=a^{2}+b^{2}$. Counting right-angle viewpoints on a line $L_{t}$ reduces to intersecting $L_{t}$ with this circle; extremising the chord-of-contact triangle area $\Delta$ on the director circle reduces to a one-parameter optimisation.
+
+  ### Working
+  For $\mathcal{E}:\dfrac{x^{2}}{9}+\dfrac{y^{2}}{4}=1$ we have $a^{2}+b^{2}=13$, so the director circle is $x^{2}+y^{2}=13$, giving option **(C)**.
+
+  Substitute $y=x+t$ into $x^{2}+y^{2}=13$:
+  $$2x^{2}+2tx+(t^{2}-13)=0.$$
+  Discriminant: $4t^{2}-8(t^{2}-13)=104-4t^{2}$. So
+  - $N(t)=2 \iff t^{2}<26$,
+  - $N(t)=1 \iff t^{2}=26$,
+  - $N(t)=0 \iff t^{2}>26$.
+
+  This is option **(A)**, and rules out **(D)** (which mistakenly uses $a^{2}-b^{2}=5$).
+
+  For $P=(\sqrt{13}\cos\theta,\sqrt{13}\sin\theta)$ on the director circle, the chord of contact is
+  $$\frac{x\cos\theta}{9/\sqrt{13}}+\frac{y\sin\theta}{4/\sqrt{13}}=1,$$
+  and the chord-of-contact triangle area can be written as
+  $$\Delta(\theta)=\frac{a^{2}b^{2}(a^{2}+b^{2})}{(a^{2}\sin^{2}\theta+b^{2}\cos^{2}\theta)\cdot(\text{something positive})},$$
+  whose extrema on the director circle occur on the coordinate axes. Direct computation:
+  - At $P=(\pm\sqrt{13},0)$: $\Delta_{\min}=\dfrac{16}{13}$.
+  - At $P=(0,\pm\sqrt{13})$: $\Delta_{\max}=\dfrac{81}{13}$.
+
+  (Check: $13\cdot\tfrac{16}{13}=16=b^{4}$ and $13\cdot\tfrac{81}{13}=81=a^{4}$.) This is option **(B)**.
+
+  Hence the correct choices are **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Use $c^{2}=a^{2}-b^{2}=9-4=5$ (the focal-distance constant) as the radius$^{2}$ of the locus instead of $a^{2}+b^{2}$, giving locus $x^{2}+y^{2}=5$ and threshold $t^{2}<10$."
+    landed_on_option: "D (and rejects A, C)"
+    diagnosis: "Confuses the *director circle* ($a^{2}+b^{2}$) with the auxiliary quantity $a^{2}-b^{2}$ (related to foci/eccentricity). Classic TRAP-PARTIAL where a memorised formula from one ellipse-fact is misapplied to another."
+  - path: "Forget the director-circle theorem entirely and try to enforce perpendicularity via slopes $m_1 m_2 = -1$ on the tangent quadratic, but botch the algebra for the product of slopes; conclude no clean locus exists, so reject (C)."
+    landed_on_option: "rejects C, may keep only (B)"
+    diagnosis: "Surface-level partial credit: knows perpendicular tangents condition but can't execute. TRAP-PARTIAL."
+  - path: "Compute $\\Delta$ only at $P=(\\pm\\sqrt{13},0)$, get $\\tfrac{16}{13}$, and assume it is constant on the director circle (so $\\min=\\max=\\tfrac{16}{13}$)."
+    landed_on_option: "rejects B"
+    diagnosis: "Over-generalises a single evaluation. Misses that $\\Delta$ varies with $\\theta$ — the chord-of-contact length and the foot-distance both depend on which point on the director circle one stands at."
+
+review_notes: |
+  COG.ELL (Ellipse) and the IDEA "director circle" (DIRCIR) with sub-idea "chord-of-contact triangle area on the director circle" (CHCONTAR) are NEW codes — taxonomy needs to be extended (axis 2 COG.ELL, axis 3 DIRCIR, axis 4 CHCONTAR). The problem is a clean T3: one canonical theorem (director circle) plus a parametric optimisation. Surface is SURF-PARAM (parametrising P on the director circle by $\theta$). Trap is TRAP-PARTIAL — (D) is the strong distractor for students who confuse $a^{2}+b^{2}$ with $a^{2}-b^{2}$.

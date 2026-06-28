@@ -1,0 +1,72 @@
+schema_version: 1
+
+question_code: TRG.INV.TELESC.ATANDIFF.001
+
+fingerprint:
+  topic: TRG
+  subtopic: INV
+  idea: TELESC
+  sub_idea: ATANDIFF
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EDGE
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 120
+  R3_seconds: 90
+  R4_seconds: 60
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $S_n=\sum_{k=1}^{n}\tan^{-1}\dfrac{1}{k^{2}+k+1}$. Which of the following are correct?
+
+  - (A) $S_{n}=\tan^{-1}(n+1)-\dfrac{\pi}{4}$
+  - (B) $\displaystyle\lim_{n\to\infty}S_{n}=\dfrac{\pi}{4}$
+  - (C) $S_{n}=\tan^{-1}(n)-\dfrac{\pi}{4}$
+  - (D) $\displaystyle\lim_{n\to\infty}S_{n}=\dfrac{\pi}{2}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  When a sum of $\tan^{-1}$ terms has a denominator of the form $1+(\text{product})$ and numerator that is a difference, rewrite each term as $\tan^{-1}\alpha-\tan^{-1}\beta$ so the series telescopes.
+
+  ### Working
+  Note that
+  $$\frac{1}{k^{2}+k+1}=\frac{(k+1)-k}{1+k(k+1)},$$
+  which matches the $\tan^{-1}$ subtraction identity:
+  $$\tan^{-1}\frac{1}{k^{2}+k+1}=\tan^{-1}(k+1)-\tan^{-1}(k).$$
+  Summing from $k=1$ to $n$ telescopes:
+  $$S_{n}=\tan^{-1}(n+1)-\tan^{-1}(1)=\tan^{-1}(n+1)-\frac{\pi}{4}.$$
+  So (A) is correct. Taking $n\to\infty$, $\tan^{-1}(n+1)\to\frac{\pi}{2}$, hence
+  $$\lim_{n\to\infty}S_{n}=\frac{\pi}{2}-\frac{\pi}{4}=\frac{\pi}{4},$$
+  so (B) is correct. (C) is the off-by-one variant with $\tan^{-1}(n)$ instead of $\tan^{-1}(n+1)$ — false. (D) drops the lower endpoint $\tan^{-1}(1)=\pi/4$ — false.
+
+wrong_paths:
+  - path: "Forgets to subtract the lower endpoint $\\tan^{-1}(1)=\\pi/4$ after telescoping, writing $S_n=\\tan^{-1}(n+1)$ and concluding the limit is $\\pi/2$."
+    landed_on_option: "D"
+    diagnosis: "TRAP-EDGE: endpoint dropped in telescoping sum. The lower-index term $\\tan^{-1}(1)$ must be subtracted; dropping it inflates the limit by $\\pi/4$."
+  - path: "Mis-pairs the telescoping as $\\tan^{-1}(k)-\\tan^{-1}(k-1)$ so the upper endpoint becomes $\\tan^{-1}(n)$ rather than $\\tan^{-1}(n+1)$."
+    landed_on_option: "C"
+    diagnosis: "Off-by-one indexing of the telescoping cancellation; correct alignment gives $\\tan^{-1}(k+1)-\\tan^{-1}(k)$ because the numerator is $(k+1)-k$."
+  - path: "Uses $\\tan^{-1}x+\\tan^{-1}y=\\tan^{-1}\\frac{x+y}{1-xy}$ unguardedly with $x=1$, $y=k$, scrambling signs and never reaching a closed form."
+    landed_on_option: "C or D"
+    diagnosis: "Wrong identity selected; the form $\\frac{a-b}{1+ab}$ in the summand signals the subtraction identity, not the addition identity."
+
+review_notes: |
+  Standard telescoping $\tan^{-1}$ sum — a true JEE workhorse. Both (A) and (B) follow from one observation. Surface SURF-PLAIN; trap TRAP-EDGE captures the endpoint-dropping distractor (D). Difficulty T2: identity-pattern recognition + clean telescoping. New axis-3 code TELESC (telescoping inverse-trig sum) and axis-4 ATANDIFF (atan subtraction identity) proposed; also new subtopic INV under TRG was already listed in the contract's subtopic enum. If TRG.INV.TELESC.ATANDIFF is not acceptable, fold under TRG.INV with a similar pattern code.

@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: MAT.INV.NILINV.NEUMANN.001
+
+fingerprint:
+  topic: MAT
+  subtopic: INV
+  idea: NILINV
+  sub_idea: NEUMANN
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 140
+  R4_seconds: 110
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $U=\begin{pmatrix}0&2&3\\0&0&4\\0&0&0\end{pmatrix}$ (so $U^{3}=O$), and let $B=(I+U)^{-1}$. Which of the following is/are correct?
+
+  - (A) $\det(I+U)=1$ and $\operatorname{tr}B=3$
+  - (B) $B$ has $(1,3)$ entry $5$ and $(1,2)$ entry $-2$
+  - (C) $B=I-U+U^{2}$ exactly
+  - (D) $B=I-U$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  For any nilpotent matrix $U$ with $U^{n}=O$, the finite Neumann series gives the exact inverse:
+  $(I+U)(I-U+U^{2}-\cdots+(-1)^{n-1}U^{n-1})=I-(-U)^{n}=I$. So $(I+U)^{-1}$ terminates after $n$ terms — no truncation error.
+
+  ### Working
+  Here $U^{3}=O$, so
+  $$B=(I+U)^{-1}=I-U+U^{2}\quad\text{exactly},$$
+  which establishes **(C)**.
+
+  Compute $U^{2}$: the only nonzero entry is the $(1,3)$ entry $=2\cdot4=8$, so
+  $$U^{2}=\begin{pmatrix}0&0&8\\0&0&0\\0&0&0\end{pmatrix}.$$
+  Hence
+  $$B=I-U+U^{2}=\begin{pmatrix}1&-2&-3\\0&1&-4\\0&0&1\end{pmatrix}+\begin{pmatrix}0&0&8\\0&0&0\\0&0&0\end{pmatrix}=\begin{pmatrix}1&-2&5\\0&1&-4\\0&0&1\end{pmatrix}.$$
+  The $(1,2)$ entry is $-2$ and the $(1,3)$ entry is $-3+8=5$, establishing **(B)**.
+
+  Since $I+U$ is upper-triangular with $1$'s on the diagonal, every eigenvalue is $1$, so $\det(I+U)=1$. The same holds for $B$ (unipotent upper-triangular), giving $\operatorname{tr}B=1+1+1=3$. This establishes **(A)**.
+
+  For **(D)**: $(I+U)(I-U)=I-U^{2}\neq I$ because $U^{2}\neq O$. So $B\neq I-U$; the $+U^{2}$ correction is essential.
+
+  Correct: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student stops the geometric/Neumann series after two terms, writing $(I+U)^{-1}\\approx I-U$ by analogy with $\\frac{1}{1+x}\\approx 1-x$."
+    landed_on_option: "(D)"
+    diagnosis: "TRAP-PARTIAL: truncates the finite series one term too early. The series must run until $U^{k}=O$; here $U^{2}\\neq O$ so the $U^{2}$ term is mandatory."
+  - path: "Computes $U^{2}$ but mis-multiplies the (1,3) entry as $2\\cdot3=6$ or $3\\cdot4=12$ instead of (row1 of U) dot (col3 of U) $=2\\cdot4+3\\cdot0=8$, giving wrong $(1,3)$ entry of $B$."
+    landed_on_option: "Rejects (B), keeps only (A) and (C)"
+    diagnosis: "Standard row-column multiplication slip on a strictly-upper-triangular product; the only contributing term is $U_{12}\\cdot U_{23}=2\\cdot4=8$."
+  - path: "Tries to invert $I+U$ by computing $\\operatorname{adj}(I+U)/\\det(I+U)$ directly and gives up on the $3\\times3$ cofactor expansion, leaving (A) (the cheap determinant/trace claim) as the only confident pick."
+    landed_on_option: "(A) only"
+    diagnosis: "Misses the nilpotent-inverse identity — the canonical JEE-level trick for $(I+U)^{-1}$ when $U$ is strictly upper-triangular. The adjugate route is correct but wastes time and invites arithmetic errors."
+
+review_notes: |
+  Clean Neumann-series / nilpotent-inverse item. Three correct options reward students who both (i) know the finite series for $(I+\text{nilpotent})^{-1}$ and (ii) execute the $U^{2}$ entry correctly. Distractor (D) is the truncate-too-early trap and is the single most common JEE student error. Difficulty T2 — standard medium; computation is small but multi-step. Subtopic INV. Sub-idea NEUMANN introduced (finite Neumann/von Neumann series for nilpotent perturbation of identity). Idea NILINV (nilpotent-based inverse) is also new; suggest adding both to taxonomy.

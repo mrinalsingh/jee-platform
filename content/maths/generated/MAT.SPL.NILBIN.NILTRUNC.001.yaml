@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: MAT.SPL.NILBIN.NILTRUNC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: NILBIN
+  sub_idea: NILTRUNC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 120
+  R3_seconds: 90
+  R4_seconds: 60
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $N=\begin{pmatrix}0&1&2\\ 0&0&3\\ 0&0&0\end{pmatrix}$, so that $N^{3}=O$, and let $k=10$. Which of the following statements is/are TRUE?
+
+  - (A) $(I+N)^{k}=I+kN$
+  - (B) $\operatorname{trace}\bigl((I+N)^{k}\bigr)=3k$
+  - (C) $(I+N)^{k}=I+kN+\binom{k}{2}N^{2}$
+  - (D) $\det(I+N)=1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  When $N$ is nilpotent with $N^{m}=O$, the binomial expansion
+  $(I+N)^{k}=\sum_{j=0}^{k}\binom{k}{j}N^{j}$ TRUNCATES at $j=m-1$, because all higher powers vanish. Here $N^{3}=O$, so only the $j=0,1,2$ terms survive — independently of how large $k$ is. Triangularity of $I+N$ then makes the determinant and trace immediate.
+
+  ### Working
+  Since $I$ and $N$ commute, the binomial theorem applies:
+  $$(I+N)^{k}=I+kN+\binom{k}{2}N^{2}+\binom{k}{3}N^{3}+\cdots$$
+  All terms from $N^{3}$ onward are $O$, so
+  $$(I+N)^{k}=I+kN+\binom{k}{2}N^{2}.$$
+  For $k=10$ this is $I+10N+45N^{2}$.
+
+  **(C)** is exactly this identity — **TRUE**.
+
+  **(D)** $I+N$ is upper-triangular with diagonal entries $1,1,1$, so $\det(I+N)=1\cdot1\cdot1=1$ — **TRUE**.
+
+  **(A)** Compute $N^{2}=\begin{pmatrix}0&0&3\\ 0&0&0\\ 0&0&0\end{pmatrix}\ne O$. The coefficient of $N^{2}$ in $(I+N)^{10}$ is $\binom{10}{2}=45\ne 0$, so the $N^{2}$ term survives and $(I+N)^{10}\ne I+10N$ — **FALSE**.
+
+  **(B)** $(I+N)^{k}$ is upper-triangular with every diagonal entry equal to $1$ (since adding $N$, which is strictly upper-triangular, doesn't change the diagonal, and powers of an upper-triangular matrix have diagonal entries equal to powers of the original diagonal entries). Hence $\operatorname{trace}((I+N)^{k})=1+1+1=3$ for every $k$, not $3k=30$ — **FALSE**.
+
+  Correct options: **(C), (D)**.
+
+wrong_paths:
+  - path: "Apply the binomial theorem but stop after the linear term, writing $(I+N)^{k}=I+kN$ as if $N^{2}=O$. Student confuses 'nilpotent' with 'square-zero'."
+    landed_on_option: "Marks (A) true; consequently may also mark (C) false."
+    diagnosis: "Partial truncation — TRAP-PARTIAL. The truncation happens at $N^{3}$ (because $N^{3}=O$), not at $N^{2}$. The student conflates the nilpotency index $3$ with index $2$."
+  - path: "Compute trace by linearity as $\\operatorname{trace}((I+N)^{k}) = \\operatorname{trace}(I)+k\\operatorname{trace}(N)+\\cdots$ and naively reads $3+0+\\cdots = 3$ — gets (B) right being 3 — but then mis-reads the option as $3$ and ticks (B). Or, alternatively, multiplies the diagonal $(1)$ by $k$ thinking '$k$ copies of the identity' contribute."
+    landed_on_option: "Marks (B) true (value $3k=30$)."
+    diagnosis: "Trace-scaling error: confuses $\\operatorname{trace}(A^{k})$ with $k\\operatorname{trace}(A)$. The trace of $(I+N)^{k}$ is the sum of diagonal entries of an upper-triangular matrix with $1$s on the diagonal — always $3$."
+  - path: "Tries to actually multiply out $(I+N)^{10}$ entry-by-entry and gives up, marking nothing or only (D)."
+    landed_on_option: "Marks only (D), missing (C)."
+    diagnosis: "Misses that the binomial theorem applies because $I$ and $N$ commute, and that nilpotency collapses the expansion to three terms. A computational rather than structural approach."
+
+review_notes: |
+  Standard nilpotent-binomial item; (C) and (D) are the canonical answers. The IDEA code NILBIN (nilpotent binomial truncation) and SUB-IDEA NILTRUNC are new — neither MAT.SPL.ORBSUM nor existing MAT codes capture binomial-with-nilpotent. T2/standard; first-page JEE multi-correct. Distractor (A) tests the off-by-one in the nilpotency index (a TRAP-PARTIAL). Distractor (B) tests trace-of-power vs power-of-trace confusion.

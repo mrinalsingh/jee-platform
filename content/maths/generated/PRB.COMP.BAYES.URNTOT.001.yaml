@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: PRB.COMP.BAYES.URNTOT.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: BAYES
+  sub_idea: URNTOT
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Urn $i$ ($i=1,2,3,4,5$) contains $i$ defective balls out of $10$. An urn is chosen uniformly at random and one ball is drawn from it. Which of the following is/are correct?
+
+  - (A) $P(\text{def})=\tfrac12$
+  - (B) $P(\text{def})=\tfrac{3}{10}$
+  - (C) $P(\text{urn }1\mid\text{def})=\tfrac15$
+  - (D) $P(\text{urn }5\mid\text{def})=\tfrac13$; and in the $n$-urn analogue $P(\text{urn }n\mid\text{def})=\tfrac{2}{n+1}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  Total probability over a uniform prior on urns gives $P(\text{def})$ as the average of the urn-conditional defective rates; Bayes then re-weights each urn's posterior by its likelihood $i/10$, which is proportional to $i$, so posteriors form a triangular-number distribution.
+
+  ### Working
+  Condition on the urn: $P(\text{def}\mid \text{urn }i)=\dfrac{i}{10}$, and $P(\text{urn }i)=\tfrac15$.
+
+  **Total probability.**
+  $$P(\text{def})=\sum_{i=1}^{5}\tfrac15\cdot\tfrac{i}{10}=\tfrac{1}{50}\sum_{i=1}^{5}i=\tfrac{15}{50}=\tfrac{3}{10}.$$
+  So (B) is true and (A) is false.
+
+  **Bayes.** Since the prior is uniform,
+  $$P(\text{urn }i\mid\text{def})=\dfrac{(1/5)(i/10)}{3/10}=\dfrac{i}{15}.$$
+  Hence $P(\text{urn }1\mid\text{def})=\tfrac{1}{15}\ne\tfrac15$, so (C) is false. And $P(\text{urn }5\mid\text{def})=\tfrac{5}{15}=\tfrac13$.
+
+  **$n$-urn analogue.** With $n$ urns, urn $i$ having $i$ defective out of $10$, uniform prior $1/n$:
+  $$P(\text{urn }i\mid\text{def})=\dfrac{(1/n)(i/10)}{(1/n)\sum_{j=1}^{n}(j/10)}=\dfrac{i}{\sum_{j=1}^{n}j}=\dfrac{2i}{n(n+1)}.$$
+  For the top urn $i=n$: $\dfrac{2n}{n(n+1)}=\dfrac{2}{n+1}$. So (D) is true.
+
+  **Correct options:** (B), (D).
+
+wrong_paths:
+  - path: "Student averages the urn fractions as $\\tfrac{1+2+3+4+5}{5\\cdot 10}$ but mis-simplifies to $\\tfrac12$, or treats 'one ball drawn from an urn of 10' as a 50/50 coin flip."
+    landed_on_option: "A"
+    diagnosis: "TRAP-NCERT misuse of equally-likely intuition: ignores that defective rates vary across urns and that the average is $3/10$, not $1/2$."
+  - path: "Uniform-prior fallacy: student assumes that after observing 'defective', the posterior over urns is still uniform, so $P(\\text{urn }1\\mid\\text{def})=1/5$."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL: confuses prior with posterior, forgetting that Bayes re-weights by likelihood $i/10$. Urn 1 is the least likely source of a defective, with posterior $1/15$, not $1/5$."
+  - path: "Student computes $P(\\text{urn }5\\mid\\text{def})=1/3$ correctly but cannot derive the $n$-urn formula, so does not mark (D); or derives $P=1/n$ by uniform-prior fallacy."
+    landed_on_option: "fails to mark D"
+    diagnosis: "Misses that $\\sum_{j=1}^n j=n(n+1)/2$, so the posterior for urn $n$ is $\\tfrac{n}{n(n+1)/2}=\\tfrac{2}{n+1}$ — a triangular-number packaging."
+
+review_notes: |
+  PRB.COMP.BAYES.URNTOT is a NEW idea/sub-idea pair — the existing PRB.COMP only has INCEXC. This problem is a textbook Bayes-with-uniform-prior + $n$-urn generalisation that is core JEE Advanced fare and deserves its own idea code. Difficulty T3: standard Bayes mechanics, but (D)'s $n$-urn extension lifts it above pure T2. Multi-correct with a classic uniform-prior distractor (C) and an averaging-fallacy distractor (A).

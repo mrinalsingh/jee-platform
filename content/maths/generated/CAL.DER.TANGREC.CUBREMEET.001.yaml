@@ -1,0 +1,74 @@
+schema_version: 1
+
+question_code: CAL.DER.TANGREC.CUBREMEET.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DER
+  idea: TANGREC
+  sub_idea: CUBREMEET
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 150
+  R3_seconds: 120
+  R4_seconds: 90
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  $T_a$ tangent to $y=x^{3}$ at $(a,a^{3})$ meets curve again at $x=\varphi(a)$; $a_0=1,\ a_{k+1}=\varphi(a_k)$.
+
+  - (A) $\varphi(a)=-\tfrac{a}{2}$
+  - (B) $\varphi(a)=-2a$
+  - (C) $\{a_k\}$ is an A.P.
+  - (D) $\{a_k\}$ is a G.P. with ratio $-2$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  For a cubic $y=x^3$, the tangent at $(a,a^3)$ meets the curve at a point whose $x$-coordinate is determined by the factorisation $(x-a)^2(x+2a)=0$: the double root sits at the contact, the simple root at $-2a$. Iterating $\varphi(a)=-2a$ from $a_0=1$ produces a geometric progression with ratio $-2$.
+
+  ### Working
+  The tangent at $(a,a^3)$ is
+  $$y = a^{3} + 3a^{2}(x-a).$$
+  Setting $x^{3} = a^{3} + 3a^{2}(x-a)$ gives
+  $$x^{3} - 3a^{2}x + 2a^{3} = 0 \;\Longleftrightarrow\; (x-a)^{2}(x+2a)=0.$$
+  The double root $x=a$ corresponds to the point of contact and the new intersection is $x=-2a$, so
+  $$\varphi(a) = -2a.$$
+  Thus (B) holds and (A) fails.
+
+  Iterating $a_{k+1} = -2a_{k}$ with $a_0 = 1$ gives
+  $$a_k = (-2)^{k},$$
+  a geometric progression with common ratio $-2$. Hence (D) holds; (C) fails because the successive differences $1, -3, 6, -12, \dots$ are not constant.
+
+wrong_paths:
+  - path: "Uses slope of normal $-1/(3a^2)$ or otherwise confuses the tangent slope and writes $\\varphi(a)=-a/2$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL: reciprocal-of-slope slip. Student inverts the tangent slope $3a^2$ instead of solving the cubic intersection properly."
+  - path: "Correctly finds $\\varphi(a)=-2a$ and the sequence $1,-2,4,-8,\\dots$, then mistakes the alternating-sign pattern as having constant differences and ticks AP."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL: confuses GP with AP because consecutive terms differ in sign; fails to verify the constant-difference test."
+  - path: "Sets $x^3 = a^3 + 3a^2(x-a)$ but drops the double-root factor, taking $x=a$ as the only relevant root and concluding $\\varphi(a)=a$ (fixed point)."
+    landed_on_option: "none (rejects B and D)"
+    diagnosis: "Misses that the contact point gives a double root; the cubic must factor as $(x-a)^2(x+2a)$, so the second intersection is $-2a$, not $a$."
+
+review_notes: |
+  Standard JEE-level cubic-tangent factoring problem. New axis-3 IDEA code TANGREC ("tangent meets curve again, then iterate") and axis-4 SUB-IDEA CUBREMEET ("cubic-revisit double-root factoring") proposed because no existing CAL.DER idea covers this self-similar tangent-iteration construction. Calibrated T2: short once the $(x-a)^2$ factor is spotted, but the AP/GP check trips the careless.

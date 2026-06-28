@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: PRB.COMP.DICEMOD.RESUNI.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: DICEMOD
+  sub_idea: RESUNI
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Three fair dice are rolled. Let $T$ denote their sum and $\Pi$ denote their product. Which of the following is/are correct?
+
+  - (A) $P(T \equiv 0 \pmod 3) = \dfrac{1}{3}$
+  - (B) $P(3 \mid \Pi) = \dfrac{19}{27}$
+  - (C) $P(\text{at least one face shows } 6) = \dfrac{1}{2}$
+  - (D) $P(\text{all three faces have the same residue mod } 3) = \dfrac{1}{9}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  Each die's residue mod $3$ is uniform on $\{0,1,2\}$ since the faces $\{1,2,3,4,5,6\}$ split as two faces per residue class. This makes mod-$3$ questions on dice tractable via independence of uniform residues, and "$3 \mid \Pi$" reduces to a complementary count.
+
+  ### Working
+  Label each die's residue $R_i \in \{0,1,2\}$, each value taken with probability $\tfrac{2}{6}=\tfrac{1}{3}$, independently across the three dice.
+
+  **(A)** Sum of three i.i.d.\ uniform residues mod $3$: the convolution of uniform distributions on $\mathbb{Z}/3$ is again uniform on $\mathbb{Z}/3$. Hence $P(T \equiv 0 \pmod 3) = \tfrac{1}{3}$. **True.**
+
+  **(B)** $3 \mid \Pi$ iff at least one die shows a multiple of $3$ (i.e.\ residue $0$). Complement: no die is a multiple of $3$, probability $\left(\tfrac{4}{6}\right)^3 = \tfrac{8}{27}$. So $P(3 \mid \Pi) = 1 - \tfrac{8}{27} = \tfrac{19}{27}$. **True.**
+
+  **(C)** $P(\text{at least one } 6) = 1 - \left(\tfrac{5}{6}\right)^3 = 1 - \tfrac{125}{216} = \tfrac{91}{216} \ne \tfrac{1}{2}$. **False.**
+
+  **(D)** All three dice in the same residue class: choose the class ($3$ ways) and demand all three land there: $3 \cdot \left(\tfrac{2}{6}\right)^3 = 3 \cdot \tfrac{1}{27} = \tfrac{1}{9}$. **True.**
+
+  Correct options: (A), (B), (D).
+
+wrong_paths:
+  - path: "Computes $P(\\text{at least one }6) = 3 \\cdot \\tfrac{1}{6} = \\tfrac{1}{2}$ by adding single-die probabilities."
+    landed_on_option: "Marks (C) true (and likely keeps A, B, D)."
+    diagnosis: "Classic union-bound / overcounting error: treats $P(A_1 \\cup A_2 \\cup A_3)$ as $\\sum P(A_i)$, ignoring overlaps. TRAP-PARTIAL: the candidate gets three of four options right but adds the spurious (C)."
+  - path: "Sums residue probabilities assuming $T \\equiv 0$ requires all dice to be multiples of $3$, getting $(1/3)^3 = 1/27$."
+    landed_on_option: "Drops (A)."
+    diagnosis: "Confuses 'sum $\\equiv 0$ mod 3' with 'each summand $\\equiv 0$ mod 3'; misses that uniform residues convolve to uniform."
+  - path: "For (D), forgets to multiply by the number of residue classes and gets $(2/6)^3 = 1/27$."
+    landed_on_option: "Drops (D)."
+    diagnosis: "Counts only one class (say all residue $0$) instead of summing over the three disjoint same-residue events."
+  - path: "For (B), counts $P(\\text{exactly one die is multiple of 3})$ via $\\binom{3}{1}(2/6)(4/6)^2 = 4/9$ and stops."
+    landed_on_option: "Drops (B)."
+    diagnosis: "Confuses 'at least one' with 'exactly one'; misses the complement $1-(4/6)^3$ structure."
+
+review_notes: |
+  Standard JEE Advanced multi-correct probability item testing (i) uniform-residue-mod-3 reasoning on dice, (ii) complement principle for divisibility of product, (iii) recognising the $1-(5/6)^3$ vs $1/2$ trap, and (iv) summing over residue classes. T2 calibration: each part is a one-line computation once the residue framing is seen. Taxonomy extension: I introduced IDEA `DICEMOD` (mod-residue reasoning on dice) and SUB-IDEA `RESUNI` (uniform-residue convolution + complement). If MS prefers, this can be reassigned to PRB.COMP.INCEXC with a new sub-idea like `DICERES`.

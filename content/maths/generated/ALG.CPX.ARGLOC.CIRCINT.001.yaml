@@ -1,0 +1,84 @@
+schema_version: 1
+
+question_code: ALG.CPX.ARGLOC.CIRCINT.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: ARGLOC
+  sub_idea: CIRCINT
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $z\in\mathbb{C}$ satisfy $\arg\!\left(\dfrac{z}{z-2}\right)=\dfrac{\pi}{4}$ and $|z|=\sqrt{2}$. Then
+
+  (A) there are exactly two such $z$
+
+  (B) $\operatorname{Im} z<0$
+
+  (C) $\operatorname{Re} z=\dfrac{1+\sqrt{3}}{2}$
+
+  (D) $z+\bar z = 1-\sqrt{3}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  An argument condition $\arg(w)=\pi/4$ is not just $\operatorname{Im} w=\operatorname{Re} w$ — that line also covers $\arg w=-3\pi/4$. The genuine locus is the open ray where both parts are *equal and positive*. Imposing positivity selects a half-circle, and only its intersection with $|z|=\sqrt{2}$ that respects the sign condition survives.
+
+  ### Working
+  Write $z=x+iy$ and $w=\dfrac{z}{z-2}=\dfrac{(x+iy)(x-2-iy)}{(x-2)^2+y^2}$. So
+  $$\operatorname{Re} w=\dfrac{x^2-2x+y^2}{(x-2)^2+y^2},\qquad \operatorname{Im} w=\dfrac{-2y}{(x-2)^2+y^2}.$$
+  The condition $\arg w=\pi/4$ means $\operatorname{Re} w=\operatorname{Im} w>0$. Equating numerators:
+  $$x^2-2x+y^2=-2y\ \Longrightarrow\ (x-1)^2+(y+1)^2=2,$$
+  and positivity forces $-2y>0$, i.e. $y<0$.
+
+  Intersect with $x^2+y^2=2$. Subtracting the two circle equations:
+  $$(x^2-2x+y^2+2y+2)-(x^2+y^2-2)=0\ \Longrightarrow\ -2x+2y+4=0\ \Longrightarrow\ x=y+2-1\Rightarrow x=y+1$$
+  (more carefully: $-2x+2y+4=0\Rightarrow x=y+2$… recompute: $(x-1)^2+(y+1)^2=2$ expands to $x^2-2x+1+y^2+2y+1=2$, i.e. $x^2+y^2=2x-2y$; combined with $x^2+y^2=2$ gives $2x-2y=2$, so $x=y+1$.)
+
+  Substitute into $x^2+y^2=2$: $(y+1)^2+y^2=2\Rightarrow 2y^2+2y-1=0\Rightarrow y=\dfrac{-1\pm\sqrt{3}}{2}.$
+
+  The sign constraint $y<0$ kills $y=\dfrac{-1+\sqrt{3}}{2}>0$ and keeps
+  $$y=\dfrac{-1-\sqrt{3}}{2},\qquad x=y+1=\dfrac{1-\sqrt{3}}{2}.$$
+
+  So there is a **unique** $z$: (A) is false. $\operatorname{Im} z=y<0$ confirms (B). $\operatorname{Re} z=\dfrac{1-\sqrt{3}}{2}$, not $\dfrac{1+\sqrt{3}}{2}$, so (C) is false. Finally $z+\bar z=2x=1-\sqrt{3}$, confirming (D).
+
+  **Answer: (B), (D).**
+
+wrong_paths:
+  - path: "Treat $\\arg w=\\pi/4$ as just $\\operatorname{Im} w=\\operatorname{Re} w$ without the positivity requirement, so the full circle $(x-1)^2+(y+1)^2=2$ is the locus. Then both intersections with $x^2+y^2=2$ are accepted, giving two solutions."
+    landed_on_option: "A"
+    diagnosis: "Classical $\\arg$ trap: forgetting that $\\arg w=\\pi/4$ is a ray, not a line. The forbidden half ($\\arg w=-3\\pi/4$) corresponds to $y>0$, which must be rejected. Activates TRAP-PARTIAL."
+  - path: "Solve the quadratic $2y^2+2y-1=0$ correctly but pick the root $y=\\dfrac{-1+\\sqrt 3}{2}$ (which is positive), forgetting the $y<0$ sign constraint. This gives $x=\\dfrac{1+\\sqrt 3}{2}$."
+    landed_on_option: "C"
+    diagnosis: "Sign-of-imaginary-part oversight: the positivity condition on $\\operatorname{Im} w$ translates to $y<0$, but a student who jumped straight from the equated-parts equation to the intersection misses it."
+  - path: "Accept both roots of $2y^2+2y-1=0$ as valid (i.e. miss the $y<0$ filter) and conclude there are two solutions, with $z+\\bar z$ for the wrong-sign root giving $1+\\sqrt 3$ (or list both)."
+    landed_on_option: "A, C"
+    diagnosis: "Same root cause as path 1: dropping the sign filter on $\\operatorname{Im} w$. Reinforces that argument equations must be treated as oriented rays, not lines."
+
+review_notes: |
+  Locus problem combining (i) the half-line interpretation of $\arg$ and (ii) intersection of two circles via subtraction. The deliberate distractor (C) flips the sign of $\sqrt 3$, catching students who solve the quadratic but mishandle the sign filter. Proposed new taxonomy codes: IDEA = ARGLOC (locus from an argument-of-ratio condition) and SUB-IDEA = CIRCINT (intersection of two circles via subtraction). No existing IDEA under ALG.CPX in the provided taxonomy fits; flag for extension.

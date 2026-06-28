@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: CAL.LIM.PNRMIN.TENTFN.001
+
+fingerprint:
+  topic: CAL
+  subtopic: LIM
+  idea: PNRMIN
+  sub_idea: TENTFN
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  $\psi(a)=\displaystyle\lim_{n\to\infty}\big(|a|^{-n}+|a-2|^{-n}\big)^{-1/n}$, with $\psi(0)=\psi(2)=0$. Which of the following are correct?
+
+  - (A) $\displaystyle\int_0^3 \psi(a)\,da=\frac{3}{2}$
+  - (B) $\psi(a)=\big|\,|a-1|-1\,\big|$ for every $a$
+  - (C) the region bounded by $y=\psi(a)$ and the upper half of $(a-1)^2+y^2=1$ has area $\dfrac{\pi}{2}$
+  - (D) $\displaystyle\int_0^2 a\,\psi(a)\,da=1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  For positive reals $x,y$, the $p$-norm limit $\lim_{n\to\infty}(x^{-n}+y^{-n})^{-1/n}=\min(x,y)$. Applying this with $x=|a|$, $y=|a-2|$ collapses $\psi$ to a familiar tent function, after which every option reduces to a standard area / integral computation.
+
+  ### Working
+  By the $p$-norm-to-min limit, $\psi(a)=\min(|a|,|a-2|)$ for $a\notin\{0,2\}$, and the value $0$ is consistent at the endpoints. A direct case split gives
+  $$\psi(a)=\big|\,|a-1|-1\,\big|,$$
+  a tent through $(0,0),(1,1),(2,0)$, and $\psi(a)=|a-1|-1$ outside $[0,2]$ (in particular $\psi(a)=a-2$ on $[2,3]$). This is option **(B)**.
+
+  **(A)** $\displaystyle\int_0^3\psi=\underbrace{\int_0^2\psi}_{\text{tent area}=1}+\underbrace{\int_2^3(a-2)\,da}_{=1/2}=\tfrac32.$ True.
+
+  **(D)** $\displaystyle\int_0^2 a\,\psi(a)\,da=\int_0^1 a\cdot a\,da+\int_1^2 a(2-a)\,da=\tfrac13+\big[a^2-\tfrac{a^3}{3}\big]_1^2=\tfrac13+\tfrac23=1.$ True.
+
+  **(C)** The upper semicircle $(a-1)^2+y^2=1$, $y\ge 0$, has area $\tfrac{\pi}{2}$; the tent (lying entirely below the semicircle on $[0,2]$ since $\sqrt{1-(a-1)^2}\ge 1-|a-1|=\psi(a)$) has area $1$. The region between them is $\tfrac{\pi}{2}-1\neq\tfrac{\pi}{2}$. False.
+
+  Correct options: **(A), (B), (D)**.
+
+wrong_paths:
+  - path: "Computes the $p$-norm limit as $\\max(|a|,|a-2|)$ instead of $\\min$ (sign-flip on the exponent)."
+    landed_on_option: "Rejects (B); may also mis-evaluate (A) and (D) and pick only (C)."
+    diagnosis: "Confusing $(x^{-n}+y^{-n})^{-1/n}\\to\\min$ with $(x^n+y^n)^{1/n}\\to\\max$. TRAP-PARTIAL: a correct identity used in the wrong direction."
+  - path: "Reads option (C) as 'area enclosed by the two curves' and substitutes the area of the semicircle directly, $\\tfrac{\\pi}{2}$, without subtracting the tent area $1$."
+    landed_on_option: "(C)"
+    diagnosis: "Skipping the subtraction step — classic TRAP-PARTIAL where the student conflates the bounding region's area with the area of one of its boundaries."
+  - path: "On (D), forgets the absolute value and writes $\\psi(a)=a-1$ on $[1,2]$ instead of $2-a$, giving $\\int_1^2 a(a-1)\\,da=\\tfrac56$ and total $\\tfrac76\\ne 1$."
+    landed_on_option: "Rejects (D)."
+    diagnosis: "Mis-resolving the nested absolute value $||a-1|-1|$ on the right half. TRAP-EDGE on the piecewise boundary at $a=1$."
+  - path: "On (A), integrates only over $[0,2]$ (the visible tent), getting $1$ instead of $\\tfrac32$."
+    landed_on_option: "Rejects (A)."
+    diagnosis: "Truncating the domain of integration; misses that $\\psi$ extends as $a-2$ on $[2,3]$. TRAP-PARTIAL on domain."
+
+review_notes: |
+  Multi-correct calculus problem fusing the $p$-norm-to-min limit identity with piecewise-linear integration and a planar-area comparison against a semicircle. Difficulty T4: the limit step is non-standard (recognising $(x^{-n}+y^{-n})^{-1/n}\to\min$), then three independent computations (a piecewise integral, a moment integral, a region-area comparison) must each be done cleanly. Option (C) is the headline distractor (area of bounding curve ≠ area of bounded region). New taxonomy codes proposed: CAL.LIM idea PNRMIN ("p-norm-to-min/max limit") and sub-idea TENTFN ("resolves to a tent / piecewise-linear absolute-value function"). Surface SURF-FUNC because the question is built around analysing a function defined by a limit; trap TRAP-PARTIAL since each false option corresponds to a correct sub-computation used incompletely.

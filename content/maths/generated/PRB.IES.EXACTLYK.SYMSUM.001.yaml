@@ -1,0 +1,92 @@
+schema_version: 1
+
+question_code: PRB.IES.EXACTLYK.SYMSUM.001
+
+fingerprint:
+  topic: PRB
+  subtopic: IES
+  idea: EXACTLYK
+  sub_idea: SYMSUM
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-NCERT
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 300   # ~5 min — first pass: set up S1,S2,S3 and run all four exactly-k formulas, with the 1/20 arithmetic
+  R2_seconds: 210   # ~3.5 min — formulas recalled, still careful bookkeeping
+  R3_seconds: 150   # ~2.5 min — fluent
+  R4_seconds: 100   # ~1.7 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A,B,C$ be events with
+  $$P(A)=\tfrac{13}{20},\quad P(B)=\tfrac35,\quad P(C)=\tfrac12,$$
+  $$P(A\cap B)=\tfrac25,\quad P(B\cap C)=P(C\cap A)=\tfrac{7}{20},\quad P(A\cap B\cap C)=\tfrac14.$$
+
+  Which of the following are correct?
+
+  - **(A)** $P(\text{exactly two of }A,B,C)=\dfrac{7}{20}$
+  - **(B)** $P(A\cap B\cap C')=\dfrac{3}{20}$
+  - **(C)** $P(\text{at most one of }A,B,C)=\dfrac{1}{10}$
+  - **(D)** $P(\text{exactly one of }A,B,C)=\dfrac{3}{10}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### Setup — symmetric sums
+  Put everything over $20$ and form the three symmetric sums:
+  $$S_1=P(A)+P(B)+P(C)=\tfrac{13}{20}+\tfrac{12}{20}+\tfrac{10}{20}=\tfrac{35}{20},$$
+  $$S_2=P(A\cap B)+P(B\cap C)+P(C\cap A)=\tfrac{8}{20}+\tfrac{7}{20}+\tfrac{7}{20}=\tfrac{22}{20},$$
+  $$S_3=P(A\cap B\cap C)=\tfrac14=\tfrac{5}{20}.$$
+
+  The "exactly-$k$ of three events" formulas are
+  $$P(\text{exactly two})=S_2-3S_3,\qquad P(\text{exactly one})=S_1-2S_2+3S_3,$$
+  $$P(A\cup B\cup C)=S_1-S_2+S_3\ \ (\text{inclusion-exclusion}).$$
+
+  ### Option (A)
+  $$P(\text{exactly two})=S_2-3S_3=\tfrac{22}{20}-\tfrac{15}{20}=\tfrac{7}{20}.\quad\checkmark$$
+
+  ### Option (B)
+  $A\cap B$ splits into $(A\cap B\cap C)$ and $(A\cap B\cap C')$, so
+  $$P(A\cap B\cap C')=P(A\cap B)-P(A\cap B\cap C)=\tfrac25-\tfrac14=\tfrac{8-5}{20}=\tfrac{3}{20}.\quad\checkmark$$
+
+  ### Option (D)
+  $$P(\text{exactly one})=S_1-2S_2+3S_3=\tfrac{35}{20}-\tfrac{44}{20}+\tfrac{15}{20}=\tfrac{6}{20}=\tfrac{3}{10}.\quad\checkmark$$
+
+  ### Option (C) — the trap
+  Note $1-P(A\cup B\cup C)=1-(S_1-S_2+S_3)=1-\tfrac{18}{20}=\tfrac{1}{10}$. **But that is $P(\text{none})$, not $P(\text{at most one})$.** "At most one" means none **or** exactly one:
+  $$P(\text{at most one})=P(\text{none})+P(\text{exactly one})=\tfrac1{10}+\tfrac3{10}=\tfrac25\ne\tfrac1{10}.\quad\times$$
+
+  Hence the correct options are **(A), (B), (D)**.
+
+wrong_paths:
+  - path: "Reads 'at most one' as the complement of the union and writes P(at most one)=1−P(A∪B∪C)=1/10, accepting (C). Forgets that 1−P(union) counts only the outcomes in NO event."
+    landed_on_option: "Marks (C) as correct (and likely keeps A, B, D) → over-selects {A,B,C,D}."
+    diagnosis: "TRAP-NCERT: conflates 'at most one' with 'none.' 1−P(∪)=P(none); 'at most one' must add P(exactly one). Misidentifying a standard complement is the bait."
+  - path: "Uses an exactly-k formula with wrong binomial weights, e.g. P(exactly one)=S1−S2+S3 (the union formula) instead of S1−2S2+3S3, getting 35/20−22/20+5/20=18/20=9/10, or P(exactly two)=S2−S3=17/20."
+    landed_on_option: "Rejects (D) (and/or (A)) because the computed value no longer matches 3/10 (or 7/20)."
+    diagnosis: "Confuses the inclusion-exclusion union weights (+1,−1,+1) with the exactly-k weights (which carry binomial coefficients 2 and 3 here). Drops correct options."
+  - path: "Computes P(A∩B∩C') = P(A∩B) but forgets to subtract the triple intersection, getting 2/5=8/20, so the value 3/20 in (B) looks wrong."
+    landed_on_option: "Rejects (B)."
+    diagnosis: "Misses that A∩B partitions into (A∩B∩C) and (A∩B∩C'); the C' piece is P(A∩B)−P(A∩B∩C), not P(A∩B). Drops a correct option."
+
+review_notes: |
+  - Source: 0609d Q3 (cross-chapter batch). Key per sheet = (A), (B), (D); num_correct = 3.
+  - TAXONOMY EXTENSION REQUIRED. PRB had no subtopic/idea/sub_idea. New codes proposed: PRB.IES (Inclusion-exclusion & combinations of events), IDEA EXACTLYK (symmetric-sum decomposition of exactly/at-least/at-most-k of n events), SUB-IDEA SYMSUM (binomial-weighted exactly-k for three events; 'at most one' vs 1−P(∪) trap). Add to /Users/ms/Documents/jee_platform/content/taxonomy/maths.yaml before import.
+  - The whole item is pure NCERT-syllabus inclusion-exclusion bookkeeping; the only real cognitive content is the (C) trap, which keeps the difficulty at T2 despite three correct options.
+  - Surface tagged SURF-SET (heavy event-intersection / symmetric-sum notation). Trap tagged TRAP-NCERT (standard-complement misidentification); TRAP-PARTIAL is a secondary fit given partial-marking on a 3-correct item, but the dominant bait is the conceptual 'at most one' = 'none' slip.
+  - Authored times are estimates; the live check is whether students reflexively write 1−P(∪) for 'at most one.'

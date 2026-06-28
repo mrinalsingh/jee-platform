@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: CAL.DIF.INVTRIGBR.COS3UBR.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: INVTRIGBR
+  sub_idea: COS3UBR
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608b_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $r=P(\text{3rd draw lies strictly between the 1st and 2nd}\mid\text{1st}<\text{2nd})$ for three distinct numbers drawn uniformly at random from $\{1,2,\dots,N\}$ (with $N\ge 3$). For $u\in(0,1)$, define
+  $$y=\tan^{-1}\!\frac{u}{\sqrt{1-u^2}},\qquad x=\cos^{-1}(4u^3-3u).$$
+  Which of the following is/are correct?
+
+  - (A) $\dfrac{dy}{dx}=r$ on $\left(0,\tfrac12\right)$
+  - (B) $\dfrac{dy}{dx}=-r$ on $\left(0,\tfrac12\right)$
+  - (C) $\dfrac{dy}{dx}=r$ on $\left(\tfrac12,1\right)$
+  - (D) $\dfrac{dy}{dx}=-r$ on $\left(\tfrac12,1\right)$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, D]
+
+solution: |
+  ### The IDEA
+  $\cos^{-1}(4u^3-3u)$ is *not* simply $3\cos^{-1}u$ — the principal-value branch of $\cos^{-1}(\cos3\theta)$ folds back on itself as $\theta$ crosses $\pi/3$. To compute $dy/dx$ you must (i) simplify $y$ to a single inverse function, (ii) split the domain of $x$ into branches where $\cos^{-1}(\cos3\theta)$ has a closed form, and (iii) match each $u$-interval to the correct branch. The conditional probability $r$ is a tidy symmetry exercise that pins the numerical value of the answer.
+
+  ### Working
+  **Step 1 — compute $r$.** Among the three drawn values $s<m<\ell$ assigned to ordered positions $(X_1,X_2,X_3)$, the condition $X_1<X_2$ holds in exactly $3$ of the $6$ equally likely orderings. Of these three orderings only $(X_1,X_2,X_3)=(s,\ell,m)$ places $X_3$ strictly between $X_1$ and $X_2$. Hence $r=\tfrac{1}{3}$, independent of $N$.
+
+  **Step 2 — simplify $y$.** Set $u=\sin\phi$ with $\phi\in(0,\pi/2)$; then $\tan^{-1}\!\dfrac{u}{\sqrt{1-u^2}}=\tan^{-1}(\tan\phi)=\phi=\sin^{-1}u$. So
+  $$\frac{dy}{du}=\frac{1}{\sqrt{1-u^2}}.$$
+
+  **Step 3 — branch-analyse $x$.** Put $u=\cos\theta$ with $\theta\in(0,\pi/2)$ since $u\in(0,1)$. Then $4u^3-3u=\cos 3\theta$, and
+  $$x=\cos^{-1}(\cos 3\theta).$$
+  The principal value of $\cos^{-1}(\cos\alpha)$ equals $\alpha$ on $[0,\pi]$ and $2\pi-\alpha$ on $[\pi,2\pi]$. As $\theta$ ranges over $(0,\pi/2)$, the angle $3\theta$ ranges over $(0,3\pi/2)$, crossing $\pi$ at $\theta=\pi/3$, i.e. $u=\cos(\pi/3)=\tfrac12$.
+  - For $u\in(\tfrac12,1)$: $\theta\in(0,\pi/3)$, $3\theta\in(0,\pi)$, so $x=3\theta$, $\dfrac{dx}{d\theta}=3$, and $\dfrac{dx}{du}=3\cdot\dfrac{d\theta}{du}=-\dfrac{3}{\sqrt{1-u^2}}$ (since $du/d\theta=-\sin\theta=-\sqrt{1-u^2}$).
+  - For $u\in(0,\tfrac12)$: $\theta\in(\pi/3,\pi/2)$, $3\theta\in(\pi,3\pi/2)$, so $x=2\pi-3\theta$, $\dfrac{dx}{d\theta}=-3$, and $\dfrac{dx}{du}=+\dfrac{3}{\sqrt{1-u^2}}$.
+
+  **Step 4 — assemble $dy/dx$.**
+  $$\frac{dy}{dx}=\frac{dy/du}{dx/du}=\begin{cases}\dfrac{1/\sqrt{1-u^2}}{+3/\sqrt{1-u^2}}=+\tfrac13=r,& u\in(0,\tfrac12),\\[6pt]\dfrac{1/\sqrt{1-u^2}}{-3/\sqrt{1-u^2}}=-\tfrac13=-r,& u\in(\tfrac12,1).\end{cases}$$
+  Hence **(A)** and **(D)** are correct; **(B)** and **(C)** flip the sign on the wrong branch.
+
+wrong_paths:
+  - path: "Student blindly writes $\\cos^{-1}(4u^3-3u)=3\\cos^{-1}u$ for all $u\\in(0,1)$, giving $dx/du=-3/\\sqrt{1-u^2}$ everywhere, hence $dy/dx=-1/3=-r$ everywhere."
+    landed_on_option: "B and D"
+    diagnosis: "Classic TRAP-PARTIAL: the triple-angle identity $\\cos 3\\theta = 4\\cos^3\\theta-3\\cos\\theta$ holds, but $\\cos^{-1}(\\cos 3\\theta)\\ne 3\\theta$ once $3\\theta$ leaves $[0,\\pi]$. The student ignores the principal-value fold at $u=1/2$."
+  - path: "Student handles the branch correctly but mis-evaluates $r$, asserting $r=P(\\text{middle}\\mid\\text{anything})=1/3$ but then writes the answer as $r=1/2$ from $P(X_1<X_2)=1/2$, looking for an option with $\\pm 1/2$."
+    landed_on_option: "Neither — student aborts or guesses, often picking only A."
+    diagnosis: "Confuses the unconditional probability $P(X_1<X_2)=1/2$ with the conditional question. The symmetry argument forces $r=1/3$ independent of $N$."
+  - path: "Student uses $y=\\sin^{-1}u$ correctly but takes $x=3\\cos^{-1}u$ on $(\\tfrac12,1)$ and $x=2\\pi-3\\cos^{-1}u$ on $(0,\\tfrac12)$, then forgets the sign of $du/d\\theta$, producing $dy/dx=+1/3$ on both intervals."
+    landed_on_option: "A and C"
+    diagnosis: "Chain-rule sign slip: $u=\\cos\\theta\\Rightarrow du/d\\theta=-\\sin\\theta<0$ flips the sign of $dx/du$. Forgetting this kills the discriminating $(1/2,1)$ branch."
+
+review_notes: |
+  This is a calculus-dominant item — the probability sub-question is just a parity argument fixing $r=1/3$. The discriminator is whether the student knows that $\cos^{-1}(\cos 3\theta)$ folds at $\theta=\pi/3$, i.e. at $u=1/2$. Surface tagged SURF-PARAM because both $x$ and $y$ are presented as functions of the parameter $u$. Trap is TRAP-PARTIAL: students who apply the triple-angle identity without branch analysis get a uniform answer on both intervals and lose either A or D. Tagged under a new IDEA `INVTRIGBR` (inverse-trig branch analysis via principal-value folding) and SUB-IDEA `COS3UBR` (cos^{-1} of cubic Chebyshev expression with branch split at u=1/2). Difficulty T3 — standard JEE-Adv calculus material but multi-step and easy to half-solve.

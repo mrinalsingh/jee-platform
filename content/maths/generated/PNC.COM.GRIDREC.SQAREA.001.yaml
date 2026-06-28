@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: PNC.COM.GRIDREC.SQAREA.001
+
+fingerprint:
+  topic: PNC
+  subtopic: COM
+  idea: GRIDREC
+  sub_idea: SQAREA
+  answer_type: NUM-INT
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  On an $8\times 8$ chessboard, consider the $9$ horizontal and $9$ vertical grid lines. A rectangle is determined by choosing $2$ horizontal and $2$ vertical lines. The number of such rectangles whose area, measured in unit squares, is a perfect square equals ______.
+
+answer:
+  type: NUM-INT
+  value: 298
+
+solution: |
+  ### The IDEA
+  A rectangle of width $w$ and height $h$ (with $w,h\in\{1,\dots,8\}$) can be placed on the $8\times 8$ board in $(9-w)(9-h)$ positions. So the count of rectangles with a given $(w,h)$ shape is the product $(9-w)(9-h)$. We sum this product over all $(w,h)$ for which the area $wh$ is a perfect square.
+
+  ### Working
+  List all ordered pairs $(w,h)$ with $1\le w,h\le 8$ and $wh$ a perfect square.
+
+  **(i) $w=h$ (the square sub-boards):** $(1,1),(2,2),\dots,(8,8)$.
+  Contribution: $\displaystyle\sum_{k=1}^{8}(9-k)^2 = 8^2+7^2+\cdots+1^2 = 204$.
+
+  **(ii) $w\ne h$ with $wh$ a non-trivial square:** within $\{1,\dots,8\}$ the unordered pairs are
+  $$\{1,4\},\ \{2,8\},\ \{4,9\text{ (out)}\},\ \{1,9\text{ (out)}\},\ \{1,16\text{ (out)}\}.$$
+  So the only valid unordered pairs are $\{1,4\}$ (area $4$) and $\{2,8\}$ (area $16$).
+
+  Each unordered pair gives two ordered pairs $(w,h)$.
+  - $\{1,4\}$: $(1,4)$ contributes $(9-1)(9-4)=8\cdot 5=40$; $(4,1)$ contributes $5\cdot 8=40$. Total $80$.
+  - $\{2,8\}$: $(2,8)$ contributes $7\cdot 1=7$; $(8,2)$ contributes $1\cdot 7=7$. Total $14$.
+
+  Non-square-shape contribution: $80+14 = 94$.
+
+  **Grand total:** $204 + 94 = \boxed{298}$.
+
+wrong_paths:
+  - path: "Counts only the square sub-boards (w=h), forgetting that wh can be a perfect square when w != h, e.g. 1x4 or 2x8."
+    landed_on_option: "204"
+    diagnosis: "Classical TRAP-PARTIAL: solver recognises that w=h gives a square area but fails to enumerate other (w,h) with wh a perfect square. This is the canonical 'how many squares on a chessboard' answer 204 misapplied to a 'how many rectangles with square area' question."
+  - path: "Counts unordered shapes {w,h} once instead of treating (w,h) and (h,w) as distinct rectangle shapes (or equivalently forgets to double the asymmetric contributions)."
+    landed_on_option: "251"
+    diagnosis: "Solver writes 204 + 40 + 7 = 251, taking each non-square shape only once. Misses that on the board a 1x4 rectangle and a 4x1 rectangle are geometrically distinct placements counted by (9-w)(9-h)."
+  - path: "Includes 4x4=16 and 2x8=16 but also double-counts the 4x4 case (which is already in the w=h sum) when adding the {2,8} contribution."
+    landed_on_option: "298 plus extra"
+    diagnosis: "Bookkeeping slip: when listing pairs with area = 16, solver writes (2,8),(8,2),(4,4) and adds (4,4)'s 5*5=25 again on top of the w=h sum. Indicates sloppy partition between the diagonal and off-diagonal cases."
+  - path: "Counts the total number of rectangles on the board (C(9,2)^2 = 1296) or the total number of squares (204) without filtering by 'area is a perfect square'."
+    landed_on_option: "1296 or 204"
+    diagnosis: "Misreads the constraint 'area is a perfect square' as 'shape is a square' (giving 204) or ignores the constraint entirely (giving 1296). TRAP-NCERT: confuses two well-known chessboard counting results."
+
+review_notes: |
+  NV with answer 298. New axis-3 IDEA code 'GRIDREC' (grid rectangle counting by shape multiplicity) and axis-4 SUB-IDEA 'SQAREA' (perfect-square-area constraint) introduced — taxonomy extension required. T3 because the placement-multiplicity weighting (9-w)(9-h) is a standard PnC trick, but the area=perfect-square enumeration (including the 1x4 and 2x8 shapes besides w=h) is the JEE-distinguishing twist. Trap is TRAP-PARTIAL: the 'how many squares on an n x n board' result 204 is the canonical wrong answer.

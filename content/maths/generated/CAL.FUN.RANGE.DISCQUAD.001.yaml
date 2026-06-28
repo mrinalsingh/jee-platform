@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: CAL.FUN.RANGE.DISCQUAD.001
+
+fingerprint:
+  topic: CAL
+  subtopic: FUN
+  idea: RANGE
+  sub_idea: DISCQUAD
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 120
+  R3_seconds: 90
+  R4_seconds: 60
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $y=\dfrac{x^{2}-3x+4}{x^{2}+3x+4}$, $x\in\mathbb{R}$, and let $R$ denote the range of $y$. Which of the following statements is/are TRUE?
+
+  - (A) $\max R = 7$
+  - (B) $R = \mathbb{R}$
+  - (C) $\min R = \dfrac{1}{7}$
+  - (D) $\max R = 1,\ \min R = -1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  To find the range of a rational function $y = P(x)/Q(x)$ with $\deg P = \deg Q = 2$, cross-multiply to get a quadratic in $x$ with $y$ as a parameter, then demand that this quadratic admit a real solution by requiring its discriminant to be $\ge 0$. The set of $y$ satisfying this discriminant inequality is the range (after checking the degenerate case where the leading coefficient vanishes).
+
+  ### Working
+  Cross-multiplying $y(x^{2}+3x+4) = x^{2}-3x+4$ gives
+  $$(y-1)x^{2} + 3(y+1)x + 4(y-1) = 0.$$
+
+  **Case $y = 1$:** the equation reduces to $6x = 0$, so $x = 0$ is a solution. Hence $y = 1$ is attained.
+
+  **Case $y \ne 1$:** we need the discriminant to be non-negative:
+  $$9(y+1)^{2} - 16(y-1)^{2} \ge 0.$$
+  Factor as a difference of squares:
+  $$\bigl(3(y+1) - 4(y-1)\bigr)\bigl(3(y+1) + 4(y-1)\bigr) = (7 - y)(7y - 1) \ge 0.$$
+  Expanding gives $-7y^{2} + 50y - 7 \ge 0$, i.e. $7y^{2} - 50y + 7 \le 0$, which holds for $\dfrac{1}{7} \le y \le 7$.
+
+  Combining both cases, $R = \left[\dfrac{1}{7},\, 7\right]$. Therefore $\max R = 7$ (so **(A)** is true) and $\min R = \dfrac{1}{7}$ (so **(C)** is true). The range is bounded, so **(B)** is false; and it is not $[-1, 1]$, so **(D)** is false.
+
+  Note: the denominator $x^{2} + 3x + 4 = (x + 3/2)^{2} + 7/4 > 0$ for all real $x$, so $y$ is well-defined everywhere.
+
+wrong_paths:
+  - path: "Student forgets to check the $y = 1$ degeneracy and writes the range as the open interval $(1/7, 7)$, but still picks the max/min correctly."
+    landed_on_option: "A and C (correct conclusion by luck)"
+    diagnosis: "Endpoints of the discriminant inequality are still $1/7$ and $7$; the degeneracy at $y = 1$ only affects whether the value $y = 1$ itself is in the range, not the extrema. Student gets right answer for partially-right reason."
+  - path: "Student notes that as $x \\to \\pm\\infty$, $y \\to 1$, and concludes that the range is unbounded or all of $\\mathbb{R}$ because the function is rational."
+    landed_on_option: "B"
+    diagnosis: "Confuses 'rational function' with 'unbounded'. Since numerator and denominator have equal degree with the same leading coefficient, $y \\to 1$ at infinity, and the function is in fact bounded — a classic TRAP-PARTIAL where surface intuition overrides the discriminant test."
+  - path: "Student computes $y$ at $x = 0$ (giving $y = 1$) and notices symmetry $y(x) \\cdot y(-x) = 1$, then guesses the range is $[-1, 1]$ by analogy with $\\cos$ or by forcing a symmetric interval."
+    landed_on_option: "D"
+    diagnosis: "Misapplies symmetry: $y(x) y(-x) = 1$ shows the range is closed under reciprocation (so endpoints satisfy $y_{\\max} \\cdot y_{\\min} = 1$, consistent with $7 \\cdot 1/7 = 1$), NOT that the range is $[-1, 1]$. Student conflates 'reciprocal-symmetric' with 'sign-symmetric'."
+
+review_notes: |
+  Standard JEE range-via-discriminant problem on a degree-2/degree-2 rational function. Calibrated T2 — every JEE aspirant should know the discriminant technique; the only subtlety is checking the $y = 1$ degeneracy (which doesn't affect the endpoints here, so even sloppy work gets credit). Multi-correct format with (D) as a tempting symmetric-interval distractor and (B) as the "rational = unbounded" trap.
+
+  Note: this introduces new taxonomy codes CAL.FUN.RANGE and sub-idea DISCQUAD ("discriminant method for quadratic-over-quadratic"). The IDEA code RANGE already exists under TRG.IDN — proposing the same string under CAL.FUN since the importer keys IDEA by (TOPIC, SUBTOPIC, IDEA). If the importer requires globally-unique IDEA codes, rename to RNGRAT (range of rational function) or similar.

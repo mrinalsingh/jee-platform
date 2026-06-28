@@ -1,0 +1,88 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.003
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $S$ be the set of integers $a$ such that the equation
+  $$x^{4} - (a^{2}-5a+6)\,x^{2} - (a^{2}-3a+2) = 0$$
+  has all four real roots (counted with multiplicity). Which of the following is/are correct?
+
+  **(A)** $S=\{1,2\}$
+
+  **(B)** every $a\in S$ gives exactly one positive real root
+
+  **(C)** $|S|>2$
+
+  **(D)** sum of elements of $S$ equals $3$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, D]
+
+solution: |
+  ### The IDEA
+  Substitute $y=x^{2}\ge 0$ to reduce the biquadratic to a quadratic in $y$. The original equation has all four real $x$-roots iff the quadratic in $y$ has both roots $\ge 0$ — which gives three conditions on the coefficients (discriminant $\ge 0$, sum of roots $\ge 0$, product of roots $\ge 0$).
+
+  ### Working
+  Let $y=x^{2}\ge 0$, and set
+  $$p = a^{2}-5a+6 = (a-2)(a-3), \qquad q = a^{2}-3a+2 = (a-1)(a-2).$$
+  The equation becomes
+  $$y^{2} - p\,y - q = 0.$$
+  All four $x$-roots are real iff both $y$-roots are non-negative, which requires:
+  - Discriminant: $\Delta = p^{2}+4q \ge 0$
+  - Sum of $y$-roots: $p \ge 0$
+  - Product of $y$-roots: $-q \ge 0$, i.e. $q\le 0$.
+
+  The last condition $q\le 0$ gives $(a-1)(a-2)\le 0 \iff a\in[1,2]$. On this interval, $p=(a-2)(a-3) > 0$ (since $a<3$ and $a\le 2$ gives $(a-2)\le 0$, $(a-3)<0$, so product $\ge 0$), and $\Delta=p^2+4q$: check the endpoints — both conditions are automatically satisfied on $[1,2]$.
+
+  Integer $a\in[1,2]$ gives $a\in\{1,2\}$, so $S=\{1,2\}$. Hence **(A)** is true, $|S|=2$ so **(C)** is false, and sum $=1+2=3$, so **(D)** is true.
+
+  Check **(B)**:
+  - At $a=1$: $p=2,\ q=0$, so $y^{2}-2y=0$, giving $y\in\{0,2\}$. Then $x\in\{0,0,\sqrt{2},-\sqrt{2}\}$ — exactly **one** positive real root.
+  - At $a=2$: $p=q=0$, so $y^{2}=0$, $y=0$, hence $x=0$ is a quadruple root — **zero** positive roots.
+
+  So "every $a\in S$ gives exactly one positive real root" fails at $a=2$. **(B)** is false.
+
+  **Answer: (A), (D).**
+
+wrong_paths:
+  - path: "Student forgets the product condition $-q\\ge 0$ and only imposes $\\Delta\\ge 0$ and $p\\ge 0$ on the quadratic in $y$. Gets a larger set of $a$-values, perhaps concluding $|S|>2$."
+    landed_on_option: "C"
+    diagnosis: "Missing the non-negativity-of-both-roots condition (product $\\ge 0$) — a classic sign-localization slip when reducing a biquadratic via $y=x^2$."
+  - path: "Student checks $a=1$ and finds one positive root, then assumes by symmetry the same holds at $a=2$ without recomputing — concludes (B) is true."
+    landed_on_option: "B"
+    diagnosis: "Doesn't notice that at $a=2$ the substitution gives a quadruple root $x=0$ (zero positive roots), so the count is not uniform across $S$. Partial verification trap."
+  - path: "Student treats the equation as a quadratic in $x^2$ and counts root multiplicities incorrectly — believes (B) on the basis that 'one $y$-root positive implies one positive $x$' without handling the $y=0$ case."
+    landed_on_option: "A, B, D"
+    diagnosis: "Conflates 'positive $y$-root gives $\\pm\\sqrt{y}$' with counting positive $x$-roots; misses that $y=0$ contributes $x=0$ (not positive) and that $a=2$ produces only $x=0$."
+
+review_notes: |
+  Multi-correct sign-localization problem on a biquadratic via $y=x^2$. The hard kernel is recognising that "all four $x$-real" forces the quadratic in $y$ to have both roots $\ge 0$, hence the three classical sign conditions. Then a small case-check at the endpoints of $S$ kills the tempting (B). Tagged as ALG.QUA.ROOTLOC.SIGNLOC because the entire engine is sign-location of quadratic roots (here applied to the $y$-quadratic). Surface is SURF-SET because the answer is described via a defined integer set $S$. Trap TRAP-PARTIAL captures the (B)-style trap where a student verifies one element of $S$ and assumes the property is uniform.

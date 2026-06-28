@@ -1,0 +1,91 @@
+schema_version: 1
+
+question_code: CAL.DER.TANEXT.MONOG.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DER
+  idea: TANEXT
+  sub_idea: MONOG
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 200
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  From the point $P=(c,0)$ on the $x$-axis, let $N(c)$ denote the number of tangent lines that can be drawn to the curve $y=\ln x$. Which of the following are correct?
+
+  - (A) If $c_1<c_2$ are the two roots of $u^{2}-3u+1=0$, then $N(c_1)=2$ and $N(c_2)=0$.
+  - (B) If $c=1$, then $N(c)=1$ and the contact point has abscissa $1$.
+  - (C) The set $\{\,c\in\mathbb{Z}: -4\le c\le 4,\ N(c)=1\,\}$ has exactly $6$ elements.
+  - (D) The tangent from the origin touches $y=\ln x$ at abscissa $e$, and the region it bounds with $y=\ln x$ and the $x$-axis has area $\dfrac{e}{2}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  For tangents from an external point $P=(c,0)$ to $y=\ln x$, parametrize by the contact abscissa $a>0$. The tangent at $(a,\ln a)$ has slope $1/a$, so its $x$-intercept satisfies $c=a(1-\ln a)$. The count $N(c)$ equals the number of positive solutions $a$ of $G(a)=c$, which we read off the monotonicity of $G$.
+
+  ### Working
+  Let $G(a)=a(1-\ln a)$ for $a>0$. Then $G'(a)=1-\ln a-1=-\ln a$, so $G$ is increasing on $(0,1)$, decreasing on $(1,\infty)$, with maximum $G(1)=1$. Also $G(a)\to0^{+}$ as $a\to0^{+}$ and $G(a)\to-\infty$ as $a\to\infty$.
+
+  Reading $G(a)=c$ across the range of $c$:
+  - $c>1$: no solution, $N(c)=0$.
+  - $c=1$: exactly one solution $a=1$, $N(c)=1$.
+  - $0<c<1$: two solutions (one in $(0,1)$, one in $(1,\infty)$), $N(c)=2$.
+  - $c\le0$: exactly one solution in $(1,\infty)$ (since $G$ is positive on $(0,1)$ but negative beyond some point), $N(c)=1$.
+
+  **(A)** The roots of $u^2-3u+1=0$ are $u=\tfrac{3\pm\sqrt5}{2}$. So $c_1=\tfrac{3-\sqrt5}{2}\approx 0.382\in(0,1)\Rightarrow N(c_1)=2$, and $c_2=\tfrac{3+\sqrt5}{2}\approx 2.618>1\Rightarrow N(c_2)=0$. **True.**
+
+  **(B)** $c=1\Rightarrow$ unique solution $a=1$, $N=1$, contact abscissa $1$. **True.**
+
+  **(C)** Integers in $[-4,4]$ with $N(c)=1$ are those with $c\le 0$ or $c=1$: $\{-4,-3,-2,-1,0,1\}$, exactly $6$ elements. **True.**
+
+  **(D)** Tangent from origin: $c=0\Rightarrow a(1-\ln a)=0\Rightarrow \ln a=1\Rightarrow a=e$, slope $1/e$, line $y=x/e$. The bounded region (with $y=\ln x$ and the $x$-axis) has area
+  $$\int_{0}^{1}\frac{x}{e}\,dx+\int_{1}^{e}\!\Big(\frac{x}{e}-\ln x\Big)dx=\frac{1}{2e}+\Big(\frac{e}{2}-\frac{1}{2e}-1\Big)=\frac{e}{2}-1,$$
+  not $\dfrac{e}{2}$. **False.**
+
+  Correct options: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Treating $G(a)=a(1-\\ln a)$ as monotone (forgetting the turning point at $a=1$) and concluding $N(c)\\le 1$ for all $c$, so (A) seems wrong because $N(c_1)$ can't be $2$."
+    landed_on_option: "Drops (A); may pick only (B), (C)."
+    diagnosis: "Failure to differentiate $G$ and locate its maximum at $a=1$. TRAP-PARTIAL: solver gets the easy cases right but misses the two-tangent regime $0<c<1$."
+  - path: "For (D), computing the area only as $\\int_0^e(x/e-\\ln x)\\,dx=e/2-(e-1)\\cdot\\dots$ — getting $e/2$ by ignoring that $\\ln x<0$ on $(0,1)$ and that the bounding curve on $(0,1)$ is the $x$-axis, not $\\ln x$."
+    landed_on_option: "Picks (D) along with (A), (B), (C)."
+    diagnosis: "Region-mis-identification: student doesn't split the integral at $x=1$ where $\\ln x$ crosses the axis. TRAP-PARTIAL on area sub-problem."
+  - path: "For (C), counting integers with $N(c)=1$ as just $\\{1\\}$ (only the boundary case $c=1$), forgetting that all $c\\le 0$ also yield exactly one tangent."
+    landed_on_option: "Drops (C); answer becomes (A), (B) only."
+    diagnosis: "Solver does not track the $c\\to-\\infty$ branch of $G$, where $G(a)<0$ for large $a$ produces one positive solution. Conceptual gap on tangents from points to the left of the curve."
+  - path: "For (A), plugging the roots of $u^2-3u+1=0$ numerically incorrectly (e.g. $u=\\tfrac{3\\pm\\sqrt{13}}{2}$ from wrong discriminant) and getting $c_1<0$, $c_2>1$, so $N(c_1)=1,N(c_2)=0$."
+    landed_on_option: "Drops (A); answer becomes (B), (C)."
+    diagnosis: "Arithmetic slip on the quadratic, not on the calculus. Discriminant error."
+
+review_notes: |
+  Multi-correct, key (A), (B), (C). Core idea: parametrize tangents to $y=\ln x$ from $(c,0)$ by contact abscissa $a$, leading to $c=G(a)=a(1-\ln a)$; analyse monotonicity. Option (D) is the area trap — students who don't split at $x=1$ get the seductive answer $e/2$.
+
+  Difficulty T3: standard tangent-from-external-point setup but the four options stress (i) reading a transcendental equation through $G$'s graph, (ii) integer-counting over a mixed regime, (iii) a tangent-region area requiring two pieces.
+
+  New taxonomy codes proposed:
+  - IDEA `TANEXT` under CAL.DER: count of tangents from an external point to a fixed curve via contact-parameter equation.
+  - SUB-IDEA `MONOG` under CAL.DER.TANEXT: solve via monotonicity of the implicit-contact function $G(a)$.

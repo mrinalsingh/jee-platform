@@ -1,0 +1,81 @@
+schema_version: 1
+
+question_code: SOT.REC.CNJSURD.FLOORINT.001
+
+fingerprint:
+  topic: SOT
+  subtopic: REC
+  idea: CNJSURD
+  sub_idea: FLOORINT
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a_n=(3+2\sqrt{2})^{n}+(3-2\sqrt{2})^{n}$ for $n\ge 0$. Note that $0<3-2\sqrt{2}<1$. Which of the following statement(s) is/are correct?
+
+  - (A) $4\mid a_n$ for all $n\ge 1$
+  - (B) $a_n=6a_{n-1}-a_{n-2}$ for $n\ge 2$, with $a_0=2,\ a_1=6$
+  - (C) $\big\lfloor (3+2\sqrt{2})^{4}\big\rfloor=1153$
+  - (D) $a_n$ is irrational for some $n\ge 1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  If $\alpha,\beta$ are roots of $t^2-pt+q=0$, then $s_n=\alpha^n+\beta^n$ satisfies the Newton-type linear recurrence $s_n=p\,s_{n-1}-q\,s_{n-2}$ with $s_0=2,\ s_1=p$. In particular $s_n\in\mathbb{Z}$ whenever $p,q\in\mathbb{Z}$. When one of $\alpha,\beta$ lies in $(0,1)$, the integer $s_n$ is just the other power's floor plus a tiny correction, giving exact floor values for high powers of the larger conjugate.
+
+  ### Working
+  Set $\alpha=3+2\sqrt{2},\ \beta=3-2\sqrt{2}$. Then $\alpha+\beta=6,\ \alpha\beta=9-8=1$, so $\alpha,\beta$ are the roots of $t^2-6t+1=0$.
+
+  Hence $a_n=\alpha^n+\beta^n$ satisfies
+  $$a_n=6a_{n-1}-a_{n-2},\qquad a_0=2,\ a_1=6,$$
+  which is exactly **(B)**.
+
+  Iterating: $a_0=2,\ a_1=6,\ a_2=34,\ a_3=198,\ a_4=1154,\dots$. All are integers, so $a_n$ is never irrational, killing **(D)**.
+
+  Check **(A)**: $a_1=6$ is not divisible by $4$. So (A) fails.
+
+  Check **(C)**: $0<\beta=3-2\sqrt{2}<1$, hence $0<\beta^4<1$. Since $\alpha^4+\beta^4=a_4=1154$,
+  $$\alpha^4=1154-\beta^4\in(1153,1154),$$
+  so $\lfloor (3+2\sqrt{2})^4\rfloor=1153$. **(C)** holds.
+
+  Correct: **(B), (C)**.
+
+wrong_paths:
+  - path: "Student computes $a_2=34,\\ a_3=198,\\ a_4=1154$, notices each is even, and jumps to the divisibility-by-4 claim without checking $a_1$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL: a pattern that holds from $n=2$ onward is mistaken for an `all $n\\ge 1$' statement; $a_1=6$ is the missed edge case."
+  - path: "Student reasons that $(3+2\\sqrt{2})^n$ involves $\\sqrt{2}$, so $a_n$ must be irrational for at least some $n$, missing the conjugate cancellation."
+    landed_on_option: "D"
+    diagnosis: "TRAP-NCERT: failure to spot that $\\alpha^n+\\beta^n$ cancels the surd terms by symmetry; classic conjugate-sum identity oversight."
+  - path: "Student computes $\\alpha^4\\approx 1154$ on the calculator and reports $\\lfloor\\alpha^4\\rfloor=1154$, ignoring that $a_4=\\alpha^4+\\beta^4$ is the integer and $\\alpha^4$ sits just below it."
+    landed_on_option: "Neither B nor C (drops C)"
+    diagnosis: "TRAP-EDGE: confusing the integer sum $a_4$ with $\\alpha^4$ itself; the floor of $\\alpha^4$ is $a_4-1$, not $a_4$."
+  - path: "Student writes $a_n=(\\alpha+\\beta)a_{n-1}-\\alpha\\beta\\, a_{n-2}$ but mis-signs $\\alpha\\beta$, getting $a_n=6a_{n-1}+a_{n-2}$, and rejects (B)."
+    landed_on_option: "Drops B, keeps only C"
+    diagnosis: "TRAP-PARTIAL: sign slip in the Newton-recurrence template; conflates the recurrence $s_n=p s_{n-1}-q s_{n-2}$ with the characteristic polynomial $t^2-pt+q=0$."
+
+review_notes: |
+  Multi-correct from SOT/recurrence + floor-function pairing. Key conjugate-surd technique. Taxonomy extension proposed: SOT.REC.CNJSURD.FLOORINT (recurrence/conjugate-surd integer sequences with floor extraction). If preferred, this can be re-homed under ALG.BIN (binomial expansion cancellation) but the recurrence framing is the natural one. Trap axis set to EDGE because the killer error is on (C)'s floor computation.

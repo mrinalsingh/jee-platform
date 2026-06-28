@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: CAL.ARE.PARCHORD.ROOTGAP.001
+
+fingerprint:
+  topic: CAL
+  subtopic: ARE
+  idea: PARCHORD
+  sub_idea: ROOTGAP
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{P}:y=x^{2}$ and $L_{m}:y=mx+2$. Let $A(m)$ denote the area of the region enclosed between $L_{m}$ and $\mathcal{P}$. Which of the following is/are correct?
+
+  - (A) $L_{m}$ is tangent to $\mathcal{P}$ for exactly one value of $m$.
+  - (B) $A(1)=\dfrac{9}{2}$.
+  - (C) $\displaystyle\min_{m}A(m)=\dfrac{4\sqrt{2}}{3}$.
+  - (D) $\displaystyle\min_{m}A(m)=\dfrac{8\sqrt{2}}{3}$, attained only at $m=0$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  For a line cutting a parabola at two points whose $x$-coordinates differ by $w$ (the "root gap"), the area enclosed between the line and the parabola is $\tfrac{1}{6}\,w^{3}$. So once the intersection quadratic is in hand, the enclosed area is determined by the discriminant alone.
+
+  ### Working
+  $L_{m}$ meets $\mathcal{P}$ where $x^{2}=mx+2$, i.e.
+  $$x^{2}-mx-2=0,$$
+  whose discriminant is $m^{2}+8>0$ for every real $m$. So $L_{m}$ is always a proper chord and **never** tangent to $\mathcal{P}$ — **(A) is false**.
+
+  The two roots differ by $w=\sqrt{m^{2}+8}$, and the standard "$\tfrac{1}{6}w^{3}$" formula for the area between a line and a parabola gives
+  $$A(m)=\tfrac{1}{6}\bigl(m^{2}+8\bigr)^{3/2}.$$
+
+  At $m=1$:
+  $$A(1)=\tfrac{1}{6}\cdot 9^{3/2}=\tfrac{27}{6}=\tfrac{9}{2}.$$
+  So **(B) is true**.
+
+  Since $A(m)$ is strictly increasing in $m^{2}$, the minimum occurs at $m=0$ and only there:
+  $$A(0)=\tfrac{1}{6}\cdot 8^{3/2}=\tfrac{16\sqrt{2}}{6}=\tfrac{8\sqrt{2}}{3}.$$
+  So **(D) is true** and **(C) is false** (the value $\tfrac{4\sqrt{2}}{3}$ is exactly half of the correct minimum — see wrong paths).
+
+wrong_paths:
+  - path: "Setting the discriminant of $x^{2}-mx-2=0$ to zero to find the tangent line, getting $m^{2}+8=0$, no real solution, but then mis-reading 'no tangent' as 'exactly one tangent (the degenerate $m=\\infty$ case)' or just ticking (A) reflexively because lines through a fixed point typically have a tangent direction to a parabola."
+    landed_on_option: "A"
+    diagnosis: "TRAP-PARTIAL: the student conflates 'a line through $(0,2)$ tangent to $y=x^2$' with the present family. The point $(0,2)$ lies *inside* the parabola (above the vertex), so NO line through it is tangent — discriminant $m^2+8$ is positive for all $m$. Student fails to check the sign of the discriminant globally."
+  - path: "Uses $\\tfrac{1}{12}w^{3}$ (the 'segment-of-a-parabola' formula for area cut off by a chord, mis-remembered) instead of the correct $\\tfrac{1}{6}w^{3}$ for the area between line and parabola. Then $A(m)=\\tfrac{1}{12}(m^{2}+8)^{3/2}$, giving $\\min A=\\tfrac{1}{12}\\cdot 8^{3/2}=\\tfrac{4\\sqrt{2}}{3}$."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL: dropped factor of 2. Confuses the chord-area formula with Archimedes' '2/3 of the bounding rectangle' or with the focal-chord variant. The mis-remembered constant halves every answer; here it produces exactly the (C) distractor."
+  - path: "Computes $A(1)=\\int_{x_1}^{x_2}(mx+2-x^{2})\\,dx$ but takes the limits as $0$ and $1$ (mis-reading $m=1$ as 'integrate from 0 to 1') instead of the actual roots of $x^{2}-x-2=0$, namely $x=-1,2$."
+    landed_on_option: "neither B nor D (e.g. produces $A(1)=\\tfrac{7}{6}$)"
+    diagnosis: "Set-up error: ignores that the bounded region is between the two intersection points of $L_m$ and $\\mathcal{P}$, not over an arbitrary interval. Misses (B)."
+
+review_notes: |
+  Calibration: T3 — the $\tfrac{1}{6}w^{3}$ chord-area formula is standard JEE Advanced fare; difficulty comes from (a) noticing the line always cuts the parabola (point $(0,2)$ is inside), (b) parametrising area as a function of $m$, and (c) recognising the half-value distractor in (C). Multi-correct format with two true statements (B, D) and two carefully designed false ones (A: tangency trap; C: dropped-factor slip). Surface is SURF-PARAM since $m$ is the running parameter. Trap TRAP-PARTIAL covers the dropped-1/2 in (C). New IDEA code PARCHORD (parabola-chord area) and SUB-IDEA ROOTGAP (root-gap cube formula) introduced — taxonomy extension required.

@@ -1,0 +1,101 @@
+schema_version: 1
+
+question_code: PRB.BND.MARGPOLY.BONFMARK.001
+
+fingerprint:
+  topic: PRB
+  subtopic: BND
+  idea: MARGPOLY
+  sub_idea: BONFMARK
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 600   # ~10 min — "valid for every joint distribution" is unfamiliar; must invent the failure-count idea
+  R2_seconds: 420   # ~7  min — Bonferroni + Markov recalled, but D still needs a polytope argument
+  R3_seconds: 300   # ~5  min — fluent; X=#fails, E[X]=1/2, read off bounds
+  R4_seconds: 180   # ~3  min — exam pace, sees the structure immediately
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $E_1, E_2, E_3, E_4$ be four events, each of probability $\tfrac{7}{8}$, with **no** information about their intersections. Call a statement **valid** if it holds for *every* joint distribution consistent with these four marginal probabilities. Which of the following are correct?
+
+  - **(A)** $P(E_1 \cup E_2 \cup E_3 \cup E_4) = 1$ always
+  - **(B)** $P(E_1 \cap E_2 \cap E_3 \cap E_4) \ge \tfrac{1}{2}$ is valid
+  - **(C)** $P(\text{at least three of the four occur}) \ge \tfrac{3}{4}$ is valid
+  - **(D)** $P(\text{exactly three of the four occur})$ can be as large as $\tfrac{3}{4}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  Let $X = \#\{\,i : E_i \text{ fails}\,\}$ be the number of the four events that do **not** occur. Since each $E_i$ has $P(E_i) = \tfrac{7}{8}$, the failure probability is $P(E_i^c) = \tfrac{1}{8}$, and by linearity of expectation (which needs only the marginals, no independence):
+  $$
+  E[X] = \sum_{i=1}^{4} P(E_i^c) = 4 \cdot \tfrac{1}{8} = \tfrac{1}{2}.
+  $$
+  A statement is *valid* exactly when it survives the worst joint distribution consistent with the marginals — i.e. the extreme (vertex) couplings of the marginal polytope. Bonferroni and Markov give the sharp worst-case bounds directly.
+
+  ### (B) — Bonferroni bound on the intersection (VALID)
+  $$
+  P\!\Big(\bigcap_{i} E_i\Big) = 1 - P\!\Big(\bigcup_i E_i^c\Big) \ge 1 - \sum_i P(E_i^c) = 1 - \tfrac{1}{2} = \tfrac{1}{2}.
+  $$
+  This bound is **attained** (place the four failure-sets disjointly, which is feasible since $\sum_i P(E_i^c) = \tfrac12 \le 1$). So $P(\bigcap E_i) \ge \tfrac12$ holds for every coupling and is tight. **Valid.**
+
+  ### (C) — Markov on the failure count (VALID)
+  "At least three of the four occur" means at most one fails, i.e. $X \le 1$. By Markov's inequality on the non-negative integer $X$,
+  $$
+  P(X \ge 2) \le \frac{E[X]}{2} = \frac{1/2}{2} = \tfrac{1}{4},
+  \qquad\text{so}\qquad
+  P(X \le 1) \ge 1 - \tfrac{1}{4} = \tfrac{3}{4}.
+  $$
+  Again **attained**, so $P(\text{at least three occur}) \ge \tfrac34$ is **valid.**
+
+  ### (A) — the union need not fill the space (FALSE)
+  Validity requires the statement to hold for *every* coupling. Nest the events so that $E_4 \subseteq E_3 \subseteq E_2 \subseteq E_1$; then
+  $$
+  P\!\Big(\bigcup_i E_i\Big) = P(E_1) = \tfrac{7}{8} < 1.
+  $$
+  So "$=1$ always" fails. (This is a quantifier-flip trap: $P(\bigcup) = 1$ is *possible*, not *necessary*.) **Not valid.**
+
+  ### (D) — extreme value of "exactly three occur" (FALSE)
+  "Exactly three occur" means exactly one fails, i.e. $X = 1$. Maximising $P(X=1)$ over the marginal polytope $\{p \in \mathbb{R}^{16}_{\ge 0} : \sum p = 1,\ P(E_i) = \tfrac78\}$ is a linear program; its optimum sits at a vertex. With total failure mass $E[X] = \tfrac12$ spread to put weight on single-failure outcomes, the best achievable is
+  $$
+  \max P(\text{exactly one fails}) = \tfrac{1}{2},
+  $$
+  never $\tfrac34$. (Intuitively: each "exactly-one-fails" outcome carries one unit of failure, and total failure mass is only $\tfrac12$, so $P(X=1) \le E[X] = \tfrac12$.) **False.**
+
+  ### Cross-checks
+  $\min P(\bigcap E_i) = \tfrac12$, $\ \min P(\bigcup E_i) = \tfrac78$, $\ \min P(X \le 1) = \tfrac34$, $\ \max P(X = 1) = \tfrac12$. All within JEE syllabus (linearity of expectation, Markov, union/Bonferroni bound, complementary counting).
+
+wrong_paths:
+  - path: "Assumes the four high-probability events behave 'almost surely', so their union must be everything: $P(E_1\\cup\\cdots\\cup E_4)=1$. Treats a possible coupling as a necessary one and marks (A)."
+    landed_on_option: "Picks A (and likely B, C), missing that nesting gives union $=\\tfrac78<1$."
+    diagnosis: "Quantifier-flip trap: confuses 'can equal 1' with 'always equals 1'. Validity is a for-all over couplings; the nested counterexample kills it."
+  - path: "Bounds $P(X=1)$ by the same Markov step used for (C) but reads it as an achievable maximum, or anchors on the headline '$\\tfrac34$' from (C) and reuses it: concludes exactly-three can reach $\\tfrac34$."
+    landed_on_option: "Picks D, carrying the $\\tfrac34$ from the at-least-three bound into the exactly-three claim."
+    diagnosis: "Conflates the tail bound $P(X\\le1)\\ge\\tfrac34$ with the single-value mass $P(X=1)$. The true cap is $P(X=1)\\le E[X]=\\tfrac12$ — the failure budget is only $\\tfrac12$."
+  - path: "Tries to compute the probabilities assuming independence: $P(\\bigcap E_i)=(\\tfrac78)^4\\approx0.586$ and $P(X=1)=\\binom41(\\tfrac18)(\\tfrac78)^3\\approx0.335$, then checks each inequality against these single numbers."
+    landed_on_option: "May accept B (0.586 ≥ 0.5) but rejects C or mis-rules D, since independence is just one coupling, not the worst case."
+    diagnosis: "Ignores the 'every joint distribution' quantifier and silently assumes independence. Validity needs the extreme coupling, not a convenient one; the sharp bounds come from Bonferroni/Markov, not from the product measure."
+
+review_notes: |
+  - **Taxonomy extension required.** PRB had no SUBTOPIC/IDEA/SUB-IDEA. Proposed: PRB.BND.MARGPOLY.BONFMARK (probabilistic bounds → marginal-polytope extremes → Bonferroni + Markov on the failure count). Add these three codes before import or the fingerprint is rejected.
+  - This is a near-verbatim lift of the 0609d Q5 sheet item (correct key B, C); kept faithful for calibration. It is *not* a parallel-form of any existing bank item — it opens a new PRB branch.
+  - **T4** rather than T3: the 'valid for every joint distribution' framing is non-standard for JEE and the (D) cap ($P(X=1)\le E[X]$) is the kind of distribution-free extremal argument top students get but the middle of the cohort misses. The hard part is realising the answer is distribution-free, not the arithmetic.
+  - surface = SURF-SET (events/index/intersection language); trap = TRAP-PARTIAL (multiple-correct tuned so each distractor catches a distinct misread — A the quantifier flip, D the tail-vs-point-mass conflation — which is exactly what partial marking probes).
+  - If a NUM-INT mastery variant is wanted later, ask for $\lfloor 100 \cdot \max P(\text{exactly three occur})\rfloor = 50$, or change the marginal to $\tfrac{m-1}{m}$ and ask for the validity threshold.

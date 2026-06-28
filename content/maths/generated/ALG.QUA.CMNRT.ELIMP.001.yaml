@@ -1,0 +1,74 @@
+schema_version: 1
+
+question_code: ALG.QUA.CMNRT.ELIMP.001
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: CMNRT
+  sub_idea: ELIMP
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T1
+
+authored_time_by_round:
+  R1_seconds: 90
+  R2_seconds: 70
+  R3_seconds: 55
+  R4_seconds: 45
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $P(x)=x^{2}-6x+8$ and $Q(x)=x^{2}-12x+32$. It is given that $P$ and $Q$ have exactly one common root. Let $T$ denote the set of all distinct roots of $P$ and $Q$ taken together. Which of the following statement(s) is/are correct?
+
+  - (A) The common root is $2$.
+  - (B) The common root is $4$.
+  - (C) $8$ is a root of both $P$ and $Q$.
+  - (D) The elements of $T$, arranged in increasing order, form a G.P.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  To find a common root of two quadratics, factor each (or subtract them to eliminate the leading term) and check which root is shared. Then assemble the set of all distinct roots and inspect its structure.
+
+  ### Working
+  Factor each polynomial:
+  $$P(x)=x^{2}-6x+8=(x-2)(x-4), \qquad Q(x)=x^{2}-12x+32=(x-4)(x-8).$$
+  The roots of $P$ are $\{2,4\}$ and the roots of $Q$ are $\{4,8\}$. The unique common root is $\boxed{4}$, so (B) is correct and (A) is false.
+
+  The value $8$ is a root of $Q$ but $P(8)=64-48+8=24\ne 0$, so $8$ is not a root of $P$. Hence (C) is false.
+
+  The set of all distinct roots is
+  $$T=\{2,4,8\}.$$
+  In increasing order $2,4,8$ form a geometric progression with common ratio $2$. Hence (D) is correct.
+
+  Therefore the correct options are (B) and (D).
+
+wrong_paths:
+  - path: "Student picks up the root $2$ of $P$ (the smaller, more familiar factor) and labels it 'the common root' without checking it against $Q$."
+    landed_on_option: "A"
+    diagnosis: "Partial verification — $P(2)=0$ is checked but $Q(2)=4-24+32=12\\ne 0$ is skipped. Classic TRAP-PARTIAL (verify in only one of the two polynomials)."
+  - path: "Student notes $8$ appears in $Q$ as a root and as the constant term $8$ of $P$, and conflates 'appears in $P$' with 'is a root of $P$'."
+    landed_on_option: "C"
+    diagnosis: "Constant-term confusion: the constant $8$ in $P(x)=x^{2}-6x+8$ is the product of roots, not a root itself. A quick substitution $P(8)=24\\ne 0$ would rule this out."
+  - path: "Student finds $T=\\{2,4,8\\}$ but tests for A.P. instead of G.P. (differences $2,4$ — not constant — so concludes (D) is false)."
+    landed_on_option: "Neither B nor D selected with D"
+    diagnosis: "Misreads 'G.P.' as 'A.P.' or defaults to A.P. testing. The ratios $4/2=2$ and $8/4=2$ are equal, so $T$ is a G.P. with ratio $2$."
+
+review_notes: |
+  Light T1-level multi-correct: tests careful factoring, the precise meaning of 'common root' (not 'common coefficient'), and recognition of a 3-term G.P. Distractors (A) and (C) catch partial-verification slips; (D) rewards seeing structure in $\{2,4,8\}$. Good warm-up item.

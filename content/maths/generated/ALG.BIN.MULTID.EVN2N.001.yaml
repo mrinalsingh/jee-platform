@@ -1,0 +1,127 @@
+schema_version: 1
+
+question_code: ALG.BIN.MULTID.EVN2N.001
+
+fingerprint:
+  topic: ALG
+  subtopic: BIN
+  idea: MULTID
+  sub_idea: EVN2N
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 270
+  R4_seconds: 210
+
+source_metadata:
+  jee_authenticity_score: 8.8
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.8
+    reviewed_at: "2026-06-14"
+    notes: "four (1+x)^(2n) identities"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613b_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $n \geq 2$ be a positive integer and let $a_k = \binom{2n}{k}$ for $k = 0, 1, 2, \ldots, 2n$.
+  Which of the following statements is/are TRUE?
+
+  **(A)** $a_0 + a_2 + a_4 + \cdots + a_{2n} = 2^{2n-1}$.
+
+  **(B)** $a_0^{2} + a_1^{2} + \cdots + a_{2n}^{2} = \binom{4n}{2n}$.
+
+  **(C)** The matrix $\begin{pmatrix} a_0 & a_1 & a_2 \\ a_1 & a_2 & a_3 \\ a_2 & a_3 & a_4 \end{pmatrix}$ is singular for some $n \geq 2$.
+
+  **(D)** $\displaystyle\sum_{k=0}^{2n} k\, a_k = n\cdot 2^{2n}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  All four options are classical statements about the single generating polynomial
+  $f(x) = (1+x)^{2n} = \displaystyle\sum_{k=0}^{2n} a_k\, x^{k}$.
+  Three of them (A, B, D) are standard binomial identities; the fourth (C) is a Hankel-determinant
+  claim that requires direct evaluation. The trap is to wave through (C) by analogy with the other
+  three rather than computing.
+
+  ### Option (A): even-index sum
+  $f(1) + f(-1) = 2^{2n} + 0 = 2\!\!\!\displaystyle\sum_{k\text{ even}}\!\! a_k$, so
+  $$\sum_{k\text{ even}} a_k = 2^{\,2n-1}.$$
+  **TRUE.**
+
+  ### Option (B): sum of squares via convolution
+  The coefficient of $x^{2n}$ in $f(x)\cdot f(x) = (1+x)^{4n}$ is $\binom{4n}{2n}$. On the other hand,
+  using the palindrome $a_k = a_{2n-k}$,
+  $$[x^{2n}]\,f(x)^{2} = \sum_{k=0}^{2n} a_k\, a_{2n-k} = \sum_{k=0}^{2n} a_k^{2}.$$
+  Hence $\sum a_k^{2} = \binom{4n}{2n}$. **TRUE.**
+
+  ### Option (D): weighted sum via derivative
+  $f'(x) = 2n\,(1+x)^{2n-1}$, so $f'(1) = 2n \cdot 2^{2n-1} = n\cdot 2^{2n}$. But also
+  $f'(1) = \displaystyle\sum_{k=0}^{2n} k\, a_k$. **TRUE.**
+
+  ### Option (C): Hankel singularity — direct evaluation
+  Write the matrix $H = \begin{pmatrix} a_0 & a_1 & a_2 \\ a_1 & a_2 & a_3 \\ a_2 & a_3 & a_4 \end{pmatrix}$
+  and expand:
+  $$\det H = a_0(a_2 a_4 - a_3^{2}) - a_1(a_1 a_4 - a_2 a_3) + a_2(a_1 a_3 - a_2^{2}).$$
+  Substituting $a_k = \binom{2n}{k}$ and simplifying (cleanest via the ratio $a_{k+1}/a_k = (2n-k)/(k+1)$),
+  $$\det H = -\,\frac{(2n)^{2}(2n-1)(2n+1)^{2}(2n+2)}{144}.$$
+  *Sanity check at $n=2$:* $a_0,\dots,a_4 = 1,4,6,4,1$, so
+  $\det H = 1(6\cdot 1 - 16) - 4(4 - 24) + 6(16 - 36) = -10 + 80 - 120 = -50$, and the closed form gives
+  $-\tfrac{16\cdot 3\cdot 25\cdot 6}{144} = -\tfrac{7200}{144} = -50$. $\checkmark$
+
+  Every factor in the closed form is strictly positive for $n \geq 2$, so $\det H < 0$ for every such $n$.
+  The matrix is therefore **never** singular. **(C) is FALSE.**
+
+  ### Conclusion
+  Correct options: **(A), (B), (D)**.
+
+wrong_paths:
+  - path: "Student verifies (A), (B), (D) correctly but assumes by symmetry/heuristic that the consecutive-binomial Hankel determinant must vanish for SOME $n$ (small-$n$ intuition or analogy with Vandermonde-style identities). Picks (C) as a bonus 'true' option."
+    landed_on_option: "A, B, C, D"
+    diagnosis: "TRAP-PARTIAL: skips the Hankel computation and pattern-matches to 'binomial identities are usually clean,' producing a wrong-option pick under JEE Advanced negative/partial marking. The closed form $-\\tfrac{(2n)^{2}(2n-1)(2n+1)^{2}(2n+2)}{144}$ is strictly negative for $n\\ge 2$."
+  - path: "On (A) student writes $\\sum_{k\\text{ even}} a_k = 2^{2n}$, having recalled $\\sum a_k = 2^{2n}$ and confused total sum with even-index sum. Rejects (A); accepts (B) and (D)."
+    landed_on_option: "B, D"
+    diagnosis: "Recall slip on the standard even/odd split. The correct chain is $f(1)+f(-1) = 2\\sum_{k\\text{ even}} a_k$; halving the $2^{2n}$ is the move missed."
+  - path: "On (D) student differentiates $f(x) = (1+x)^{2n}$, evaluates at $x=1$ but forgets the chain factor and writes $f'(1) = (2n-1)\\cdot 2^{2n-1}$ or $2^{2n-1}$; rejects (D)."
+    landed_on_option: "A, B"
+    diagnosis: "Routine differentiation slip — drops the outer factor $2n$ from $\\tfrac{d}{dx}(1+x)^{2n} = 2n(1+x)^{2n-1}$. The identity $\\sum k\\,a_k = n\\cdot 2^{2n}$ is one of the standard four; missing it is a recall/execution failure, not a conceptual one."
+
+review_notes: |
+  Cross-chapter fusion between ALG.BIN (binomial identities on $a_k=\binom{2n}{k}$) and a MAT.DET-flavoured
+  Hankel singularity check. All four options are anchored to the single generator $f(x)=(1+x)^{2n}$, but
+  each tests a DIFFERENT canonical move: even-index split via $f(1)+f(-1)$; sum-of-squares via the
+  convolution $[x^{2n}]f(x)^{2}$ and the palindrome symmetry; weighted sum via $f'(1)$; and a Hankel
+  determinant requiring direct (3x3) evaluation rather than a slick identity. The trap option (C) is
+  engineered to catch the student who waves through Hankel-style claims by analogy with the other
+  three "clean" identities — under JEE Advanced multi-correct partial marking, picking (C) costs
+  marks even if (A), (B), (D) are all marked correctly. T4 reflects the fan-out (four sub-arguments,
+  one trap) rather than any single hard step.
+
+  Proposed new IDEA $\\texttt{ALG.BIN.MULTID}$ ("multi-identity fan-out on a single $(1+x)^{N}$ expansion")
+  and new SUB-IDEA $\\texttt{EVN2N}$ ("the canonical four for $N=2n$: even-sum, sum-of-squares,
+  weighted-sum, and Hankel"). The IDEA generalises beyond this one problem (any "verify four
+  identities at once" item with the same generator collapses to this template).

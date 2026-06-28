@@ -1,0 +1,76 @@
+schema_version: 1
+
+question_code: CAL.DIF.FTCDIFF.CORNERKILL.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: FTCDIFF
+  sub_idea: CORNERKILL
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 300
+  R4_seconds: 240
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For $t\in\mathbb{R}$ let $g(t)=(t-1)\big(\,\lvert t^{2}-2\lvert t\rvert\rvert+\lvert t-1\rvert\,\big)$, and define $F:\mathbb{R}\to\mathbb{R}$ by $F(x)=\displaystyle\int_{0}^{x} g(t)\,dt$. Then
+
+  - (A) $F$ is differentiable at every $x\in\mathbb{R}$
+  - (B) $F''(x)$ exists at $x=1$
+  - (C) $F''$ fails to exist at exactly $3$ points of $\mathbb{R}$
+  - (D) $F''$ fails to exist at $x=1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  By the Fundamental Theorem of Calculus, $F'=g$ wherever $g$ is continuous, and $F''=g'$ wherever $g$ is differentiable. So the question reduces to locating the non-differentiable points of $g(t)=(t-1)h(t)$, where $h(t)=\lvert t^{2}-2\lvert t\rvert\rvert+\lvert t-1\rvert$. A corner of $h$ at a point $t_0$ where the prefactor $(t-1)$ vanishes can be "killed" — locally $(t-1)\lvert t-1\rvert=\operatorname{sgn}(t-1)\,(t-1)^{2}$ is $C^{1}$.
+
+  ### Working
+  Since $g$ is continuous on $\mathbb{R}$, the FTC gives $F'(x)=g(x)$ for every $x$, so $F$ is differentiable everywhere — option **(A)**.
+
+  Now locate the corners of $h$. Write $t^{2}-2\lvert t\rvert=\lvert t\rvert(\lvert t\rvert-2)$; this changes sign at $\lvert t\rvert=0$ and $\lvert t\rvert=2$, so $\lvert t^{2}-2\lvert t\rvert\rvert$ has corners at $t=-2,0,2$. The summand $\lvert t-1\rvert$ has a corner at $t=1$. Thus $h$ has corners at $t\in\{-2,0,1,2\}$ and is $C^{1}$ elsewhere.
+
+  Examine each corner of $h$ inside $g=(t-1)h$:
+
+  - At $t=1$: the prefactor $(t-1)$ vanishes. Locally $(t-1)\lvert t-1\rvert=\operatorname{sgn}(t-1)\,(t-1)^{2}$, whose derivative is $2(t-1)\operatorname{sgn}(t-1)=2\lvert t-1\rvert$, continuous through $t=1$. The other summand $(t-1)\lvert t^{2}-2\lvert t\rvert\rvert$ is smooth near $t=1$ since $h$'s "$t^{2}-2\lvert t\rvert$" piece is smooth there. So $g$ is differentiable at $t=1$ — option **(B)** holds, and **(D)** fails.
+
+  - At $t=-2,0,2$: the prefactor $(t-1)$ is nonzero, so multiplying does not kill the corner. $g$ fails to be differentiable at each of these three points.
+
+  Hence $g'$ (equivalently $F''$) fails to exist at exactly $\{-2,0,2\}$ — three points — option **(C)**.
+
+  Correct options: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "Student lists every corner of $h$ as a failure point of $F''$, getting $\\{-2,0,1,2\\}$ (four points)."
+    landed_on_option: "Picks (D), and rejects (B) and (C)."
+    diagnosis: "Misses the corner-killing effect of the vanishing prefactor $(t-1)$ at $t=1$. Classic TRAP-PARTIAL — applies the product structure of $g$ only to count corners, not to check whether each survives."
+  - path: "Student worries that $F'(x)=g(x)$ only where $g$ is differentiable and so concludes $F$ is not differentiable at the corners of $g$."
+    landed_on_option: "Rejects (A)."
+    diagnosis: "Confuses the hypothesis of the FTC. Continuity of the integrand (not differentiability) suffices for $F'=g$ on the whole line."
+  - path: "Student computes $g(t)=(t-1)\\lvert t^{2}-2\\lvert t\\rvert\\rvert+(t-1)\\lvert t-1\\rvert$ but forgets to check the second piece carefully and treats it as smooth everywhere."
+    landed_on_option: "Lists $\\{-2,0,2\\}$ but for the wrong reason; may also accept (D) by accident if the same shortcut is applied inconsistently."
+    diagnosis: "Right answer by lucky cancellation, fragile reasoning — does not actually verify the $(t-1)\\lvert t-1\\rvert= \\operatorname{sgn}(t-1)(t-1)^{2}$ identity."
+
+review_notes: |
+  Two-layer hard differentiability problem: (i) FTC reduces $F''$ to $g'$, (ii) absolute-value product analysis. The "corner-killing" trick at $t=1$ is the discriminating step that separates (B)/(D). New axis-3 code FTCDIFF (FTC + differentiability count) and axis-4 code CORNERKILL (vanishing prefactor kills an absolute-value corner) proposed — please confirm.

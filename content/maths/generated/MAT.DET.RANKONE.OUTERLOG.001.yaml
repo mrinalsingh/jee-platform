@@ -1,0 +1,72 @@
+schema_version: 1
+
+question_code: MAT.DET.RANKONE.OUTERLOG.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: RANKONE
+  sub_idea: OUTERLOG
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 120
+  R4_seconds: 90
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let
+  $$D=\begin{vmatrix} 1 & \log_x y & \log_x z\\ \log_y x & 1 & \log_y z\\ \log_z x & \log_z y & 1\end{vmatrix},\qquad x,y,z>0,\ x,y,z\neq 1.$$
+  Which of the following is/are correct?
+
+  - (A) $D=0$ for all admissible $x,y,z$
+  - (B) $D=1$ (from the unit diagonal)
+  - (C) $D=\log_x y\cdot\log_y z\cdot\log_z x=1$
+  - (D) $D$ depends on $x,y,z$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A]
+
+solution: |
+  ### The IDEA
+  Write each entry of the matrix in terms of natural logs. The $(i,j)$ entry becomes $(\ln c_j)/(\ln r_i)$, so the whole matrix is a rank-1 outer product $uv^{\mathsf T}$. A $3\times3$ rank-1 matrix has determinant $0$ identically.
+
+  ### Working
+  Set $p=\ln x,\ q=\ln y,\ r=\ln z$. Then $\log_x y=\dfrac{\ln y}{\ln x}=\dfrac{q}{p}$, and similarly for every entry. Hence
+  $$M=\begin{pmatrix} p/p & q/p & r/p\\ p/q & q/q & r/q\\ p/r & q/r & r/r\end{pmatrix}=u\,v^{\mathsf T},\qquad u=\begin{pmatrix}1/p\\1/q\\1/r\end{pmatrix},\ v=\begin{pmatrix}p\\q\\r\end{pmatrix}.$$
+  Since $u v^{\mathsf T}$ has rank $\le 1$, all $2\times2$ minors of $M$ involving two independent rows already vanish; concretely the rows are scalar multiples of $(p,q,r)$. Hence $\det M=0$ for every admissible $x,y,z$, so $D=0$ identically — option **(A)** holds.
+
+  Eigenvalue check: the only nonzero eigenvalue of a rank-1 matrix $uv^{\mathsf T}$ is $v^{\mathsf T}u=\dfrac{p}{p}+\dfrac{q}{q}+\dfrac{r}{r}=3$, the other two are $0$; product $=0$, confirming $D=0$.
+
+  Therefore (B), (C), (D) are all false: $D\ne 1$, and although the identity $\log_x y\cdot\log_y z\cdot\log_z x=1$ is genuinely true, it is **not** equal to $D$ (which is $0$); and $D$ does not depend on $x,y,z$ at all.
+
+wrong_paths:
+  - path: "Reads the unit diagonal and assumes the determinant of a matrix with all 1's on the diagonal is 1."
+    landed_on_option: "B"
+    diagnosis: "TRAP-PARTIAL: confuses 'diagonal entries all 1' with 'identity matrix'. Off-diagonal entries are nonzero, so this reasoning is invalid."
+  - path: "Recalls the (true) chain identity $\\log_x y\\cdot\\log_y z\\cdot\\log_z x=1$ and conflates this product with the determinant value."
+    landed_on_option: "C"
+    diagnosis: "TRAP-PARTIAL: a correct log identity is mis-attributed to the determinant. The product equals 1, but $D=0$, so $D$ does not equal that product."
+  - path: "Expands by cofactors without spotting the rank-1 structure, makes a sign or substitution slip, and concludes $D$ varies with $x,y,z$."
+    landed_on_option: "D"
+    diagnosis: "Misses the outer-product factorisation $M=uv^{\\mathsf T}$. The determinant is identically zero, independent of $x,y,z$."
+
+review_notes: |
+  Q7 of 0609f sheet. Header marked 'one or more correct' but only (A) is the key — students must verify each option, not stop after finding one true statement. New taxonomy codes proposed: MAT.DET.RANKONE (idea: determinant vanishes because matrix is a rank-1 outer product) with sub-idea OUTERLOG (logarithmic outer-product surface). Trap is TRAP-PARTIAL — several distractors weaponise partially-true facts (log chain identity is real; unit diagonal is real) that don't actually give $D$.

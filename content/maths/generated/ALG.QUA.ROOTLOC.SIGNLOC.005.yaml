@@ -1,0 +1,90 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.005
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $2x^{2}-2(2a+1)x+a(a+1)=0$ and define
+  $$T=\{a\in\mathbb R:\text{both roots lie in }(a,a+1)\}.$$
+  Then which of the following is/are TRUE?
+
+  (A) The equation has two distinct real roots for every real $a$.
+  (B) Both roots lie in $(a,a+1)$ for every real $a$.
+  (C) $T=(-1,0)$.
+  (D) Both roots are positive for every $a\ge 0$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  Root-location for a quadratic $f(x)=2x^{2}-2(2a+1)x+a(a+1)$ on an interval $(a,a+1)$.
+  Since the leading coefficient is positive, both roots lie strictly inside an open
+  interval $(p,q)$ iff (i) discriminant $>0$, (ii) the vertex $x_0\in(p,q)$, and
+  (iii) $f(p)>0,\ f(q)>0$. Here the vertex happens to land exactly at the midpoint
+  of $(a,a+1)$, so (ii) is automatic — the question reduces to checking the sign
+  of $f$ at the endpoints.
+
+  ### Working
+  **Discriminant.** $\dfrac{\Delta}{4}=(2a+1)^{2}-2a(a+1)=2a^{2}+2a+1
+  =2\!\left(a+\tfrac12\right)^{2}+\tfrac12>0$ for every real $a$. So there are
+  always two distinct real roots — **(A) is TRUE**.
+
+  **Vertex.** $x_{0}=\dfrac{2a+1}{2}=a+\tfrac12$, which is the midpoint of $(a,a+1)$.
+
+  **Endpoint signs.** Direct expansion gives
+  $$f(a)=2a^{2}-2(2a+1)a+a(a+1)=-a(a+1),\qquad f(a+1)=-a(a+1).$$
+  Both are positive iff $a(a+1)<0$, i.e.\ $a\in(-1,0)$.
+  Hence $T=(-1,0)$ — **(C) is TRUE**, and **(B) is FALSE** (it fails for, e.g., $a=1$).
+
+  **Positivity for $a\ge 0$.** At $a=0$ the equation becomes $2x^{2}-2x=0$ with roots
+  $0,1$; the root $0$ is not positive. So **(D) is FALSE** (the boundary $a=0$ kills it).
+
+  **Answer: (A), (C).**
+
+wrong_paths:
+  - path: "Student checks discriminant, sees it's always positive, and concludes (B) — confusing 'real roots exist' with 'roots lie in (a,a+1)'."
+    landed_on_option: "B"
+    diagnosis: "Skips the endpoint-sign test; mistakes existence of real roots for location in the prescribed interval."
+  - path: "Student tests $a=1$: roots of $2x^{2}-6x+2=0$ are $(3\\pm\\sqrt5)/2\approx 0.38,2.62$, both positive, and assumes the pattern extends to all $a\\ge 0$ without checking the boundary $a=0$."
+    landed_on_option: "D"
+    diagnosis: "TRAP-EDGE — fails to check the boundary case $a=0$ where one root is exactly $0$ (not strictly positive); the strict-inequality 'positive' is broken at the endpoint."
+  - path: "Student finds $f(a)=f(a+1)=-a(a+1)$, requires $\\ge 0$ instead of $>0$, and writes $T=[-1,0]$, then dismisses (C)."
+    landed_on_option: "neither A nor C (e.g. only A)"
+    diagnosis: "Open vs closed interval confusion at the endpoint: at $a=-1$ or $a=0$ one root coincides with $a$ or $a+1$, so it is NOT in the open interval $(a,a+1)$. Strict inequality is needed."
+
+review_notes: |
+  Classic JEE root-location multi-correct. The 'vertex = midpoint' coincidence is the
+  clean structural observation that collapses the problem to two endpoint checks. The
+  TRAP-EDGE flag is on option (D), where $a=0$ forces one root to be $0$. Trigger axes:
+  ALG.QUA.ROOTLOC.SIGNLOC fits with no taxonomy extension needed. T3 calibration: the
+  algebra is short but the open-vs-closed and 'for every a' vs '$a\in T$' distinctions
+  catch students.

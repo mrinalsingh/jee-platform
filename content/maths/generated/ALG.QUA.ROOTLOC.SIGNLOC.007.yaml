@@ -1,0 +1,102 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.007
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A\subset\mathbb{R}$ be the set of all real $a$ for which every root of
+  $$ (a-1)z^4 - 4z^2 + (a+2) = 0 $$
+  is purely imaginary (treating $0$ as purely imaginary). Which of the following is/are correct?
+
+  **(A)** $A = (-3,-2)$
+
+  **(B)** $|A| = 2$
+
+  **(C)** $-2 \in A$
+
+  **(D)** $|A| = 1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  "All roots purely imaginary" for an even polynomial in $z$ becomes a real condition after $z = iy$:
+  the substitution converts the quartic into a quadratic in $u = y^2$, and the requirement is that
+  **every root $u$ be real and $\ge 0$**. That is a classical root-location problem on a real quadratic
+  (discriminant $\ge 0$, sum $\ge 0$, product $\ge 0$ — with sign decided by the leading coefficient).
+
+  ### Working
+  Substitute $z = iy$ with $y\in\mathbb{R}$. Since $z^2 = -y^2$ and $z^4 = y^4$,
+  $$ (a-1)y^4 + 4y^2 + (a+2) = 0. $$
+  Let $u = y^2 \ge 0$. We need every root of
+  $$ (a-1)u^2 + 4u + (a+2) = 0 \qquad (*) $$
+  to be real and $\ge 0$.
+
+  **Case $a = 1$:** $(*)$ becomes $4u + 3 = 0 \Rightarrow u = -3/4 < 0$. Reject.
+
+  **Case $a \ne 1$:** divide by $(a-1)$. Let the two roots be $u_1,u_2$.
+
+  *Real roots:* discriminant
+  $$ \Delta = 16 - 4(a-1)(a+2) \ge 0 \iff (a-1)(a+2) \le 4 \iff a^2 + a - 6 \le 0 \iff (a+3)(a-2)\le 0, $$
+  so $a \in [-3,2]$.
+
+  *Sum $u_1+u_2 = -\dfrac{4}{a-1} \ge 0 \Rightarrow a - 1 < 0$, i.e. $a < 1$.*
+
+  *Product $u_1 u_2 = \dfrac{a+2}{a-1} \ge 0$.* With $a < 1$ the denominator is negative, so the numerator must be $\le 0$: $a \le -2$.
+
+  Intersecting $a\in[-3,2]$, $a<1$, $a\le -2$ gives $a\in[-3,-2]$.
+
+  - At $a=-2$: $(*)$ is $-3u^2+4u = 0 \Rightarrow u = 0$ or $u = 4/3$, both $\ge 0$. The root $u=0$ gives $z=0$, accepted as purely imaginary. Admissible.
+  - At $a=-3$: $\Delta = 16 - 4(-4)(-1) = 0$, repeated root $u = -\dfrac{4}{2(a-1)} = \dfrac{1}{2} \ge 0$. Admissible.
+
+  Hence
+  $$ A = [-3,-2], \qquad |A| = (-2)-(-3) = 1, \qquad -2 \in A. $$
+
+  So **(C)** and **(D)** are true; **(A)** is wrong (it excludes the endpoints which are in $A$) and **(B)** is wrong.
+
+wrong_paths:
+  - path: "Treats the problem as a strict-inequality root-location: insists discriminant $>0$ and product $>0$ (not allowing $u=0$), getting the open interval $(-3,-2)$."
+    landed_on_option: "A"
+    diagnosis: "TRAP-EDGE — forgets that $z=0$ is purely imaginary, so $u=0$ is allowed; also forgets the equality case of the discriminant. Excluding both endpoints turns $[-3,-2]$ into $(-3,-2)$."
+  - path: "Computes the interval correctly as $[-3,-2]$ but reports $|A|$ as the number of endpoints, $2$ (confusing 'measure of A' with 'cardinality of boundary of A')."
+    landed_on_option: "B"
+    diagnosis: "Misreads the notation $|A|$: for a subset of $\\mathbb{R}$ the convention here is Lebesgue length of an interval, not endpoint count. Picks B and likely also picks A, missing both."
+  - path: "Forgets the case $a=1$ (linear) and also forgets the sign condition on the sum; only enforces $\\Delta \\ge 0$ and product $\\ge 0$, ending with $A = [-3,-2]\\cup\\{\\text{spurious } a>1 \\text{ piece}\\}$, so $|A|\\ne 1$."
+    landed_on_option: "C only (misses D)"
+    diagnosis: "TRAP-PARTIAL on the location conditions — one of the three Vieta-sign tests omitted. The student still sees $-2\\in A$ (picks C) but rejects D because their $A$ is larger than $[-3,-2]$."
+
+review_notes: |
+  Standard JEE-style 'all roots purely imaginary' reduction via $z = iy$, landing on a parameter-quadratic
+  root-location with three Vieta tests (discriminant, sum sign, product sign) plus careful endpoint check.
+  The trap is closed vs. open interval (TRAP-EDGE on $a=-2$ and $a=-3$) and the dual reading of $|A|$
+  (Lebesgue length vs. cardinality). Fingerprint placed on ALG.QUA.ROOTLOC.SIGNLOC since after the
+  $z=iy$ substitution the entire problem is sign-location on a real quadratic in $u=y^2$.

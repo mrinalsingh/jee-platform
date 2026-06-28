@@ -1,0 +1,76 @@
+schema_version: 1
+
+question_code: LOG.EQN.LOGRED.LOGBC.004
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: LOGRED
+  sub_idea: LOGBC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  $x_1, x_2$ are the real solutions of $x^{\log_{10} x} = 100 x$.
+
+  (A) $x_1 x_2 = 10$
+
+  (B) $\log_{10} x_1 + \log_{10} x_2 = 1$
+
+  (C) $x_1 / x_2 = 10$ for some labelling
+
+  (D) both $x_i > 1$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  Take $\log_{10}$ of both sides. With $y = \log_{10} x$, the left side becomes $y \cdot y = y^2$ and the right side becomes $\log_{10}(100x) = 2 + y$. So
+  $$y^2 = 2 + y \;\;\Longleftrightarrow\;\; y^2 - y - 2 = 0 \;\;\Longleftrightarrow\;\; (y-2)(y+1) = 0,$$
+  giving $y \in \{2, -1\}$ and hence $\{x_1, x_2\} = \{100,\ \tfrac{1}{10}\}$.
+
+  - $x_1 x_2 = 100 \cdot \tfrac{1}{10} = 10$, so **(A)** is correct.
+  - $\log_{10} x_1 + \log_{10} x_2 = 2 + (-1) = 1$, so **(B)** is correct.
+  - The ratio is $100/(1/10) = 1000 \ne 10$, so **(C)** is false.
+  - One root, $x = 1/10$, is less than $1$, so **(D)** is false.
+
+  Note: the equation is NOT symmetric under $x \mapsto 1/x$, despite appearances; the log-square structure forces exactly one root below $1$.
+
+wrong_paths:
+  - path: "After getting $y^2 - y - 2 = 0$ with roots $y = 2, -1$, student forgets the sign of the smaller root and writes $\\{x_1, x_2\\} = \\{100, 10\\}$, concluding both lie above 1 and the ratio is 10."
+    landed_on_option: "C and D"
+    diagnosis: "sign error on logarithm root; misreads $y=-1$ as $y=1$"
+  - path: "Student computes the product $x_1 x_2$ correctly as 10 (A is true) but assumes the equation is symmetric under $x \\mapsto 1/x$ and concludes the roots are reciprocals, so $\\log_{10} x_1 + \\log_{10} x_2 = 0$, rejecting (B)."
+    landed_on_option: "only A"
+    diagnosis: "false symmetry assumption; ignores constant term shift on RHS"
+  - path: "Student forgets to expand $\\log_{10}(100x) = 2 + \\log_{10} x$ and instead writes $y^2 = 2y$, getting $y \\in \\{0, 2\\}$, i.e.\\ $\\{x_1, x_2\\} = \\{1, 100\\}$; then $x_1 x_2 = 100$, $\\log$-sum $= 2$, ratio $= 100$, both $\\ge 1$."
+    landed_on_option: "D"
+    diagnosis: "log-of-product error: $\\log(100x) \\ne \\log 100 \\cdot \\log x$"
+
+review_notes: |
+  Classic JEE log-substitution. Trap is partial-correctness: it is easy to confirm (A) via Vieta-like product
+  reasoning without nailing down which roots actually occur, leading to acceptance of (D) or rejection of (B).
+  The non-symmetry under $x \mapsto 1/x$ is the conceptual hook. T2 difficulty: substitution + quadratic +
+  attention to root signs. Time budget reflects single-pass substitution; faster on later rounds once the
+  log-substitution pattern is automatic.

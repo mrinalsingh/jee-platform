@@ -1,0 +1,119 @@
+schema_version: 1
+
+question_code: ALG.CPX.CBROOT.VANDMOD.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: CBROOT
+  sub_idea: VANDMOD
+  answer_type: MCQ-SC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q11_v2 (rebuilt to fuse Complex × Vandermonde after MS feedback that the original was single-method standard JEE theory)"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $z_1, z_2, z_3$ be three **distinct** complex numbers on the unit circle $|z|=1$
+  satisfying $z_1^3 = z_2^3 = z_3^3$, and let
+  $$D = \det\begin{pmatrix} z_1^2 & z_2^2 & z_3^2 \\ z_1 & z_2 & z_3 \\ 1 & 1 & 1 \end{pmatrix}.$$
+  Then **exactly one** of the following holds for every such triple $(z_1, z_2, z_3)$:
+
+  (A) $D = 0$.
+
+  (B) $|D| = 3\sqrt{3}$.
+
+  (C) $D$ is purely real.
+
+  (D) $D = z_1 + z_2 + z_3$.
+
+answer:
+  type: MCQ-SC
+  correct_options: [B]
+
+solution: |
+  ### The IDEA
+  Two layered facts: (i) the condition $z_k^3 = z_j^3$ with $z_k \ne z_j$ forces
+  $z_k/z_j$ to be a non-trivial cube root of unity (a Complex-numbers structural fact);
+  (ii) the determinant $D$ is the Vandermonde of $(z_1, z_2, z_3)$ in the rows $(z^2, z, 1)$,
+  so $D = (z_2 - z_1)(z_3 - z_1)(z_3 - z_2)$ (a Determinants identity).
+
+  Fusing these gives a closed form whose modulus is invariant across all triples.
+
+  ### Working
+  Set $\omega = e^{2\pi i/3}$, so $1, \omega, \omega^2$ are the cube roots of unity.
+  The condition $z_k^3 = c$ for a common $c$, with $|z_k|=1$ and the three distinct, means
+  (up to relabeling) $(z_1, z_2, z_3) = (z_1, \omega z_1, \omega^2 z_1)$ and $|c| = 1$.
+
+  By the Vandermonde formula for rows $(z^2, z, 1)$:
+  $$D = (z_2 - z_1)(z_3 - z_1)(z_3 - z_2).$$
+  Substituting:
+  - $z_2 - z_1 = z_1(\omega - 1)$
+  - $z_3 - z_1 = z_1(\omega^2 - 1)$
+  - $z_3 - z_2 = z_1(\omega^2 - \omega) = z_1 \omega (\omega - 1)$
+
+  So $D = z_1^3 \cdot \omega \cdot (\omega - 1)^2 \cdot (\omega^2 - 1) = z_1^3 \cdot \omega \cdot (\omega - 1)^3 (\omega + 1)$,
+  using $\omega^2 - 1 = (\omega - 1)(\omega + 1)$.
+
+  Now compute $|D|$: $|z_1| = 1$, $|\omega| = 1$, $|\omega - 1| = \sqrt{3}$, $|\omega + 1| = 1$
+  (since $\omega + 1 = -\omega^2$). Therefore
+  $$|D| = 1 \cdot 1 \cdot (\sqrt{3})^3 \cdot 1 = 3\sqrt{3}.$$
+  So **(B) is true** for every such triple.
+
+  ### Refuting the others
+  - **(A)** false: the three $z_k$ are distinct, so the Vandermonde is nonzero.
+  - **(D)** false: cube roots of a common value sum to $0$, i.e. $z_1 + z_2 + z_3 = 0$.
+    But $D \ne 0$, so $D = z_1 + z_2 + z_3$ is impossible.
+  - **(C)** false: with $z_1 = e^{i\alpha}$, $D = e^{3i\alpha} \cdot \omega (\omega - 1)^3 (\omega + 1)$.
+    The $e^{3i\alpha}$ factor makes $\arg D$ depend on $\alpha$, so $D$ is not purely real for every choice.
+
+  **Correct option: (B).**
+
+wrong_paths:
+  - path: "Student computes the Vandermonde product (z2-z1)(z3-z1)(z3-z2) but, on seeing the cube-roots-of-unity structure, prematurely concludes D = z1 + z2 + z3 because both quantities involve symmetric combinations of the z_k; marks (D)."
+    landed_on_option: "D"
+    diagnosis: "Confuses the Vandermonde-product structure (which is nonzero for distinct values) with the symmetric-sum structure (which is 0 for cube roots of a common value). The two never coincide here."
+  - path: "Student verifies the modulus for the special case c = 1 (so z_k are the cube roots of unity 1, omega, omega^2), gets D = 3*sqrt(3), but doesn't realize the modulus is INVARIANT in c; concludes only that 'D could equal 3*sqrt(3)' and so doesn't pick (B) confidently — marks (C) thinking purely-real is the safer claim."
+    landed_on_option: "C"
+    diagnosis: "Fails to factor out z_1^3 (a unit modulus complex number) cleanly to see that |D| is independent of the choice of c. Treats one special case as the answer without verifying invariance."
+  - path: "Student misreads the determinant as a sum-of-products (instead of the Vandermonde-style alternating sum) and computes a value like z_1^2(z_2 - z_3) + ... directly; gets a number that depends on z_1 and incorrectly judges (A) D = 0 in the equilateral case."
+    landed_on_option: "A"
+    diagnosis: "Computation error rather than concept error. The cube-roots-of-unity at z_k = 1, omega, omega^2 form an equilateral triangle but the Vandermonde is still nonzero — there's no algebraic reason for D=0."
+
+review_notes: |
+  Rebuilt 2026-06-10 after MS feedback on the original 0609k Q11. The original
+  (collinearity determinant for parametric points) was a single-method drill on standard JEE
+  theory and scored ~7 by MS calibration. New version FUSES two non-trivial ideas:
+    (i) Complex Numbers: z_k^3 = z_j^3 with z_k != z_j forces z_k/z_j to be a non-trivial cube root of unity.
+    (ii) Determinants: Vandermonde identity for rows (z^2, z, 1).
+  Two of the four options now genuinely require distinct insights:
+    (B) needs the |omega-1| = sqrt(3) fact AND the Vandermonde computation.
+    (D) needs Vieta on z^3 = c (sum of three cube roots is 0) AND the realization that D != 0.
+  (A) and (C) are quicker refutations.
+
+  Verified in /usr/bin/python3 (cmath): |D| = 5.196152... = 3*sqrt(3) across 8 random c on the unit circle;
+  D varies in argument with z_1, confirming (C) false. Sum z_1+z_2+z_3 = 0 always.
+
+  Taxonomy proposed:
+    ALG.CPX (Complex Numbers — already in canonical taxonomy)
+    IDEA CBROOT = "Cube-roots of a common value give the z_k = c^{1/3}, omega*c^{1/3}, omega^2*c^{1/3} structure; combined with |omega-1| = sqrt 3"
+    SUB-IDEA VANDMOD = "Modulus of a Vandermonde determinant on cube-roots-of-a-value reduces to a constant 3*sqrt(3), independent of the value c"
+
+  Answer is single-correct (MCQ-SC). Replaces MAT.DET.COLLIN.VANDFAC.001 (the original Q11 question_code), which is being marked deprecated.

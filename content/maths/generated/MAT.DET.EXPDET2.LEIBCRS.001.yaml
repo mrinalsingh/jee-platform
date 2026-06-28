@@ -1,0 +1,74 @@
+schema_version: 1
+
+question_code: MAT.DET.EXPDET2.LEIBCRS.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: EXPDET2
+  sub_idea: LEIBCRS
+  answer_type: NUM-INT
+  surface: SURF-PLAIN
+  trap: TRAP-NONE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 210
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  A $3\times 3$ matrix $M$ is formed by choosing each of its nine entries independently and uniformly from $\{+1,-1\}$. The value of $\;\mathbb{E}\!\left[(\det M)^{2}\right]+\mathbb{E}\!\left[(\operatorname{trace} M)^{2}\right]\;$ equals \underline{\hspace{2.2cm}}.
+
+answer:
+  type: NUM-INT
+  value: 9
+
+solution: |
+  ### The IDEA
+  When entries of a matrix are i.i.d. with mean $0$ and squared-mean $1$, the Leibniz expansion of $\det M$ becomes orthogonal in expectation: cross-terms from two distinct permutations always contain some entry to the first power, whose expectation is $0$. So $\mathbb{E}[(\det M)^2]$ collapses to the count of permutations. The trace term is just a sum of three independent $\pm 1$'s, handled by the variance formula.
+
+  ### Working
+  By Leibniz,
+  $$\det M=\sum_{\sigma\in S_3}\operatorname{sgn}(\sigma)\prod_{i=1}^{3} M_{i\sigma(i)}.$$
+  Squaring,
+  $$(\det M)^2=\sum_{\sigma,\tau}\operatorname{sgn}(\sigma)\operatorname{sgn}(\tau)\prod_{i} M_{i\sigma(i)}M_{i\tau(i)}.$$
+  If $\sigma\neq\tau$, there is some row $i$ with $\sigma(i)\neq\tau(i)$, so the product contains two distinct entries $M_{i\sigma(i)}$ and $M_{i\tau(i)}$, each to the first power. Since all $M_{ij}$ are independent with $\mathbb{E}[M_{ij}]=0$, the expectation of this cross-term is $0$.
+
+  When $\sigma=\tau$, every factor is $M_{i\sigma(i)}^2=1$, contributing $\operatorname{sgn}(\sigma)^2=1$. Hence
+  $$\mathbb{E}[(\det M)^2]=|S_3|=3!=6.$$
+
+  For the trace, $\operatorname{tr} M=M_{11}+M_{22}+M_{33}$ is a sum of three independent $\pm 1$'s, each with mean $0$ and variance $1$. So $\mathbb{E}[\operatorname{tr} M]=0$ and
+  $$\mathbb{E}[(\operatorname{tr} M)^2]=\operatorname{Var}(\operatorname{tr} M)=3.$$
+
+  Therefore $\mathbb{E}[(\det M)^2]+\mathbb{E}[(\operatorname{tr} M)^2]=6+3=\boxed{9}$.
+
+wrong_paths:
+  - path: "Compute $\\mathbb{E}[\\det M]=0$ and square it to get $0$ for the determinant part; add $\\mathbb{E}[(\\operatorname{tr} M)^2]=3$."
+    landed_on_option: "3"
+    diagnosis: "Confuses $(\\mathbb{E}[X])^2$ with $\\mathbb{E}[X^2]$. The determinant has mean $0$ by symmetry, but its second moment is not zero — exactly the point of the Leibniz orthogonality argument."
+  - path: "Use $\\mathbb{E}[(\\operatorname{tr} M)^2]=(\\mathbb{E}[\\operatorname{tr} M])^2=0$ together with $\\mathbb{E}[(\\det M)^2]=6$."
+    landed_on_option: "6"
+    diagnosis: "Same mean-vs-second-moment confusion, this time on the trace. Forgets that variance contributes to $\\mathbb{E}[X^2]$ even when the mean vanishes."
+  - path: "Expand $(\\det M)^2$ as $6$ permutation-squares but also include all $36$ ordered $(\\sigma,\\tau)$ pairs without sign-cancellation, getting $\\mathbb{E}[(\\det M)^2]=36$; add $3$."
+    landed_on_option: "39"
+    diagnosis: "Misses that cross-terms have an independent first-power entry that kills the expectation, so the $30$ off-diagonal pairs all contribute $0$, not $1$."
+  - path: "Compute $\\mathbb{E}[(\\det M)^2]=6$ correctly but forget the trace term entirely, or treat trace as a constant $0$."
+    landed_on_option: "6"
+    diagnosis: "Reads ‘trace’ as a deterministic offset rather than a random variable with positive variance."
+
+review_notes: |
+  NV problem; clean expected-value identity that disguises a clever Leibniz-orthogonality argument. T3 because once a student spots the cross-term cancellation, the rest is mechanical (variance of a sum of i.i.d. ±1's). New axis-3 code EXPDET2 (expectation of squared determinant of a random ±1 matrix) and new axis-4 code LEIBCRS (Leibniz cross-term cancellation under independence) introduced — taxonomy file must be extended before import.

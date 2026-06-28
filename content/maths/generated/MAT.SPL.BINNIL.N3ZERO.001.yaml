@@ -1,0 +1,73 @@
+schema_version: 1
+
+question_code: MAT.SPL.BINNIL.N3ZERO.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: BINNIL
+  sub_idea: N3ZERO
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A = 2I + N$, where $I$ is the $3\times 3$ identity matrix and $N$ is the $3\times 3$ upper-shift matrix (entries $N_{12}=N_{23}=1$, all others $0$), so that $N^{3}=O$. Which of the following are TRUE?
+
+  - (A) $\operatorname{trace}(A^{6}) = 46656$
+  - (B) $\det(A^{6}) = 262144$
+  - (C) $A^{6} = 2^{6} I + 6\cdot 2^{5} N$
+  - (D) the $(1,3)$ entry of $A^{6}$ equals $240$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  When $N$ is nilpotent with $N^{k}=O$, the binomial theorem terminates: $(cI+N)^{n}$ is the FINITE sum $\sum_{j=0}^{k-1}\binom{n}{j} c^{\,n-j} N^{j}$, because $I$ and $N$ commute and all higher $N^{j}$ vanish. For our $3\times 3$ upper shift, $N^{3}=O$, so only the $j=0,1,2$ terms survive.
+
+  ### Working
+  Since $I$ and $N$ commute and $N^{3}=O$,
+  $$A^{6} = (2I+N)^{6} = \binom{6}{0} 2^{6} I + \binom{6}{1} 2^{5} N + \binom{6}{2} 2^{4} N^{2} = 64\,I + 192\,N + 240\,N^{2}.$$
+
+  **(B)** $A$ is upper-triangular with all diagonal entries equal to $2$, so $\det A = 2^{3}=8$ and $\det(A^{6}) = 8^{6} = 262144$. **TRUE.**
+
+  **(D)** The matrix $N^{2}$ has its only nonzero entry at position $(1,3)$, equal to $1$. Hence the $(1,3)$ entry of $A^{6}$ comes from the $N^{2}$ term and equals $\binom{6}{2}\cdot 2^{4} = 15\cdot 16 = 240$. **TRUE.**
+
+  **(C)** The expression $2^{6}I + 6\cdot 2^{5}N$ drops the $\binom{6}{2}2^{4}N^{2}$ term and would force the $(1,3)$ entry to be $0$. But the actual $(1,3)$ entry is $240$, so this identity is **FALSE.**
+
+  **(A)** $A^{6}$ is upper-triangular with all diagonal entries $2^{6}=64$, so $\operatorname{trace}(A^{6}) = 3\cdot 64 = 192$. The value $46656 = 6^{6} = (\operatorname{trace} A)^{6}$ confuses "trace of the power" with "power of the trace". **FALSE.**
+
+wrong_paths:
+  - path: "Truncates the binomial expansion after the linear $N$ term, treating $N^{2}$ as already zero."
+    landed_on_option: "(C)"
+    diagnosis: "TRAP-PARTIAL: student remembers that $N$ is nilpotent and stops one term too early. Only $N^{3}=O$, so $N^{2}\ne O$ and its coefficient $\\binom{6}{2}2^{4}=240$ must be kept."
+  - path: "Uses $\\operatorname{trace}(A^{n}) = (\\operatorname{trace} A)^{n}$ and computes $6^{6}=46656$."
+    landed_on_option: "(A)"
+    diagnosis: "Confuses trace of a power with power of the trace. For an upper-triangular matrix $A^{6}$ has diagonal entries $2^{6}$, giving trace $3\\cdot 64 = 192$, not $46656$."
+  - path: "Computes $\\det(A^{6})$ as $(\\det A)\\cdot 6 = 48$ or $\\det A + 6 = 14$, mixing up power and product rules."
+    landed_on_option: "rejects (B)"
+    diagnosis: "Forgets that $\\det(A^{n}) = (\\det A)^{n}$. Correct value is $8^{6}=262144$."
+
+review_notes: |
+  Multi-correct on nilpotent-matrix binomial. New IDEA code BINNIL ("binomial with nilpotent N, finite expansion") proposed under MAT.SPL, with sub-idea N3ZERO ("$N^{3}=O$ truncates expansion at $N^{2}$"). No existing MAT.SPL idea captures this; ORBSUM/CNJSP is about conjugation orbits. Trap is TRAP-PARTIAL: distractor (C) is exactly the result of dropping one binomial term, a very common JEE slip. Time budgets reflect ~3-4 min for R1 dropping to ~2 min by R4.

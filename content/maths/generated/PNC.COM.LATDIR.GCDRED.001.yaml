@@ -1,0 +1,91 @@
+schema_version: 1
+
+question_code: PNC.COM.LATDIR.GCDRED.001
+
+fingerprint:
+  topic: PNC
+  subtopic: COM
+  idea: LATDIR
+  sub_idea: GCDRED
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 600   # ~10 min — must spot the shared point, then the gcd-collapse, then a 19-element perp count
+  R2_seconds: 420   # ~7  min — idea recalled; the perpendicular-pair enumeration still costs time
+  R3_seconds: 300   # ~5  min — fluent
+  R4_seconds: 210   # ~3.5 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For each ordered triple $(a,b,c)$ with $a,b,c \in \{0,1,2\}$ and $(a,b,c) \neq (0,0,0)$, form the plane
+  $$
+  \pi_{(a,b,c)} :\quad ax + by + cz = a + 2b + 3c .
+  $$
+  Two such equations describe the **same** plane exactly when one normal is a nonzero scalar multiple of the other. Which of the following are correct?
+
+  - (A) every one of these planes passes through the point $(1,2,3)$
+  - (B) the number of distinct planes obtained equals $26$
+  - (C) the number of distinct planes obtained equals $19$
+  - (D) among these distinct planes, the number of unordered pairs whose two normals are perpendicular equals $14$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  Every plane is written as $ax+by+cz = a+2b+3c$, i.e. the right-hand side is exactly $a\cdot 1 + b\cdot 2 + c\cdot 3$. So the question is really about the $26$ normal vectors $(a,b,c)$ with entries in $\{0,1,2\}$, not zero — counting how many give **distinct** planes (collapse proportional normals to a primitive direction), and how many pairs of distinct directions are perpendicular.
+
+  ### Option (A) — shared point
+  Substituting $(x,y,z)=(1,2,3)$ into the left side gives $a\cdot 1 + b\cdot 2 + c\cdot 3 = a+2b+3c$, which is exactly the right-hand side for **every** $(a,b,c)$. Hence all $26$ planes pass through $(1,2,3)$. **(A) is correct.**
+
+  ### Options (B) and (C) — counting distinct planes
+  Because all the planes share the point $(1,2,3)$, two of them coincide **iff** their normals are proportional. (Two distinct planes through a common point with parallel normals would have to be the same plane.) So the number of distinct planes equals the number of **primitive directions** among the $26$ tuples.
+
+  Reduce each $(a,b,c)$ by its $\gcd$. The tuples that are **not** primitive (a nonzero scalar multiple of a smaller tuple already in the list) are exactly those all of whose nonzero entries equal $2$:
+  $$
+  (2,0,0),\ (0,2,0),\ (0,0,2),\ (2,2,0),\ (2,0,2),\ (0,2,2),\ (2,2,2),
+  $$
+  which is $7$ tuples; each collapses onto its primitive reduction $((1,0,0)$, $(0,1,0)$, $\dots$, $(1,1,1))$, already present in the list. Every other tuple is already primitive. Hence the number of distinct planes is
+  $$
+  26 - 7 = 19 .
+  $$
+  So **(C) is correct** and **(B) (the value $26$) is the gcd-collapse trap — false.**
+
+  ### Option (D) — perpendicular pairs
+  Among the $19$ primitive direction vectors, count unordered pairs $\{\mathbf n_1,\mathbf n_2\}$ with $\mathbf n_1\cdot\mathbf n_2 = 0$. Enumerating over the primitive set gives exactly $\mathbf{12}$ perpendicular pairs, not $14$. **(D) is false** (the inflated count of $14$ comes from accidentally re-including the collapsed non-primitive directions, double-counting two pairs).
+
+  ### Answer
+  $\boxed{(A),\ (C)}$
+
+wrong_paths:
+  - path: "Counts all $26$ ordered nonzero tuples as distinct planes, forgetting that proportional normals through a common point give the same plane (skips the gcd-collapse of the seven all-2s/even tuples)."
+    landed_on_option: "B (26) — and consequently rejects C."
+    diagnosis: "TRAP-PARTIAL / overcount: misses that the shared point $(1,2,3)$ makes proportional-normal planes coincide; the $7$ non-primitive tuples must be removed, giving $19$ not $26$."
+  - path: "Counts perpendicular pairs but enumerates over the raw $26$ tuples (or otherwise re-includes the collapsed directions), inflating the dot-product-zero count to $14$."
+    landed_on_option: "D (14)."
+    diagnosis: "Double-counts perpendicular pairs by treating collapsed non-primitive directions as separate; the correct enumeration over the $19$ primitive directions yields exactly $12$ perpendicular pairs."
+  - path: "Tests the shared point on a single specific plane and assumes it is a coincidence, or checks $(1,2,3)$ against the wrong side, concluding (A) is false; then guesses among B/C/D."
+    landed_on_option: "Drops A (the correct option), e.g. selects only C."
+    diagnosis: "Fails to see the identity $a+2b+3c = a\\cdot1+b\\cdot2+c\\cdot3$ that forces $(1,2,3)$ onto every plane — the structural key that also justifies the proportional-normal coincidence used in the count."
+
+review_notes: |
+  - Core skill is PnC counting of distinct lattice **directions** dressed in a Vectors/3D-planes surface: spot the common point (algebraic identity), reduce proportional normals by gcd to primitive directions (26 -> 19), then a finite perpendicular-pair enumeration. Tagged PNC.COM (selection/counting) rather than VEC, since the load is combinatorial, not geometric.
+  - **Taxonomy extension required:** no IDEA exists under PNC.COM. Add IDEA PNC.COM.LATDIR ("counting distinct lattice direction vectors / relations among them") and SUB-IDEA GCDRED ("gcd-reduction to primitive directions; count primitive classes, then count perpendicular pairs"). Both codes are <=6 chars.
+  - surface = SURF-GEOM (planes/normals/perpendicularity dressing). trap = TRAP-PARTIAL: options B and D are tuned-near-miss values (26 instead of 19; 14 instead of 12) that reward an incomplete collapse/enumeration — classic multi-correct partial-marking bait.
+  - The (D) perpendicular-pair count of $12$ should be re-verified by an independent brute-force enumeration over the 19 primitive directions before this item is marked calibrated.
+  - T3: each individual step is standard, but chaining identity-spotting + gcd-collapse + a careful 19-element perpendicular enumeration under time pressure earns the "hard standard" rating.

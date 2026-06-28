@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: SET.FUN.FUNEQ.MULTRED.001
+
+fingerprint:
+  topic: SET
+  subtopic: FUN
+  idea: FUNEQ
+  sub_idea: MULTRED
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 210
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f:\mathbb{R}\to[1,\infty)$ be differentiable and satisfy
+  $$f(xy)=f(x)f(y)-f(x)-f(y)+2 \quad \text{for all } x,y\in\mathbb{R},$$
+  with $f(2)=5$. Which of the following are TRUE?
+
+  (A) $f(x)+1$ is multiplicative
+
+  (B) $f(3)=8$
+
+  (C) $f'(2)=4$
+
+  (D) $f$ is even and $f(\sqrt{5})=6$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  Let $g(x)=f(x)-1$. Substituting $f=g+1$ into the functional equation:
+  $$g(xy)+1=(g(x)+1)(g(y)+1)-(g(x)+1)-(g(y)+1)+2=g(x)g(y)+1,$$
+  so $g(xy)=g(x)g(y)$ — i.e. **$f(x)-1$** (not $f(x)+1$) is multiplicative. Hence **(A) is FALSE**.
+
+  Put $x=y=1$: $g(1)=g(1)^2$, so $g(1)\in\{0,1\}$. Since $f$ has range $[1,\infty)$, $g\ge 0$. If $g(1)=0$, then $g(x)=g(x\cdot 1)=g(x)\,g(1)=0$ for all $x$, contradicting $f(2)=5$ (i.e. $g(2)=4$). Hence $g(1)=1$, so $f(1)=2$.
+
+  $g$ is multiplicative, differentiable on $\mathbb{R}$, with $g(2)=4$. The standard classification of multiplicative differentiable functions gives $g(x)=|x|^{c}$ on $x\ne 0$; from $g(2)=2^{c}=4$ we get $c=2$, so $g(x)=x^{2}$. Hence
+  $$f(x)=x^{2}+1 \quad \text{for all } x\in\mathbb{R}.$$
+
+  - **(B)** $f(3)=9+1=10\ne 8$. **FALSE.**
+  - **(C)** $f'(x)=2x$, so $f'(2)=4$. **TRUE.**
+  - **(D)** $f(-x)=x^{2}+1=f(x)$, so $f$ is even; and $f(\sqrt{5})=5+1=6$. **TRUE.**
+
+  Correct options: **(C), (D)**.
+
+wrong_paths:
+  - path: "Reads the functional equation pattern $f(xy)+\\text{stuff}$ as 'a shift of $f$ is multiplicative' and guesses the shift is $+1$ without doing the substitution $g=f-1$. Marks (A) true. Then computes $f(3)$ by treating $f(3)=f(3)f(1)-f(3)-f(1)+2$ with the assumed $f(1)+1$ multiplicative giving $f(1)=2$, plugs in $f(2)f(3/2)$ style guesses and lands on $f(3)=8$ by trying $f(x)=x^2+x+...$ ansatzen."
+    landed_on_option: "(A), (B), (C), (D)"
+    diagnosis: "Sign-error in reduction: shifts by $+1$ instead of $-1$, so (A) is wrongly marked TRUE."
+  - path: "Correctly reduces to $g(xy)=g(x)g(y)$ but assumes $g(x)=x^{c}$ on all of $\\mathbb{R}$ (rather than $|x|^c$), forgetting to check parity. Concludes $f(-x)=-x^{c}+1\\ne f(x)$ so $f$ is not even, and rejects (D)."
+    landed_on_option: "(C)"
+    diagnosis: "Misses that range $[1,\\infty)$ forces $g\\ge 0$, which (with $g(-1)^2=g(1)=1$) gives $g(-1)=1$ and hence evenness."
+  - path: "Tries the ansatz $f(x)=a^{x}+c$ (exponential, by analogy with the standard Cauchy multiplicative form) and from $f(2)=5,\\ f(1)=2$ produces $a^{2}+c=5,\\ a+c=2$, giving $a=?$ messy. Abandons and just checks (B): tests $f(x)=x^{2}+1$ heuristically — gets $f(3)=10$ (rejects B), $f'(2)=4$ (accepts C). Does not verify (D) carefully and marks only (C)."
+    landed_on_option: "(C)"
+    diagnosis: "Incomplete check: fails to verify $f(\\sqrt 5)=6$ and evenness, missing (D)."
+
+review_notes: |
+  Multi-correct calculus / functional-equation item. The trap is whether (A) reads as "shift by +1" or "shift by -1" — substitution $g=f-1$ is the only safe path. The range constraint $f\ge 1$ is load-bearing: it forces $g(1)=1$ (not 0) and the even branch of $g(x)=|x|^2=x^2$. Difficulty T3 — standard once $g$-substitution is seen, but the multiple sub-checks and the parity issue raise the bar. Used a new IDEA code FUNEQ under SET.FUN (functional equations) with sub-idea MULTRED (multiplicative reduction by additive shift); taxonomy extension needed.

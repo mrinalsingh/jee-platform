@@ -1,0 +1,94 @@
+schema_version: 1
+
+question_code: LOG.EQN.ROOTCNT.ABSQUAD.001
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: ROOTCNT
+  sub_idea: ABSQUAD
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 270
+  R4_seconds: 210
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $N(a)$ denote the number of positive real $x$ satisfying
+  $$2(\log_3 x)^2 - |\log_3 x| + a = 0.$$
+  Which of the following statements is/are TRUE?
+
+  - (A) $N(a)=4$ if and only if $a\in\left(0,\tfrac{1}{8}\right)$
+  - (B) If $M=\max_{a\in\mathbb{R}} N(a)$, then $\dbinom{M}{2}=6$
+  - (C) $N(a)=3$ for exactly one value of $a$
+  - (D) $N(a)$ is an even integer for every real $a$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Substitute $v=|\log_3 x|\ge 0$ to convert the equation into a quadratic in $v$.
+  Each strictly positive root $v$ of the quadratic produces two distinct $x$-values
+  ($x=3^{v}$ and $x=3^{-v}$), while a root $v=0$ produces only one ($x=1$).
+  Counting $x$ therefore reduces to counting non-negative roots of $2v^2-v+a=0$ and
+  weighting $v=0$ specially.
+
+  ### Working
+  Setting $v=|\log_3 x|$ the equation becomes
+  $$2v^2 - v + a = 0,\qquad v\ge 0.$$
+  Its roots are $v=\dfrac{1\pm\sqrt{1-8a}}{4}$, real iff $a\le\tfrac{1}{8}$.
+  Sum of roots $=\tfrac{1}{2}>0$ and product $=\tfrac{a}{2}$.
+
+  Case analysis on $a$:
+
+  - $a>\tfrac{1}{8}$: no real $v$, so $N=0$.
+  - $a=\tfrac{1}{8}$: double root $v=\tfrac{1}{4}>0$, giving $x=3^{\pm 1/4}$, so $N=2$.
+  - $0<a<\tfrac{1}{8}$: two distinct positive roots $v_1,v_2>0$, each contributing two $x$-values, so $N=4$.
+  - $a=0$: roots $v=0$ and $v=\tfrac{1}{2}$. The first gives $x=1$ (one value), the second gives $x=3^{\pm 1/2}$, so $N=3$.
+  - $a<0$: product of roots $<0$, so exactly one positive root and one negative root; only the positive root counts, giving $N=2$.
+
+  Therefore:
+  - (A) $N(a)=4\iff a\in(0,\tfrac{1}{8})$ — TRUE.
+  - (B) $M=\max N(a)=4$, so $\binom{4}{2}=6$ — TRUE.
+  - (C) $N(a)=3$ only at $a=0$ — TRUE.
+  - (D) $N(0)=3$ is odd, so (D) is FALSE.
+
+  Correct options: (A), (B), (C).
+
+wrong_paths:
+  - path: "Solves $2v^2-v+a=0$ without separating $v=0$ from $v>0$; treats every real root of the quadratic as contributing two $x$-values uniformly."
+    landed_on_option: "Marks (D) true (assumes $N$ is always even) and may drop (C)."
+    diagnosis: "TRAP-EDGE: misses the boundary case $v=0$, where $|\\log_3 x|=0$ gives the single solution $x=1$ rather than a pair."
+  - path: "Forgets the absolute value and treats $\\log_3 x$ as an unrestricted real, getting $2t^2-t+a=0$ where each root is one $x$."
+    landed_on_option: "Concludes $M=2$ and $\\binom{M}{2}=1$, rejecting (B); may also reject (A)."
+    diagnosis: "TRAP-PARTIAL: drops the doubling that comes from $|\\log_3 x|=v\\Rightarrow x=3^{\\pm v}$, undercounting solutions."
+  - path: "Requires both roots of the quadratic to be positive but allows $a=\\tfrac18$ as part of the $N=4$ range."
+    landed_on_option: "States (A) with closed interval $[0,\\tfrac18]$ or $(0,\\tfrac18]$, marking (A) FALSE."
+    diagnosis: "Confuses strict vs. non-strict discriminant condition; at $a=\\tfrac18$ the double root gives only two $x$, not four."
+
+review_notes: |
+  Multi-correct, key (A)(B)(C). The crux is the asymmetric contribution of $v=0$ vs $v>0$
+  to the count of $x$. New axis-3 code ROOTCNT (root-counting via substitution in a log
+  equation) and axis-4 code ABSQUAD (quadratic in $|\log x|$) are proposed; reuse if a
+  closer existing code exists. Surface tagged SURF-PARAM because $a$ is the parameter and
+  the problem asks about behaviour across its range; trap TRAP-EDGE because the $v=0$
+  boundary is the principal pitfall.

@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: SOT.REC.CONJSUM.FLOOR.001
+
+fingerprint:
+  topic: SOT
+  subtopic: REC
+  idea: CONJSUM
+  sub_idea: FLOOR
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f_n=(5+2\sqrt{6})^{\,n}+(5-2\sqrt{6})^{\,n}$ for $n\ge 1$. Which of the following is/are TRUE?
+
+  - (A) $f_n$ is an even integer for every $n\ge 1$.
+  - (B) $\big\lfloor (5+2\sqrt{6})^{\,n}\big\rfloor = f_n-1$ for every $n\ge 1$.
+  - (C) $f_n$ is divisible by $4$ for at least one $n\ge 1$.
+  - (D) $\{(5+2\sqrt{6})^{\,n}\}\to 1$ as $n\to\infty$, where $\{\cdot\}$ denotes the fractional part.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  If $\alpha,\beta$ are conjugate surds with $\alpha+\beta\in\mathbb{Z}$, $\alpha\beta\in\mathbb{Z}$, then $f_n=\alpha^n+\beta^n$ satisfies a linear recurrence with integer coefficients, hence is itself an integer. When additionally $0<\beta<1$, the fractional part of $\alpha^n$ equals $1-\beta^n$, so $\lfloor\alpha^n\rfloor=f_n-1$ and $\{\alpha^n\}\to 1$.
+
+  ### Working
+  Let $\alpha=5+2\sqrt{6}$, $\beta=5-2\sqrt{6}$. Then
+  $$\alpha+\beta=10,\qquad \alpha\beta=25-24=1,\qquad 0<\beta<1.$$
+  So $f_n=\alpha^n+\beta^n$ satisfies
+  $$f_n=10\,f_{n-1}-f_{n-2},\qquad f_0=2,\ f_1=10.$$
+  By induction $f_n\in\mathbb{Z}$ and parity: $f_n\equiv 10f_{n-1}-f_{n-2}\equiv -f_{n-2}\pmod 2$, and $f_0,f_1$ are even, so every $f_n$ is even. Hence **(A)** is true.
+
+  Since $0<\beta^n<1$,
+  $$\alpha^n=f_n-\beta^n\in(f_n-1,\ f_n),$$
+  so $\lfloor\alpha^n\rfloor=f_n-1$. Hence **(B)** is true, and
+  $$\{\alpha^n\}=\alpha^n-(f_n-1)=1-\beta^n\to 1\ \text{as}\ n\to\infty,$$
+  so **(D)** is true.
+
+  For **(C)**: reduce the recurrence mod $4$. We have $f_n\equiv 10f_{n-1}-f_{n-2}\equiv 2f_{n-1}-f_{n-2}\pmod 4$. With $f_0\equiv 2,\ f_1\equiv 2$:
+  $f_2\equiv 2\cdot 2-2=2$, $f_3\equiv 2\cdot 2-2=2$, ... By induction $f_n\equiv 2\pmod 4$ for all $n\ge 0$. So $f_n$ is never divisible by $4$. **(C)** is false.
+
+  Correct: **(A), (B), (D)**.
+
+wrong_paths:
+  - path: "Student computes $f_1=10$, $f_2=98$, $f_3=970$ and notices these are all $\\equiv 2\\pmod 4$, but conjectures $f_n$ might hit a multiple of $4$ later and marks (C) as possibly true."
+    landed_on_option: "C"
+    diagnosis: "Failure to formalise the mod-4 induction. The recurrence $f_n\\equiv 2f_{n-1}-f_{n-2}\\pmod 4$ with $f_0\\equiv f_1\\equiv 2$ forces $f_n\\equiv 2\\pmod 4$ forever (TRAP-PARTIAL: partial computation without closing the induction)."
+  - path: "Student treats $(5+2\\sqrt 6)^n$ as having fractional part $\\beta^n\\to 0$, concluding $\\lfloor\\alpha^n\\rfloor=f_n$ and $\\{\\alpha^n\\}\\to 0$, so rejects (B) and (D)."
+    landed_on_option: "Only (A) marked"
+    diagnosis: "Mixes up the decomposition: $\\alpha^n=f_n-\\beta^n$ (not $f_n+\\beta^n$, since the conjugate carries a minus into the binomial expansion of $\\alpha^n$ summed with $\\beta^n$). So the fractional part is $1-\\beta^n$, not $\\beta^n$."
+  - path: "Student doubts that $f_n$ is an integer for all $n$ because $\\sqrt 6$ is irrational, and rejects (A) without setting up the recurrence."
+    landed_on_option: "Skips (A); may mark only (B), (D)"
+    diagnosis: "Misses the conjugate-cancellation IDEA: odd powers of $\\sqrt 6$ cancel between $\\alpha^n$ and $\\beta^n$, leaving an integer. This is the central insight of the problem."
+
+review_notes: |
+  Conjugate-surd / floor / fractional-part problem; classic JEE multi-correct. Needs taxonomy extension if SOT.REC and idea CONJSUM are not yet present. T3 because all four parts are standard but require a mod-4 induction in (C).

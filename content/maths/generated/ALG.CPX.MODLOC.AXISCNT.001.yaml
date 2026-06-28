@@ -1,0 +1,87 @@
+schema_version: 1
+
+question_code: ALG.CPX.MODLOC.AXISCNT.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: MODLOC
+  sub_idea: AXISCNT
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 150
+  R3_seconds: 120
+  R4_seconds: 90
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $S$ be the set of complex numbers $z$ satisfying
+  $$\log_{1/3}\!\big(|z|^2-2|z|+2\big)\ge 0 \quad\text{and}\quad z^2\in\mathbb{R}.$$
+  Which of the following are TRUE?
+
+  (A) $|S|=4$
+
+  (B) $|z|\ge 2$ on $S$
+
+  (C) $\displaystyle\sum_{z\in S} z^2 = 0$
+
+  (D) $S\subset\{z:|z|<1\}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  ### The IDEA
+  Two-stage localization: the log inequality pins $|z|$ to a single value, then $z^2\in\mathbb{R}$ confines $z$ to the union of the real and imaginary axes. Intersect to enumerate a finite set, then evaluate the listed quantities.
+
+  ### Working
+  Let $X=|z|^2-2|z|+2=(|z|-1)^2+1\ge 1$, with equality iff $|z|=1$.
+
+  Since the base $\tfrac{1}{3}\in(0,1)$, the log is a decreasing function, so
+  $$\log_{1/3} X \ge 0 \iff 0 < X \le 1.$$
+  Combined with $X\ge 1$, this forces $X=1$, i.e. $|z|=1$.
+
+  Next, $z^2\in\mathbb{R}$ means $z$ lies on the real axis or the imaginary axis. Combined with $|z|=1$:
+  $$S=\{1,\,-1,\,i,\,-i\}.$$
+
+  Hence $|S|=4$ (so **A** is true) and
+  $$\sum_{z\in S} z^2 = 1 + 1 + (-1) + (-1) = 0,$$
+  so **C** is true.
+
+  On $S$ every element has $|z|=1$, so $|z|\ge 2$ fails (B false) and $|z|<1$ fails (D false).
+
+  **Answer: (A), (C).**
+
+wrong_paths:
+  - path: "Mis-handles the decreasing log: reads $\\log_{1/3} X \\ge 0$ as $X\\ge 1$ instead of $X\\le 1$, then concludes $|z|$ is unrestricted and picks $|z|\\ge 2$ from a perceived growth condition."
+    landed_on_option: "B"
+    diagnosis: "Forgets that for base $<1$, $\\log_b$ is decreasing, so the inequality direction flips. The TRAP-EDGE here is the equality-only locus $X=1$."
+  - path: "Correctly gets $|z|=1$ but reads $z^2\\in\\mathbb{R}$ as 'z is real', getting only $\\{1,-1\\}$ and $\\sum z^2=2$, then ticks neither A nor C and falls back on D as 'small $|z|$'."
+    landed_on_option: "D"
+    diagnosis: "Misses that $z^2$ real also allows purely imaginary $z$ (since $(iy)^2=-y^2\\in\\mathbb{R}$). Undercounts $S$ and confuses the unit-circle locus with the open disk."
+  - path: "Argues $X=(|z|-1)^2+1\\ge 1$, declares $\\log_{1/3} X\\le 0$, treats the inequality as strict, finds no solutions, and rejects A while still ticking C as a vacuous sum."
+    landed_on_option: "C"
+    diagnosis: "Reads $\\ge$ as $>$ and discards the equality case $X=1$ that actually realizes the solutions. Partially correct (C is true) but for the wrong reason."
+
+review_notes: |
+  - Topic ALG.CPX has no pre-existing IDEA/SUB-IDEA codes in the published taxonomy; proposing new codes MODLOC (modulus-locus from log/inequality reduction) and AXISCNT (count/sum over real-or-imaginary axis intersection with a circle).
+  - Trap classified as TRAP-EDGE because the solution lives exactly on the equality boundary $X=1$ of the log inequality.
+  - Surface tagged SURF-SET because the question asks about properties of a finite solution set $S$.
+  - Multi-correct with (A), (C) true; (B), (D) false. Verified against keyfoot and solution.

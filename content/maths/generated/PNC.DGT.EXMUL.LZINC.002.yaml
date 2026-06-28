@@ -1,0 +1,85 @@
+schema_version: 1
+
+question_code: PNC.DGT.EXMUL.LZINC.002
+
+fingerprint:
+  topic: PNC
+  subtopic: DGT
+  idea: EXMUL
+  sub_idea: LZINC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $T=\#\{\text{7-digit positive integers with digit-sum } =19\}$.
+
+  Which of the following is/are TRUE?
+
+  (A) $T=\binom{25}{6}$
+
+  (B) $T=111\,573$
+
+  (C) $T=\#\{\text{7-digit positive integers with digit-sum } =44\}$
+
+  (D) $T=[x^{19}](1+x+\cdots+x^{9})^{7}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B]
+
+solution: |
+  Let the digits be $d_1 d_2 \cdots d_7$ with $1 \le d_1 \le 9$ and $0 \le d_i \le 9$ for $i \ge 2$.
+
+  Then $T$ equals the coefficient of $x^{19}$ in
+  $$\big(x+x^{2}+\cdots+x^{9}\big)\big(1+x+\cdots+x^{9}\big)^{6},$$
+  where the first factor enforces $d_1 \ge 1$.
+
+  Writing $x+x^2+\cdots+x^9 = x\cdot\frac{1-x^9}{1-x}$ and $1+x+\cdots+x^9 = \frac{1-x^{10}}{1-x}$, we need
+  $$[x^{18}]\ \frac{(1-x^9)(1-x^{10})^6}{(1-x)^7}.$$
+  Expanding $(1-x^9)(1-x^{10})^6$ and using $[x^n](1-x)^{-7}=\binom{n+6}{6}$, one obtains
+  $$T = 111\,573.$$
+
+  This rules in **(B)** and rules out (A), (C), (D):
+
+  - **(A)** $\binom{25}{6}=177\,100$ counts solutions in non-negative integers with no upper cap of $9$; it overcounts.
+  - **(C)** Under the reflection $d_1\mapsto 10-d_1,\ d_i\mapsto 9-d_i\ (i\ge 2)$, digit-sum $19$ corresponds to digit-sum $64-19=45$, not $44$. So $T=\#\{=45\}\ne\#\{=44\}$ (and $\#\{=44\}=139\,068$).
+  - **(D)** $(1+x+\cdots+x^9)^7$ allows leading digit $0$, so its $[x^{19}]$ coefficient $=142\,065 \ne T$.
+
+  $$\boxed{T = 111\,573 \quad\text{(B only)}}$$
+
+wrong_paths:
+  - path: "Forget the upper bound $d_i \\le 9$ and the leading-digit constraint, solve $d_1+\\cdots+d_7=19$ in non-negative integers via stars-and-bars: $\\binom{19+6}{6}=\\binom{25}{6}$."
+    landed_on_option: "A"
+    diagnosis: "Ignored upper-cap (digit $\\le 9$) and leading-digit-$\\ge 1$ constraints; raw stars-and-bars overcount."
+  - path: "Apply the digit-complement bijection $d_i \\mapsto 9-d_i$ uniformly across all 7 digits, mapping sum $19$ to sum $63-19=44$, and conclude $T=\\#\\{\\text{digit-sum}=44\\}$."
+    landed_on_option: "C"
+    diagnosis: "Mishandled the asymmetric leading-digit constraint; correct reflection sends $19\\to 45$, not $44$."
+  - path: "Write the generating function as $(1+x+\\cdots+x^9)^7$ treating all seven digits symmetrically (including $d_1$ allowed to be $0$), extract $[x^{19}]$."
+    landed_on_option: "D"
+    diagnosis: "Failed to enforce $d_1\\ge 1$; the GF must have first factor $x+x^2+\\cdots+x^9$, not $1+x+\\cdots+x^9$."
+
+review_notes: |
+  - Multi-correct with exactly one true option (B); tests whether students recognize the asymmetry of the leading digit and the upper-cap inclusion-exclusion.
+  - Each distractor lands on a clean closed-form that a student might commit to without checking, making this a good discriminator at T4.
+  - Verify the numeric value $T=111573$ by direct expansion; cross-check distractor counts ($\binom{25}{6}=177100$; $\#\{=44\}=139068$; $[x^{19}](1+\cdots+x^9)^7=142065$).
+  - Could repurpose as a numerical-value question by asking for $T$ directly.

@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: ALG.CPX.ROUNITY.CHRDIST.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: ROUNITY
+  sub_idea: CHRDIST
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 420
+  R3_seconds: 330
+  R4_seconds: 240
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\omega=e^{2\pi i/13}$ and let the vertices of a regular $13$-gon inscribed in the unit circle be the points $1,\omega,\omega^{2},\dots,\omega^{12}$. For $k=1,2,\dots,12$ let $d_k=|1-\omega^{k}|$ denote the chord length from the vertex $1$ to the vertex $\omega^{k}$. Which of the following statements is/are TRUE?
+
+  - (A) $\displaystyle\prod_{k=1}^{12} d_k = 13$
+  - (B) $\displaystyle\sum_{k=1}^{12} d_k^{2} = 26$
+  - (C) $\displaystyle\prod_{k=0}^{12} d_k = 13$
+  - (D) $\displaystyle\sum_{k=1}^{12} \frac{1}{d_k^{2}} = 14$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  For $\omega = e^{2\pi i/n}$ the polynomial $\prod_{k=1}^{n-1}(z-\omega^{k}) = \dfrac{z^{n}-1}{z-1} = 1+z+z^{2}+\cdots+z^{n-1}$. Evaluating at $z=1$ gives the chord-product identity $\prod_{k=1}^{n-1}|1-\omega^{k}|=n$. Combined with $|1-\omega^{k}|^{2}=2-2\cos\frac{2\pi k}{n}=4\sin^{2}\frac{\pi k}{n}$ and the classical identity $\sum_{k=1}^{n-1}\csc^{2}\frac{\pi k}{n}=\dfrac{n^{2}-1}{3}$, one can evaluate sums of $d_k^{2}$ and $1/d_k^{2}$ in closed form. The constant term/limit step is the lever; the edge case $k=0$ kills any product that includes it.
+
+  ### Working
+  **(A)** From $\prod_{k=1}^{12}(z-\omega^{k}) = 1+z+z^{2}+\cdots+z^{12}$, set $z=1$:
+  $$\prod_{k=1}^{12}(1-\omega^{k}) = 13.$$
+  Taking absolute values, $\prod_{k=1}^{12} d_k = 13$. **TRUE.**
+
+  **(B)** $d_k^{2} = |1-\omega^{k}|^{2} = (1-\omega^{k})(1-\overline{\omega^{k}}) = 2-2\cos\frac{2\pi k}{13}$. Therefore
+  $$\sum_{k=1}^{12} d_k^{2} = 2\cdot 12 - 2\operatorname{Re}\!\sum_{k=1}^{12}\omega^{k} = 24 - 2(-1) = 26,$$
+  using $\sum_{k=0}^{12}\omega^{k}=0$. **TRUE.**
+
+  **(C)** Extending the index to $k=0$ adds the factor $d_0 = |1-\omega^{0}| = |1-1| = 0$, so
+  $$\prod_{k=0}^{12} d_k = 0 \neq 13.$$
+  **FALSE.**
+
+  **(D)** Using $d_k^{2} = 4\sin^{2}\frac{\pi k}{13}$ and the identity $\displaystyle\sum_{k=1}^{n-1}\csc^{2}\frac{\pi k}{n} = \frac{n^{2}-1}{3}$ with $n=13$:
+  $$\sum_{k=1}^{12} \frac{1}{d_k^{2}} = \frac{1}{4}\sum_{k=1}^{12}\csc^{2}\frac{\pi k}{13} = \frac{1}{4}\cdot\frac{13^{2}-1}{3} = \frac{1}{4}\cdot\frac{168}{3} = 14.$$
+  **TRUE.**
+
+  Hence the correct options are **(A), (B), (D)**.
+
+wrong_paths:
+  - path: "Student forgets that $d_0 = |1-1| = 0$ and re-evaluates $\\prod_{k=0}^{12}(z-\\omega^{k}) = z^{13}-1$ at $z=1$, getting $0$ but then 'cancels' the $z=1$ factor and reports $13$, marking (C) as true."
+    landed_on_option: "(C)"
+    diagnosis: "TRAP-EDGE: blind index-shift treating $k=0$ as 'just another root' even though $1-\\omega^{0}=0$ trivially kills the product. The student conflates $\\prod_{k=1}^{12}(1-\\omega^{k})=13$ with $\\prod_{k=0}^{12}(1-\\omega^{k})$ without checking the $k=0$ factor."
+  - path: "For (B) the student computes $\\sum d_k^{2} = \\sum(2-2\\cos\\frac{2\\pi k}{13})$ and writes $\\sum_{k=1}^{12}\\cos\\frac{2\\pi k}{13}=0$ (forgetting that the $k=0$ term contributes $+1$, so the sum from $k=1$ to $12$ equals $-1$), getting $24$ instead of $26$ and rejecting (B)."
+    landed_on_option: "Rejects (A), (B), (D); marks only (C)"
+    diagnosis: "Standard sign-error in roots-of-unity sums: $\\sum_{k=0}^{n-1}\\omega^{k}=0 \\Rightarrow \\sum_{k=1}^{n-1}\\omega^{k}=-1$, but students often drop the $-1$."
+  - path: "For (D) the student tries to brute-force $\\sum 1/d_k^{2}$ by partial fractions on $\\dfrac{1}{(1-\\omega^{k})(1-\\overline{\\omega^{k}})}$ without invoking the cosecant identity, runs out of time, and guesses (D) is false."
+    landed_on_option: "Rejects (D); marks only (A), (B)"
+    diagnosis: "TRAP-PARTIAL: knows (A) and (B) but cannot close (D) because the $\\sum\\csc^{2}\\frac{\\pi k}{n}=\\frac{n^{2}-1}{3}$ identity is JEE-syllabus-edge; a real top student recognises it from the derivative of $\\sin(nx)/\\sin x$ or the cotangent-root-sum."
+  - path: "Student computes (A) as $\\prod (1-\\omega^{k}) = 13$ but takes signs/arguments seriously and worries the product of complex numbers might not have modulus 13, so flags (A) false."
+    landed_on_option: "Rejects (A)"
+    diagnosis: "Misses that the polynomial $1+z+\\cdots+z^{12}$ at $z=1$ is the real number $13$, hence $\\prod(1-\\omega^{k})=13$ exactly (not just in modulus). The modulus step is automatic."
+
+review_notes: |
+  Classic 13-gon chord-product/chord-sum item. Three correct answers (A, B, D) with the edge-case bait (C). The $k=0$ trap is the discriminator: weak students extend products mechanically. (D) requires the cosecant-squared sum identity (derivable from $\\frac{\\sin(n\\theta)}{\\sin\\theta}$ root structure) — sits at the upper edge of JEE syllabus but appears in standard reference texts. Sub-idea code `CHRDIST` (chord distance products/sums from a fixed vertex of a regular $n$-gon) is new under ALG.CPX.ROUNITY — extension needed.

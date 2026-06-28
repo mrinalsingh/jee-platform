@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: MAT.DET.CIRCFAC.OMEGAFAC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: CIRCFAC
+  sub_idea: OMEGAFAC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\Delta(a,b,c)=\det\!\begin{pmatrix} a&b&c\\ c&a&b\\ b&c&a\end{pmatrix}$ and let $\omega=e^{2\pi i/3}$. Which of the following statements are TRUE for all real $a,b,c$?
+
+  - (A) $\Delta=0\iff a=b=c$
+  - (B) $\Delta=(a+b+c)^{3}$
+  - (C) $\Delta=(a+b+c)(a^{2}+b^{2}+c^{2}-ab-bc-ca)$
+  - (D) $(a,b,c)=(1,\omega,\omega^{2})\Rightarrow\Delta=0$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  The circulant determinant $\Delta(a,b,c)$ factors using cube roots of unity: it equals the product of the three "eigenvalues" $a+b+c,\ a+\omega b+\omega^{2}c,\ a+\omega^{2}b+\omega c$. The product of the two conjugate eigenvalues is the real quadratic form $a^{2}+b^{2}+c^{2}-ab-bc-ca$.
+
+  ### Working
+  Expanding the determinant directly gives
+  $$\Delta=a^{3}+b^{3}+c^{3}-3abc.$$
+  Using the factorization $a^{3}+b^{3}+c^{3}-3abc=(a+b+c)(a^{2}+b^{2}+c^{2}-ab-bc-ca)$:
+
+  **(C)** is a direct restatement of this identity — **TRUE**.
+
+  **(D)** For $(a,b,c)=(1,\omega,\omega^{2})$ the factor $a+b+c=1+\omega+\omega^{2}=0$, so $\Delta=0$ — **TRUE**.
+
+  **(A)** Note $a^{2}+b^{2}+c^{2}-ab-bc-ca=\tfrac12\bigl[(a-b)^{2}+(b-c)^{2}+(c-a)^{2}\bigr]\ge0$, with equality iff $a=b=c$. Therefore
+  $$\Delta=0 \iff a+b+c=0 \ \text{or}\ a=b=c.$$
+  The triple $(1,1,-2)$ gives $\Delta=0$ but $a\ne c$, so the "$\iff a=b=c$" claim is **FALSE**.
+
+  **(B)** Test $(a,b,c)=(1,2,3)$: $(a+b+c)^{3}=216$ but $\Delta=1+8+27-18=18$. **FALSE**.
+
+  Correct options: **(C), (D)**.
+
+wrong_paths:
+  - path: "Stops after observing the (a+b+c) factor and mis-cubes it, claiming $\\Delta=(a+b+c)^{3}$."
+    landed_on_option: "B"
+    diagnosis: "Confuses $a^{3}+b^{3}+c^{3}-3abc$ with the expansion of $(a+b+c)^{3}=a^{3}+b^{3}+c^{3}+3(a+b+c)(ab+bc+ca)-3abc$. A TRAP-PARTIAL: correct first factor, wrong second factor."
+  - path: "Reasons that the second factor $a^{2}+b^{2}+c^{2}-ab-bc-ca$ vanishes iff $a=b=c$, then forgets the $(a+b+c)$ branch and concludes $\\Delta=0\\iff a=b=c$."
+    landed_on_option: "A"
+    diagnosis: "Misses the second zero branch $a+b+c=0$. Classic TRAP-PARTIAL on a biconditional — student verifies one direction and one zero locus but overlooks the other factor."
+  - path: "Computes $1+\\omega+\\omega^{2}$ incorrectly as $3$ (treating $\\omega$ as $1$) and concludes (D) is false."
+    landed_on_option: "Marks only (C); misses (D)."
+    diagnosis: "Forgets the defining identity $1+\\omega+\\omega^{2}=0$ for primitive cube roots of unity. TRAP-NCERT slip on $\\omega$-arithmetic."
+
+review_notes: |
+  Multi-correct circulant determinant. New IDEA code CIRCFAC (circulant factorization via $\omega$) and SUB-IDEA OMEGAFAC (cube-root-of-unity eigenvalue product) introduced — not covered by existing MAT.SPL.ORBSUM.CNJSP which targets conjugation-orbit sums, not circulant factorization. Difficulty T3: requires identity recall plus careful biconditional reasoning. Distractors (A) and (B) are textbook partial-credit traps.

@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: SOT.DIO.MODSIEVE.CRTCLS.001
+
+fingerprint:
+  topic: SOT
+  subtopic: DIO
+  idea: MODSIEVE
+  sub_idea: CRTCLS
+  answer_type: NUM-INT
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  From the set $S=\{1,2,\dots,30\}$ an ordered pair $(a,b)$ is formed by choosing $a$ and $b$ independently from $S$ (repetition allowed). The number of ordered pairs $(a,b)\in S\times S$ for which $a^{4}-b^{4}$ is divisible by $15$ equals \underline{\hspace{2.2cm}}.
+
+answer:
+  type: NUM-INT
+  value: 340
+
+solution: |
+  ### The IDEA
+  Because $15=3\cdot 5$, the divisibility $15\mid a^{4}-b^{4}$ splits into two independent congruences modulo $3$ and modulo $5$. Fermat-style residue tables show $x^{4}\bmod 3$ and $x^{4}\bmod 5$ depend only on whether $3\mid x$ and $5\mid x$. The pair $(a,b)$ works iff $a$ and $b$ lie in the same class under the joint map $x\mapsto(\,[3\mid x]\,,\,[5\mid x]\,)$. Counting class sizes and squaring then summing gives the answer.
+
+  ### Working
+  We need $15\mid a^{4}-b^{4}$, i.e.\ $3\mid a^{4}-b^{4}$ and $5\mid a^{4}-b^{4}$ simultaneously.
+
+  **Residue tables.** For any integer $x$:
+  $$x^{4}\equiv 0\ (\bmod\ 3)\iff 3\mid x,\qquad \text{else } x^{4}\equiv 1\ (\bmod\ 3).$$
+  $$x^{4}\equiv 0\ (\bmod\ 5)\iff 5\mid x,\qquad \text{else } x^{4}\equiv 1\ (\bmod\ 5)$$
+  (Fermat's little theorem: $x^{4}\equiv 1\pmod 5$ for $\gcd(x,5)=1$; mod $3$, $x^{2}\equiv 1$ so $x^{4}\equiv 1$ when $3\nmid x$).
+
+  **Consequence.** $a^{4}\equiv b^{4}\pmod 3$ iff $a,b$ have the same "divisible-by-$3$" status, and similarly mod $5$. So $(a,b)$ is good iff $a$ and $b$ lie in the same class of the partition of $S$ by the pair of indicators $(3\mid x,\ 5\mid x)$.
+
+  **Class sizes in $\{1,\dots,30\}$.** Inclusion-exclusion gives:
+  - neither $3$ nor $5$ divides $x$: $30-10-6+2=16$
+  - $3\mid x$ but $5\nmid x$: $10-2=8$
+  - $5\mid x$ but $3\nmid x$: $6-2=4$
+  - $15\mid x$: $2$
+
+  Check: $16+8+4+2=30$. $\checkmark$
+
+  **Count ordered pairs.** Within each class of size $n_i$ there are $n_i^{2}$ ordered pairs:
+  $$16^{2}+8^{2}+4^{2}+2^{2}=256+64+16+4=340.$$
+
+  **Answer: $340$.**
+
+wrong_paths:
+  - path: "Student only enforces $15\\mid a-b$ (forgetting $a^{4}-b^{4}=(a-b)(a+b)(a^{2}+b^{2})$ has extra factors), and counts pairs with $a\\equiv b\\pmod{15}$: each residue mod $15$ has exactly $2$ elements in $\\{1,\\dots,30\\}$, giving $15\\cdot 2^{2}=60$."
+    landed_on_option: "60"
+    diagnosis: "Treats $a^{4}-b^{4}\\equiv 0$ as $a\\equiv b$ — misses that $x^{4}$ is constant on a much coarser partition than residue mod $15$. TRAP-PARTIAL: a correct but incomplete reduction."
+  - path: "Student handles only the mod-$5$ condition (Fermat is familiar) and ignores mod-$3$. Classes mod $5$ into 'divisible by $5$' (size $6$) and 'not' (size $24$): $24^{2}+6^{2}=576+36=612$."
+    landed_on_option: "612"
+    diagnosis: "Drops one of the two prime factors of $15$. Common when the student remembers $x^{4}\\equiv 1\\pmod 5$ but does not separately analyze mod $3$."
+  - path: "Student does CRT correctly but forgets ordered vs.\\ unordered: counts unordered pairs as $\\binom{n_i}{2}$ summed: $\\binom{16}{2}+\\binom{8}{2}+\\binom{4}{2}+\\binom{2}{2}=120+28+6+1=155$."
+    landed_on_option: "155"
+    diagnosis: "Ordered/unordered slip. The problem says 'ordered pair $(a,b)$' — the student should square class sizes, not choose-2 them."
+  - path: "Student squares correctly but forgets to add the all-divisible class ($15\\mid x$, size $2$): $16^{2}+8^{2}+4^{2}=336$."
+    landed_on_option: "336"
+    diagnosis: "Misses the smallest class. Classic inclusion-exclusion bookkeeping error when the count is small."
+
+review_notes: |
+  NV item. New sub-idea proposed: SOT.DIO.MODSIEVE.CRTCLS — "Chinese-Remainder class partition counting", to extend the existing MOD8 sub-idea. Authored as T3: students who know Fermat mod 5 still have to (a) separately analyze mod 3, (b) do inclusion-exclusion class sizes in [1,30], and (c) remember to square (ordered). Round-1 ~6 min is realistic for an unfamiliar item; expert ~2 min.

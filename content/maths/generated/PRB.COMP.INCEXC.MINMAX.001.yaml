@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: PRB.COMP.INCEXC.MINMAX.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: INCEXC
+  sub_idea: MINMAX
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 135
+  R4_seconds: 100
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Three distinct numbers are chosen at random from $\{1,2,\dots,10\}$, so the sample space has $\binom{10}{3}=120$ equally likely triples. Which of the following statements are TRUE?
+
+  - (A) $P(\max=7)=\dfrac{7}{40}$
+  - (B) $P(\min=3\text{ or }\max=7)=\dfrac{3}{10}$
+  - (C) $P(\min=3)=\dfrac{7}{40}$
+  - (D) $P(\min=3\text{ or }\max=7)=\dfrac{11}{40}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  For a uniformly random $k$-subset of $\{1,\dots,n\}$, fixing the minimum (or maximum) reduces the count to a single binomial coefficient over the remaining one-sided range; combining the two events requires inclusion--exclusion because they are not disjoint.
+
+  ### Working
+  Sample space: $\binom{10}{3}=120$.
+
+  **Option (C):** $P(\min=3)$ — fix $3$ and choose the other two from $\{4,5,\dots,10\}$ (7 numbers): $\binom{7}{2}=21$. So $P(\min=3)=\dfrac{21}{120}=\dfrac{7}{40}$. **(C) is TRUE.**
+
+  **Option (A):** $P(\max=7)$ — fix $7$ and choose the other two from $\{1,2,\dots,6\}$ (6 numbers): $\binom{6}{2}=15$. So $P(\max=7)=\dfrac{15}{120}=\dfrac{1}{8}\neq\dfrac{7}{40}$. **(A) is FALSE.**
+
+  **Overlap:** $P(\min=3\text{ and }\max=7)$ — the middle value must lie strictly between $3$ and $7$, i.e. in $\{4,5,6\}$: $\binom{3}{1}=3$ triples, so probability $\dfrac{3}{120}=\dfrac{1}{40}$.
+
+  **Inclusion--exclusion:**
+  $$P(\min=3\text{ or }\max=7)=\dfrac{21}{120}+\dfrac{15}{120}-\dfrac{3}{120}=\dfrac{33}{120}=\dfrac{11}{40}.$$
+  **(D) is TRUE.**
+
+  **Option (B):** $\dfrac{21+15}{120}=\dfrac{36}{120}=\dfrac{3}{10}$ omits the overlap subtraction, so **(B) is FALSE.**
+
+  Correct: **(C), (D)**.
+
+wrong_paths:
+  - path: "Compute $P(\\max=7)$ by reusing $\\binom{7}{2}=21$ (the count from $P(\\min=3)$) instead of $\\binom{6}{2}=15$ — i.e. forgetting that for $\\max=7$ the two remaining picks must come from $\\{1,\\dots,6\\}$ (6 numbers), not 7."
+    landed_on_option: "(A)"
+    diagnosis: "Symmetric-feeling slip: students treat min and max as identical and reuse the same binomial without re-counting the one-sided range. Classic TRAP-PARTIAL on event-counting."
+  - path: "Apply $P(X\\cup Y)=P(X)+P(Y)$ as if the two events were disjoint, getting $\\tfrac{21+15}{120}=\\tfrac{3}{10}$."
+    landed_on_option: "(B)"
+    diagnosis: "Failure to subtract the intersection in inclusion--exclusion. The events $\\{\\min=3\\}$ and $\\{\\max=7\\}$ both occur on triples of the form $\\{3,m,7\\}$ with $m\\in\\{4,5,6\\}$, which must be subtracted once."
+  - path: "Correctly use inclusion--exclusion but over-subtract the overlap, e.g. counting middle values as $\\{3,4,5,6,7\\}$ (size 5) instead of strictly between."
+    landed_on_option: "neither (B) nor (D); produces $\\tfrac{21+15-5}{120}=\\tfrac{31}{120}$"
+    diagnosis: "Boundary error in counting the intersection — treating $\\min=3$ and $\\max=7$ as allowing the middle to equal $3$ or $7$, which contradicts distinctness."
+
+review_notes: |
+  Standard JEE-flavoured multi-correct on discrete uniform sampling + inclusion--exclusion. Distractors (A) and (B) target the two most common slips: symmetry-confusion in the min/max one-sided count, and forgetting to subtract the overlap. Difficulty T2 — straightforward once the student writes down the three counts cleanly. NUM-INT version would just ask for $40\,P(\min=3\text{ or }\max=7)=11$.

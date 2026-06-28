@@ -1,0 +1,94 @@
+schema_version: 1
+
+question_code: CAL.DIF.NONDIFFSET.TRIPLESUM.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: NONDIFFSET
+  sub_idea: TRIPLESUM
+  answer_type: MCQ-SC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 150
+
+source_metadata:
+  jee_authenticity_score: 8.0
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T3
+    jee_authenticity_score: 8.0
+    reviewed_at: "2026-06-14"
+    notes: "residue-class triple counting + non-cancellation"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613d_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $T=\bigl\{(a,b,c)\in\mathbb{Z}^3 : 1\le a<b<c\le 6,\;3\mid a+b+c\bigr\}$. Define
+  $$h(x)\;=\;\sum_{(a,b,c)\in T}\bigl|(x-a)(x-b)(x-c)\bigr|.$$
+  The number of points of $\mathbb{R}$ at which $h$ is not differentiable equals
+
+  (A) $6$
+
+  (B) $24$
+
+  (C) $8$
+
+  (D) $3$
+
+answer:
+  type: MCQ-SC
+  correct_options: [A]
+
+solution: |
+  **Step 1 (Enumerate $T$).** Residues mod $3$ on $\{1,\dots,6\}$: class $0=\{3,6\}$, class $1=\{1,4\}$, class $2=\{2,5\}$. Triples with $a+b+c\equiv 0\pmod 3$ come from
+  - one from each residue class: $2\cdot 2\cdot 2=8$ triples;
+  - three from a single class: $\binom{2}{3}=0$ each.
+
+  Thus $|T|=8$, explicitly
+  $$T=\{(1,2,3),(1,2,6),(1,3,5),(1,5,6),(2,3,4),(2,4,6),(3,4,5),(4,5,6)\}.$$
+
+  **Step 2 (Corners of $|P_{abc}|$).** For $P(x)=(x-a)(x-b)(x-c)$ with simple roots, $|P|$ has corners exactly at $x=a,b,c$, and the jump in $\frac{d}{dx}|P|$ at $x=r\in\{a,b,c\}$ equals $2|P'(r)|>0$.
+
+  **Step 3 (Jump at integer $m$).** The total jump in $h'$ at an integer $m\in\{1,\dots,6\}$ is
+  $$\sum_{(a,b,c)\in T,\ m\in\{a,b,c\}}2\,\bigl|(m-x_2)(m-x_3)\bigr|>0,$$
+  where $x_2,x_3$ are the other two coordinates of the triple. Every summand is strictly positive, so there is **no cancellation**: $h$ is non-differentiable at $m$ iff $m$ appears in some triple of $T$. Inspecting $T$, every element of $\{1,2,3,4,5,6\}$ appears in at least one triple.
+
+  **Step 4 (Non-integer points).** At any non-integer $x_0$, every term of $h$ is smooth.
+
+  Hence the non-differentiability set is exactly $\{1,2,3,4,5,6\}$, of size $\boxed{6}$. Answer (A).
+
+wrong_paths:
+  - path: "Student computes $|T|=8$ triples and multiplies by $3$ corners per triple, getting $24$, ignoring that the corners $\\{1,2,3,4,5,6\\}$ are shared across multiple triples."
+    landed_on_option: "B"
+    diagnosis: "Double-counts shared corners; misses that the non-differentiability set is the UNION of triple-coordinate sets, not the sum of triple sizes. The non-cancellation argument is needed only to confirm each integer in the union actually IS a corner — not to count anything else."
+  - path: "Student reports $|T|=8$ as the answer, conflating 'number of triples' with 'number of non-differentiability points'."
+    landed_on_option: "C"
+    diagnosis: "Answers the wrong cardinality question — produces the size of the index set $T$ instead of the size of the non-differentiability set."
+  - path: "Student reports $3$ (the triple-size) as the answer, thinking each triple contributes $3$ corners and that these coincide across triples."
+    landed_on_option: "D"
+    diagnosis: "Confuses triple-size with non-differentiability count; ignores that different triples have different coordinates in $\\{1,\\dots,6\\}$."
+
+review_notes: |
+  Cross-chapter fusion: PnC residue-class enumeration $\times$ Differentiability via the non-cancellation lemma for sums of $|$cubic$|$. The trap is partial-marking play between $6$ (correct), $24$ ($3\cdot |T|$), $8$ ($|T|$), and $3$ (triple-size). New IDEA / sub_idea proposed: CAL.DIF.NONDIFFSET (existing) / TRIPLESUM (NEW) — counting the non-differentiability set of a sum of $|$polynomial$|$ terms by proving every per-term corner contribution at a shared anchor is positive (so the union, not the multiset, gives the answer).

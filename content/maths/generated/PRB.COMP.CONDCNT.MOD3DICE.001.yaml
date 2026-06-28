@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: PRB.COMP.CONDCNT.MOD3DICE.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: CONDCNT
+  sub_idea: MOD3DICE
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608b_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Three fair dice, with faces $1$--$9$, are rolled. Let $F=\{\text{sum}\equiv 0\pmod 3\}$, and let $E_1,E_2,E_3$ be the events that all three faces are equal, all three are distinct, and exactly two are equal, respectively. Then
+
+  - (A) $P(F\mid E_1)=\dfrac{1}{3}$
+  - (B) $P(E_2\mid F)=\dfrac{20}{27}$
+  - (C) $P(F\mid E_2)=\dfrac{1}{3}$
+  - (D) $P(E_1\mid F)=\dfrac{1}{27}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, D]
+
+solution: |
+  ### The IDEA
+  Because $\{1,2,\dots,9\}$ splits evenly into three residue classes mod $3$ (each of size $3$), the sum $\equiv 0\pmod 3$ event $F$ has a very clean count, and conditional probabilities reduce to ratios of structured counts.
+
+  ### Working
+  Residue classes mod $3$ on $\{1,\dots,9\}$: each class has exactly $3$ elements. Total ordered outcomes: $9^3=729$. Outcomes in $F$: by symmetry, $729/3=243$.
+
+  **(A)** If all three faces are equal, the sum is $3k\equiv 0$, so $P(F\mid E_1)=1\neq\tfrac{1}{3}$. **False.**
+
+  **(B)** All-distinct outcomes in $F$ come in two types.
+  - One face from each residue class: $3\cdot 3\cdot 3\cdot 3! = 162$.
+  - All three faces from the same residue class (the class itself contributes sum $\equiv 0$): $3\cdot(3\cdot 2\cdot 1)=18$.
+
+  Total: $180$. Hence $P(E_2\mid F)=\dfrac{180}{243}=\dfrac{20}{27}$. **True.**
+
+  **(C)** All-distinct ordered outcomes: $9\cdot 8\cdot 7=504$. Of these, $180$ lie in $F$. So $P(F\mid E_2)=\dfrac{180}{504}=\dfrac{5}{14}\neq\dfrac{1}{3}$. **False.**
+
+  **(D)** All-equal outcomes in $F$: any of the $9$ values works, giving $9$ ordered outcomes. So $P(E_1\mid F)=\dfrac{9}{243}=\dfrac{1}{27}$. **True.**
+
+wrong_paths:
+  - path: "Assumes by symmetry that for any 'nice' subset of outcomes, conditioning on F leaves the sum residues uniform, so $P(F\\mid E_1)=1/3$."
+    landed_on_option: "A (incorrectly marked)"
+    diagnosis: "Misses that $E_1$ forces sum $=3k$, which is automatically $\\equiv 0\\pmod 3$; conditional probability is $1$, not $1/3$. TRAP-PARTIAL: blind symmetry argument."
+  - path: "Counts all-distinct outcomes in $F$ as only $3\\cdot 3\\cdot 3\\cdot 3!=162$, forgetting the three same-class triples."
+    landed_on_option: "Computes $P(E_2\\mid F)=162/243=2/3$, so rejects (B)."
+    diagnosis: "Missing case: a triple drawn entirely from one residue class also lies in $F$. TRAP-PARTIAL."
+  - path: "Uses unordered counts inconsistently: counts $9\\cdot 8\\cdot 7/3!=84$ unordered all-distinct triples but $243$ ordered for $F$."
+    landed_on_option: "Reports $P(F\\mid E_2)$ as $30/84$ or similar inconsistent ratio, may also distort (B)."
+    diagnosis: "Numerator and denominator must use the same sample space (ordered vs unordered). TRAP-PARTIAL."
+  - path: "Computes $P(E_1\\mid F)$ as $P(E_1)/P(F)=\\frac{9/729}{1/3}=\\frac{1}{27}$ but then doubts because they expected a Bayes-style cancellation; instead writes $9/729=1/81$ and rejects (D)."
+    landed_on_option: "Rejects (D)."
+    diagnosis: "Arithmetic slip; correct value is $9/243=1/27$ since the denominator is $|F|=243$, not $729$."
+
+review_notes: |
+  Multi-correct probability problem hinging on residues mod 3 of $\{1,\dots,9\}$. The key insight is that the residue classes are equinumerous (3 each), making counts inside $F$ clean. The two false options (A,C) both fail because the student over-applies a "by symmetry it must be 1/3" heuristic; the correct ones (B,D) require careful case-splits of all-distinct triples in $F$ and a direct count for all-equal. New axis-3/4 codes proposed: CONDCNT (conditional probability via direct counting) and MOD3DICE (residue partition on dice faces); flag for taxonomy extension. Difficulty T3 — standard hard JEE conditional-probability multi-correct.

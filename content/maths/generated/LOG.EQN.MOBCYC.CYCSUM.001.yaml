@@ -1,0 +1,103 @@
+schema_version: 1
+question_code: LOG.EQN.MOBCYC.CYCSUM.001
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: MOBCYC
+  sub_idea: CYCSUM
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 210
+  R4_seconds: 150
+
+source_metadata:
+  jee_authenticity_score: 9.0
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 9.0
+    reviewed_at: "2026-06-14"
+    notes: "order-3 Mobius cycle; cyclic log sum = 3"
+
+status: provisional
+
+provenance:
+  inspired_by: "0613b_Q7"
+  parallel_form: false
+  generator: "jee-mcq skill (Opus)"
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a, b, c > 1$ satisfy
+  $$ b = 8^{\,1/(1 - \log_{8} a)} \qquad \text{and} \qquad c = 8^{\,1/(1 - \log_{8} b)}, $$
+  and suppose further that $\log_{8} a \notin \{0, 1\}$. Which of the following is/are correct?
+
+  (A) $\log_{a} b + \log_{b} c + \log_{c} a = 3$.
+
+  (B) $(1 - \log_{8} a)(1 - \log_{8} b)(1 - \log_{8} c) = -1$.
+
+  (C) $\log_{8}(abc) = 0$.
+
+  (D) $(\log_{8} a)(\log_{8} b)(\log_{8} c) = 1$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  Set $u = \log_{8} a$, $v = \log_{8} b$, $w = \log_{8} c$. The hypotheses give
+  $$ v = \frac{1}{1 - u}, \qquad w = \frac{1}{1 - v}. $$
+  Direct substitution yields
+  $$ w = \frac{1}{1 - \tfrac{1}{1-u}} = \frac{1-u}{(1-u) - 1} = \frac{u - 1}{-u} = \frac{u-1}{u} \qquad (u \notin \{0,1\}). $$
+  The Mobius map $T(t) = 1/(1-t)$ has order $3$: applying $T$ once more sends
+  $w \mapsto 1/(1 - (u-1)/u) = u$. Hence $u, v, w$ form a $T$-cycle of length $3$, and
+  $$ 1 - u = \tfrac{1}{v}, \quad 1 - v = \tfrac{1}{w}, \quad 1 - w = \tfrac{1}{u}. $$
+
+  Compute $uvw$ directly:
+  $$ uvw = u \cdot \frac{1}{1-u} \cdot \frac{u-1}{u} = \frac{u-1}{1-u} = -1. $$
+
+  (B) Multiplying the three relations above, $(1-u)(1-v)(1-w) = 1/(uvw) = -1$. TRUE.
+
+  (D) $uvw = -1 \neq 1$. FALSE.
+
+  (A) $\log_{a} b = v/u$, $\log_{b} c = w/v$, $\log_{c} a = u/w$. Using the cycle identities
+  $1 - u = 1/v$, $1 - v = 1/w$, $1 - w = 1/u$:
+  $$ \frac{v}{u} = \frac{1}{u(1-u)}, \quad \frac{w}{v} = -\frac{(1-u)^{2}}{u}, \quad \frac{u}{w} = \frac{u^{2}}{u-1}. $$
+  Over common denominator $u(u-1)$ the numerator collapses to $3 u (u-1)$, so the sum equals $3$.
+  Sanity check at $u = 2$: terms are $-\tfrac{1}{2}, -\tfrac{1}{2}, 4$; sum $= 3$. At $u = 3$:
+  $-\tfrac{1}{6}, -\tfrac{4}{3}, \tfrac{9}{2}$; sum $= 3$. TRUE.
+
+  (C) $u + v + w$ is not constant: at $u = 2$, $u + v + w = 2 + (-1) + \tfrac{1}{2} = \tfrac{3}{2} \neq 0$. FALSE.
+
+  Correct options: A, B.
+
+wrong_paths:
+  - path: "Conflate $uvw = -1$ with the product condition in (D); flip sign."
+    landed_on_option: [A, B, D]
+    diagnosis: "Student computes $uvw = -1$ correctly but reads option (D) as $|uvw| = 1$ or misreads sign, selecting (D) as TRUE. Misses that the question asks for the unsigned identity."
+  - path: "Assume cyclic symmetry forces $u + v + w = 0$ by analogy with cube-roots-of-unity sums."
+    landed_on_option: [A, B, C]
+    diagnosis: "Order-3 Mobius cycle is mistaken for a roots-of-unity sum identity; student asserts $\\log_{8}(abc) = u+v+w = 0$ without testing. A single value check ($u = 2$) refutes it."
+  - path: "Expand $\\log_{a} b + \\log_{b} c + \\log_{c} a$ as the AM-GM lower bound and stop at $3$ for the wrong reason."
+    landed_on_option: [A]
+    diagnosis: "Student gets (A) by AM-GM on three positive reals whose product is $\\log_{a} b \\cdot \\log_{b} c \\cdot \\log_{c} a = 1$. But here $v/u \\cdot w/v \\cdot u/w = 1$ holds vacuously, while the terms can be negative (one of them is $-(1-u)^{2}/u < 0$ for $u > 0$), so AM-GM does not apply. The correct value $3$ is from the cycle structure, not AM-GM. Misses (B) entirely."
+
+review_notes: |
+  Q7 of shipped sheet 0613b. The order-3 Mobius cycle $T(t) = 1/(1-t)$ is the key
+  hidden structure; recognising it collapses (B) immediately and reduces (A) to
+  one line of algebra. Calibrated for partial marking: (A) and (B) are independent
+  insights, (C) is a roots-of-unity-style trap, (D) is a sign-flip trap on $uvw$.

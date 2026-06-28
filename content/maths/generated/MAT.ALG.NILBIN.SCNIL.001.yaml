@@ -1,0 +1,81 @@
+schema_version: 1
+
+question_code: MAT.ALG.NILBIN.SCNIL.001
+
+fingerprint:
+  topic: MAT
+  subtopic: ALG
+  idea: NILBIN
+  sub_idea: SCNIL
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 150
+  R3_seconds: 120
+  R4_seconds: 90
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $B = 2I_3$ and $C = \begin{pmatrix} 0 & 1 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix}$, and set $A = B + C$. Which of the following statements is/are correct?
+
+  - (A) $A^{10} = 2^{10}(I + C)$, so the $(1,2)$ entry of $A^{10}$ equals $1024$.
+  - (B) The $(1,2)$ entry of $A^{10}$ equals $10 \cdot 2^{9} = 5120$.
+  - (C) $\det(A^{10}) = 2^{30}$.
+  - (D) $\operatorname{tr}(A^{k}) = 3 \cdot 2^{k}$ for every positive integer $k$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### The IDEA
+  When two matrices commute, the binomial theorem applies to their sum; when one summand is nilpotent of index $2$ (i.e.\ $C^{2}=O$), the expansion collapses to just the constant and linear terms, leaving a clean closed form for every power.
+
+  ### Working
+  Since $B = 2I$ commutes with every matrix, $BC = CB$, so the binomial theorem gives
+  $$A^{n} = (B+C)^{n} = \sum_{k=0}^{n}\binom{n}{k} B^{n-k} C^{k}.$$
+  A direct check shows $C^{2} = O$, hence every term with $k \ge 2$ vanishes:
+  $$A^{n} = B^{n} + n\, B^{n-1} C = 2^{n} I + n\,2^{n-1} C.$$
+
+  For $n = 10$:
+  $$A^{10} = 2^{10} I + 10 \cdot 2^{9}\, C.$$
+  The $(1,2)$ entry of $I$ is $0$ and of $C$ is $1$, so the $(1,2)$ entry of $A^{10}$ is $10 \cdot 2^{9} = 5120$, confirming **(B)** and ruling out **(A)** (which forgot the binomial coefficient $n$).
+
+  Because $A$ is upper-triangular with diagonal entries all equal to $2$,
+  $$\det(A) = 2^{3} = 8, \quad \det(A^{10}) = (\det A)^{10} = 8^{10} = 2^{30},$$
+  so **(C)** is correct.
+
+  The matrix $C$ has all diagonal entries $0$, so adding $n\,2^{n-1} C$ does not change the trace of $2^{n} I$. Hence
+  $$\operatorname{tr}(A^{k}) = \operatorname{tr}(2^{k} I) = 3 \cdot 2^{k}$$
+  for every positive integer $k$, confirming **(D)**.
+
+  Correct options: **(B), (C), (D)**.
+
+wrong_paths:
+  - path: "Treats $(B+C)^{10}$ as $B^{10} + C^{10}$ (forgetting the cross term entirely), getting $A^{10} = 2^{10} I + C^{10} = 2^{10} I$ since $C^{10}=O$, then concludes the $(1,2)$ entry is $0$."
+    landed_on_option: "Rejects (A) and (B) both; may keep only (C) and (D)."
+    diagnosis: "Misapplies the binomial theorem for non-commuting matrices and ignores the linear cross term that survives nilpotency."
+  - path: "Applies the binomial theorem but forgets the coefficient $\\binom{10}{1}=10$, writing $A^{10}=2^{10}I + 2^{9}C$ or $A^{10}=2^{10}(I+C)$."
+    landed_on_option: "(A)"
+    diagnosis: "Classic TRAP-PARTIAL: student remembers $C^2=O$ kills the higher terms but drops the arithmetic coefficient $n=10$ on the linear term, yielding $2^{10}=1024$ instead of $10\\cdot 2^{9}=5120$."
+  - path: "For (D), mis-computes $\\operatorname{tr}(C)\\ne 0$ or thinks trace is multiplicative, getting $\\operatorname{tr}(A^{k})=(\\operatorname{tr}A)^{k}=6^{k}$."
+    landed_on_option: "Rejects (D)."
+    diagnosis: "Confuses trace with determinant (trace is additive/linear, not multiplicative), so misses that adding the off-diagonal $n\\,2^{n-1}C$ never alters the diagonal sum."
+
+review_notes: |
+  Standard JEE-Advanced multi-correct on commuting-plus-nilpotent expansion. Difficulty T2 (standard medium): recognising $C^{2}=O$ and the binomial collapse is one-step, but (A) vs (B) is a clean discriminator against the dropped-coefficient slip. New IDEA code NILBIN (nilpotent + binomial expansion of $aI+C$) and sub-idea SCNIL (scalar plus nilpotent) proposed — does not fit existing CNJSP (conjugation orbits) or RANKCON.

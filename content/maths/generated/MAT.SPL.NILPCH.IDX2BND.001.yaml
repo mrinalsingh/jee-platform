@@ -1,0 +1,78 @@
+schema_version: 1
+
+question_code: MAT.SPL.NILPCH.IDX2BND.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: NILPCH
+  sub_idea: IDX2BND
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-CAYLEY
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $M=\begin{pmatrix}6&-4\\9&-6\end{pmatrix}$. A square matrix $X$ is called nilpotent if $X^{k}=O$ for some positive integer $k$. Which of the following statement(s) is/are TRUE?
+
+  - (A) $M^{2}=O$, and consequently $M^{5}=O$.
+  - (B) If a $2\times 2$ matrix $X$ is nilpotent, then $\operatorname{tr}(X)=0$ and $\det(X)=0$.
+  - (C) For every $2\times 2$ matrix $X$, $X^{3}=O$ implies $X^{2}=O$.
+  - (D) There exists no $2\times 2$ matrix $X$ with $X^{3}=O$ but $X^{2}\neq O$; however, there exists a $3\times 3$ matrix $N$ with $N^{3}=O$ but $N^{2}\neq O$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  For a $2\times 2$ matrix, the Cayley--Hamilton theorem gives $X^{2}-(\operatorname{tr}X)\,X+(\det X)\,I=O$. A nilpotent matrix has both eigenvalues equal to $0$, so its trace and determinant vanish, which collapses Cayley--Hamilton to $X^{2}=O$. Hence in dimension $2$ the index of nilpotency cannot exceed $2$ — higher indices first appear in dimension $\ge 3$ (the shift matrix).
+
+  ### Working
+  **(A)** For $M=\begin{pmatrix}6&-4\\9&-6\end{pmatrix}$,
+  $$\operatorname{tr}(M)=6+(-6)=0,\qquad \det(M)=6\cdot(-6)-(-4)\cdot 9=-36+36=0.$$
+  By Cayley--Hamilton, $M^{2}-(\operatorname{tr}M)\,M+(\det M)\,I=O$, i.e. $M^{2}=O$. Therefore $M^{5}=M^{2}\cdot M^{3}=O$. **(A) is TRUE.**
+
+  **(B)** If $X$ is a nilpotent $2\times 2$ matrix, all eigenvalues of $X$ are $0$ (the only eigenvalue of any nilpotent matrix is $0$). Thus
+  $$\operatorname{tr}(X)=\lambda_{1}+\lambda_{2}=0,\qquad \det(X)=\lambda_{1}\lambda_{2}=0.$$
+  **(B) is TRUE.**
+
+  **(C)** Suppose $X$ is a $2\times 2$ matrix with $X^{3}=O$. Then $X$ is nilpotent, so by (B), $\operatorname{tr}(X)=\det(X)=0$. Cayley--Hamilton now gives $X^{2}=O$. **(C) is TRUE.**
+
+  **(D)** From (C), no $2\times 2$ matrix can have $X^{3}=O$ while $X^{2}\neq O$. The $3\times 3$ shift
+  $$N=\begin{pmatrix}0&1&0\\0&0&1\\0&0&0\end{pmatrix}$$
+  satisfies $N^{2}=\begin{pmatrix}0&0&1\\0&0&0\\0&0&0\end{pmatrix}\neq O$ and $N^{3}=O$. So nilpotency index $3$ does occur in dimension $3$. **(D) is TRUE.**
+
+  All four options hold.
+
+wrong_paths:
+  - path: "Student computes $M^{2}$ directly and observes it is $O$, picks (A), but rejects (B) thinking 'nilpotent must have all entries small' or that $\\det X=0$ alone is sufficient, not $\\operatorname{tr}X=0$."
+    landed_on_option: "Picks (A) only"
+    diagnosis: "Misses the Cayley--Hamilton characterisation. Student does not realise both eigenvalues of a nilpotent matrix must be $0$, hence both trace and determinant must vanish. TRAP-CAYLEY."
+  - path: "Student accepts (A), (B) but rejects (C) believing nilpotency index can be arbitrary in $2\\times 2$ (confusing with general dimension). Picks (A), (B) only."
+    landed_on_option: "Picks (A), (B)"
+    diagnosis: "Fails to apply Cayley--Hamilton again: once $\\operatorname{tr}X=\\det X=0$, the $2\\times 2$ minimal polynomial divides $t^{2}$, forcing $X^{2}=O$. Confuses dimension-2 nilpotency with the $3\\times 3$ shift example. TRAP-PARTIAL."
+  - path: "Student accepts (A), (B), (C) but flips (D), thinking the $3\\times 3$ shift counterexample is wrong because 'a nilpotent matrix should square to zero' (carrying the $2\\times 2$ intuition to $3\\times 3$)."
+    landed_on_option: "Picks (A), (B), (C)"
+    diagnosis: "Over-generalises the $n=2$ Cayley--Hamilton bound. In dimension $n$, Cayley--Hamilton only guarantees $X^{n}=O$ for a nilpotent $X$; the index can be as large as $n$. TRAP-EIGEN."
+
+review_notes: |
+  Source: 0609g paper Q5. Key from \keyfoot is (A),(B),(C),(D). The item rides on Cayley--Hamilton + the fact that nilpotent eigenvalues are 0, which collapses C-H to $X^{2}=O$ in dimension 2. Introduces a new IDEA `NILPCH` (nilpotent characterisation via Cayley--Hamilton) and SUB-IDEA `IDX2BND` (index-of-nilpotency $\le 2$ bound in $2\times 2$, contrasted with $3\times 3$ shift). Taxonomy extension required.

@@ -1,0 +1,70 @@
+schema_version: 1
+
+question_code: PNC.COM.RESBIN.MOD3.001
+
+fingerprint:
+  topic: PNC
+  subtopic: COM
+  idea: RESBIN
+  sub_idea: MOD3
+  answer_type: NUM-INT
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $S=\{x\in\mathbb{R}:\bigl|x^{2}-4|x|+2\bigr|=1\}$ and let $n=|S|$. Then
+  $$\sum_{\substack{0\le r\le n\\ r\equiv 1\pmod 3}}\binom{n}{r}=\underline{\hspace{2.2cm}}.$$
+
+answer:
+  type: NUM-INT
+  value: 86
+
+solution: |
+  ### The IDEA
+  Reduce the absolute-value equation by substituting $t=|x|\ge 0$; each positive root $t$ produces two $x$-values ($\pm t$), giving the set size $n$. Then evaluate the residue-class binomial sum $\sum_{r\equiv 1\pmod 3}\binom{n}{r}$ by direct enumeration (since $n$ is small).
+
+  ### Working
+  Put $t=|x|\ge 0$. The equation $\bigl|t^{2}-4t+2\bigr|=1$ splits into
+  $$t^{2}-4t+2=1\;\Longrightarrow\;t^{2}-4t+1=0\;\Longrightarrow\;t=2\pm\sqrt{3},$$
+  $$t^{2}-4t+2=-1\;\Longrightarrow\;t^{2}-4t+3=0\;\Longrightarrow\;t=1,\;3.$$
+  All four values of $t$ are positive, so each contributes two real $x$ values $\pm t$. Hence $n=|S|=8$.
+
+  Now compute
+  $$\sum_{\substack{0\le r\le 8\\ r\equiv 1\pmod 3}}\binom{8}{r}=\binom{8}{1}+\binom{8}{4}+\binom{8}{7}=8+70+8=86.$$
+
+wrong_paths:
+  - path: "Forgets that $|x|=t$ yields $\\pm t$ and counts $n$ as the number of positive roots only, taking $n=4$."
+    landed_on_option: "5 (since $\\binom{4}{1}+\\binom{4}{4}=4+1=5$)"
+    diagnosis: "TRAP-PARTIAL: stops at $t$ without converting back to $x$. The set $S$ lives in $\\mathbb{R}$, not in $t\\ge 0$."
+  - path: "Drops one branch of the outer absolute value, solving only $t^{2}-4t+2=1$ and getting $n=4$ (two positive $t$ each giving $\\pm x$)."
+    landed_on_option: "5"
+    diagnosis: "Forgets the $-1$ case of $|A|=1$. Classic partial-case error on nested absolute values."
+  - path: "Includes $r=10$ or other $r>n$ in the sum, e.g. takes $\\binom{8}{10}=0$ but also mistakenly adds $\\binom{8}{1}+\\binom{8}{4}+\\binom{8}{7}+\\binom{8}{10}$ thinking the residue class is $\\{1,4,7,10,\\dots\\}$ unrestricted."
+    landed_on_option: "86 (correct by accident) or any value if $\\binom{n}{r}$ for $r>n$ is mis-evaluated"
+    diagnosis: "Indexing slip; the upper bound $r\\le n$ is essential."
+  - path: "Uses a roots-of-unity filter $\\tfrac13(2^{8}+(1+\\omega)^{8}+(1+\\bar\\omega)^{8})$ for $r\\equiv 0\\pmod 3$ instead of $r\\equiv 1\\pmod 3$ (off-by-one on the filter)."
+    landed_on_option: "86 if the right shift is used; otherwise $\\tfrac{2^{8}-1}{3}=85$ or $\\tfrac{2^{8}+2}{3}=86$ depending on parity"
+    diagnosis: "Mis-applying the roots-of-unity filter formula $\\tfrac13\\sum_{j=0}^{2}\\omega^{-j}(1+\\omega^{j})^{n}$ for the desired residue $r\\equiv 1$; for small $n=8$ direct enumeration is safer."
+
+review_notes: |
+  Two-step fuse: (i) reduce $|t^{2}-4t+2|=1$ with $t=|x|$ — students often forget the $\pm$ recovery; (ii) residue-class binomial sum — enumerable for $n=8$ but roots-of-unity filter is the conceptual route. T3 because both pieces are standard but the chain is non-trivial; under 3 minutes for a strong student. Surface = SURF-SET because the data comes packaged as a set $S$ and $n=|S|$. Trap = TRAP-PARTIAL (nested absolute value + $\pm$ recovery).
+  Taxonomy extension proposed: PNC.COM.RESBIN.MOD3 (residue-class binomial sum, mod-3 filter via small-$n$ enumeration / roots of unity).

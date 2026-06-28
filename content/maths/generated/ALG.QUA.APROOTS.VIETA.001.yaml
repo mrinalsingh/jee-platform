@@ -1,0 +1,73 @@
+schema_version: 1
+
+question_code: ALG.QUA.APROOTS.VIETA.001
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: APROOTS
+  sub_idea: VIETA
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 150
+  R3_seconds: 90
+  R4_seconds: 60
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $p,q$ be the roots of $x^2-2x+A=0$ and $r,s$ be the roots of $x^2-18x+B=0$. If $p<q<r<s$ are in arithmetic progression, which of the following are correct?
+
+  - (A) $A=-3$
+  - (B) the smallest root is positive
+  - (C) $B=77$
+  - (D) the common difference equals $4$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C, D]
+
+solution: |
+  Write the four-term A.P. as $p,\ p+d,\ p+2d,\ p+3d$.
+
+  By Vieta on the first quadratic, $p+q=p+(p+d)=2$, so $2p+d=2$.
+  By Vieta on the second quadratic, $r+s=(p+2d)+(p+3d)=18$, so $2p+5d=18$.
+
+  Subtracting: $4d=16$, hence $d=4$ — option **(D)** is correct.
+
+  Then $2p+4=2 \Rightarrow p=-1$, so the four roots are $-1,\ 3,\ 7,\ 11$.
+
+  The smallest root is $-1<0$, so option **(B)** is false.
+
+  Products: $A=pq=(-1)(3)=-3$ — option **(A)** is correct. $B=rs=7\cdot 11=77$ — option **(C)** is correct.
+
+  Correct set: **(A), (C), (D)**.
+
+wrong_paths:
+  - path: "Assumes 'roots of a quadratic' must be positive (or notices A,B could be guessed positive) and concludes the smallest root must be positive without computing it."
+    landed_on_option: "B"
+    diagnosis: "sign-blindness on Vieta: $A=pq=-3<0$ forces $p,q$ to have opposite signs"
+  - path: "Sets up the AP as $p,p+d,p+2d,p+3d$ but mis-pairs roots — assumes the first quadratic has roots $p,p+2d$ (alternating) and the second has $p+d,p+3d$, giving $2p+2d=2$ and $2p+4d=18$, then $d=8$."
+    landed_on_option: "Neither (D) nor the resulting A,B match — student rejects (D), endorses only (B)"
+    diagnosis: "incorrect root-grouping: condition $p<q<r<s$ forces consecutive AP terms within each quadratic"
+  - path: "Computes $d=4$, $p=-1$ correctly but writes $A=p+q=2$ (sum) instead of product, similarly $B=r+s=18$, rejecting (A) and (C)."
+    landed_on_option: "D only"
+    diagnosis: "Vieta sign/role swap: confuses sum of roots with product (constant term) in $x^2-Sx+P$"
+
+review_notes: |
+  Classic 4-term AP across two monic quadratics linked by Vieta. The pedagogical trap is option (B): a student who only checks the AP common difference and Vieta values, without explicitly computing $p$, can be fooled into thinking the smallest root is positive (especially because $A,B$ look like 'innocent' constants). Difficulty T2 — mechanical once setup is right. Proposed new axis-3 code APROOTS (AP-structured roots) and axis-4 VIETA, since existing SYMFNRT/POWSUM/CMNRT/FNSET/ROOTLOC do not capture 'AP constraint across two quadratics + Vieta'.

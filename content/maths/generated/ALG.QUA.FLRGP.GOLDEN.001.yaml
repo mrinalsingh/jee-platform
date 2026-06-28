@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: ALG.QUA.FLRGP.GOLDEN.001
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: FLRGP
+  sub_idea: GOLDEN
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $x>0$ be such that $\big(x,\ \lfloor x\rfloor,\ \{x\}\big)$ is a (non-constant) geometric progression, where $\lfloor x\rfloor$ denotes the greatest integer $\le x$ and $\{x\}=x-\lfloor x\rfloor$. Which of the following statements is/are TRUE?
+
+  - (A) $x=\dfrac{3+\sqrt{5}}{2}$ also works.
+  - (B) $x=\dfrac{1+\sqrt{5}}{2}$.
+  - (C) $x$ satisfies $x^{2}-x-1=0$.
+  - (D) $x$ is irrational.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  Write $n=\lfloor x\rfloor$ and $f=\{x\}$, so $x=n+f$ with $n\in\mathbb{Z}_{\ge 0}$ and $0\le f<1$.
+
+  The GP condition (middle term squared = product of outer terms) gives
+  $$\lfloor x\rfloor^{2}=x\cdot\{x\}\ \Longrightarrow\ n^{2}=(n+f)f,$$
+  i.e. $f^{2}+nf-n^{2}=0$. The non-negative root is
+  $$f=\frac{-n+\sqrt{n^{2}+4n^{2}}}{2}=\frac{n(\sqrt{5}-1)}{2}.$$
+
+  The constraint $f<1$ forces $n<\dfrac{2}{\sqrt{5}-1}=\dfrac{\sqrt{5}+1}{2}<2$, so $n\in\{0,1\}$. The value $n=0$ gives $f=0$, making the middle term $0$ and the GP degenerate, so $n=1$.
+
+  Then $f=\dfrac{\sqrt{5}-1}{2}$ and
+  $$x=1+f=\frac{\sqrt{5}+1}{2}.\quad\textbf{(B)}$$
+
+  This $x$ satisfies $x^{2}=x+1$, i.e. $x^{2}-x-1=0$ — \textbf{(C)}. As a root of a primitive integer polynomial with no rational root (by the rational-root theorem), $x$ is irrational — \textbf{(D)}.
+
+  For (A): $x=\dfrac{3+\sqrt{5}}{2}\approx 2.618$ has $\lfloor x\rfloor=2$ and $\{x\}=\dfrac{\sqrt{5}-1}{2}$, so $\lfloor x\rfloor^{2}=4$ while $x\{x\}=\dfrac{\sqrt{5}+1}{2}\approx 1.618$. These are unequal, so the GP fails — \textbf{(A) is false}.
+
+  Hence the correct options are \textbf{(B), (C), (D)}.
+
+wrong_paths:
+  - path: "Sets up $n^2 = (n+f)f$ correctly but allows $n=2$ without checking $f<1$; gets $f=\\sqrt{5}-1\\approx 1.236>1$ and rationalises this as 'fractional part can be any non-negative real', leading to $x=2+(\\sqrt{5}-1)=1+\\sqrt{5}$, then misidentifies this with option (A) $\\tfrac{3+\\sqrt5}{2}$ after a sign slip."
+    landed_on_option: "A"
+    diagnosis: "ignored 0 ≤ {x} < 1 constraint; treated fractional part as unconstrained"
+  - path: "Reads the GP in the wrong order, taking $\\{x\\}^2 = x\\cdot\\lfloor x\\rfloor$ instead of $\\lfloor x\\rfloor^2 = x\\cdot\\{x\\}$; obtains a different quadratic whose only consistent solution is $x=\\tfrac{3+\\sqrt5}{2}$ (with $n=2$), then marks (A) and rejects (B)."
+    landed_on_option: "A"
+    diagnosis: "mis-identified which term is the middle of the GP"
+  - path: "Treats the GP as having common ratio $r$ with $\\lfloor x\\rfloor = xr$, $\\{x\\}=xr^2$, then uses $\\lfloor x\\rfloor + \\{x\\} = x$ to get $xr+xr^2=x$, so $r^2+r-1=0$ and $r=\\tfrac{\\sqrt5-1}{2}$; concludes only (B) since the candidate did not derive $x^2-x-1=0$ explicitly and didn't argue irrationality."
+    landed_on_option: "B"
+    diagnosis: "partial credit — found x but did not connect to minimal polynomial / irrationality"
+  - path: "Solves $f^2+nf-n^2=0$, gets $n=1$ and $x=\\tfrac{1+\\sqrt5}{2}$, but then computes $x^2 = \\tfrac{3+\\sqrt5}{2}$ and reads (A) as 'another representation of $x^2$'; marks (A) and (B), missing (C), (D)."
+    landed_on_option: "A, B"
+    diagnosis: "confused x with x^2 / golden-ratio identity misuse"
+
+review_notes: |
+  Classic golden-ratio GP problem. The 4-way 'correct' option set (B,C,D) tests (i) the existence/uniqueness argument via the $f<1$ bound forcing $n=1$, (ii) recognising the minimal polynomial $x^2-x-1=0$, and (iii) the rational-root argument for irrationality. Trap (A) is the natural $n=2$ candidate that students reach by skipping the $f<1$ check. Taxonomy note: new idea code FLRGP (floor + fractional-part GP) and sub-idea GOLDEN (golden-ratio quadratic). Could alternatively live under SET.FUN if floor-as-function angle is preferred.

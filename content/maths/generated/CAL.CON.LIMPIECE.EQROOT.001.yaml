@@ -1,0 +1,87 @@
+schema_version: 1
+
+question_code: CAL.CON.LIMPIECE.EQROOT.001
+
+fingerprint:
+  topic: CAL
+  subtopic: CON
+  idea: LIMPIECE
+  sub_idea: EQROOT
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For real $b,c$, define
+  $$f(x)=\lim_{n\to\infty}\frac{x^{2n}(x+b)+\sin\!\left(\tfrac{\pi x}{2}\right)+c}{x^{2n}+1}.$$
+  Suppose $b,c$ are the roots of $t^{2}-5t+k=0$ and $f$ is continuous on $\mathbb{R}$. Which of the following are correct?
+
+  - (A) $k=\dfrac{25}{4}$
+  - (B) $f$ is non-differentiable at exactly two points of $\mathbb{R}$
+  - (C) $f$ is differentiable at $x=1$
+  - (D) continuity alone forces $f$ differentiable on all of $\mathbb{R}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  A limit of the form $\dfrac{x^{2n}\,P(x)+Q(x)}{x^{2n}+1}$ acts as a switch: for $|x|>1$ it equals $P(x)$, for $|x|<1$ it equals $Q(x)$, and at $|x|=1$ it equals the average $\tfrac12(P+Q)$. Continuity at $x=\pm1$ then forces $P(\pm1)=Q(\pm1)$, after which differentiability is checked piece by piece.
+
+  ### Working
+  For $|x|>1$: $x^{2n}\to\infty$, so $f(x)=x+b$.
+
+  For $|x|<1$: $x^{2n}\to 0$, so $f(x)=\sin\!\left(\tfrac{\pi x}{2}\right)+c$.
+
+  At $x=1$: numerator $=1+b+1+c$, denominator $=2$, so $f(1)=\tfrac{(1+b)+(1+c)}{2}$.
+
+  At $x=-1$: numerator $=-1+b-1+c$, denominator $=2$, so $f(-1)=\tfrac{(-1+b)+(-1+c)}{2}$.
+
+  Continuity at $x=1$ requires the two side-limits agree: $1+b=\sin\!\tfrac{\pi}{2}+c=1+c$, i.e. $b=c$.
+
+  Continuity at $x=-1$: $-1+b=\sin\!\left(-\tfrac{\pi}{2}\right)+c=-1+c$, again $b=c$.
+
+  Since $b,c$ are roots of $t^{2}-5t+k=0$ and $b=c$, the quadratic has a double root, so discriminant $=25-4k=0\Rightarrow k=\tfrac{25}{4}$, with $b=c=\tfrac{5}{2}$. **(A) true.**
+
+  With these values:
+  $$f(x)=\begin{cases} x+\tfrac{5}{2}, & |x|\ge 1\\ \sin\!\left(\tfrac{\pi x}{2}\right)+\tfrac{5}{2}, & |x|<1.\end{cases}$$
+
+  Check differentiability at $x=1$: right slope $=\tfrac{d}{dx}(x+\tfrac{5}{2})=1$; left slope $=\tfrac{\pi}{2}\cos\!\tfrac{\pi}{2}=0$. They differ, so $f$ is **not** differentiable at $x=1$. By symmetry (same calculation at $x=-1$: right slope $0$, left slope $1$), $f$ is not differentiable at $x=-1$. Elsewhere $f$ is smooth on each open piece. Hence $f$ is non-differentiable at exactly the two points $x=\pm 1$. **(B) true.**
+
+  **(C)** is false since $f$ is not differentiable at $x=1$ (corner).
+
+  **(D)** is false: this very example shows continuity does not force differentiability — the corners at $\pm 1$ survive.
+
+wrong_paths:
+  - path: "Forgets that continuity at $x=\\pm1$ forces $b=c$ and just imposes Vieta's: $b+c=5,\\ bc=k$, then picks any $k\\le 25/4$. Misses that equal-roots is forced and rejects (A)."
+    landed_on_option: "Rejects (A); may pick only (B)"
+    diagnosis: "Partial use of constraints — treats the quadratic relation but skips the piecewise-junction condition that forces $b=c$. TRAP-PARTIAL."
+  - path: "Computes the two one-sided slopes at $x=1$ as $1$ (from $x+b$) and $\\tfrac{\\pi}{2}\\cos\\tfrac{\\pi}{2}\\cdot\\tfrac{\\pi}{2}$ — multiplies the derivative factor twice, gets $0$ each side, declares differentiable."
+    landed_on_option: "Picks (C); may also pick (D)"
+    diagnosis: "Chain-rule double-count at the junction; ignores that $\\cos(\\pi/2)=0$ alone gives left slope $0$ while right slope is the clean $1$. Classic corner-overlooked error."
+  - path: "Notes continuity is established and concludes the limit-of-rationals construction is automatically smooth (DCT-style reasoning), endorsing (D)."
+    landed_on_option: "Picks (D) (and often (A))"
+    diagnosis: "Confuses pointwise limit of smooth functions with uniform/smooth limit — the indicator-style switch produced by $x^{2n}/(x^{2n}+1)$ creates genuine corners. TRAP-NCERT-style overreach."
+
+review_notes: |
+  Standard JEE-style "limit-as-switch" problem. Key teaching points: (i) the $x^{2n}/(x^{2n}+1)$ kernel acts as a soft indicator of $|x|>1$; (ii) continuity at $|x|=1$ forces the two analytic branches to agree there; (iii) differentiability is then a *separate* check at $\pm 1$. Difficulty T3 — standard hard. R1 budget ~6 min for a first-attempter; experienced solver under 3 min once the switch is recognised. Confirm IDEA/sub-idea codes LIMPIECE/EQROOT are admissible — proposed extension.

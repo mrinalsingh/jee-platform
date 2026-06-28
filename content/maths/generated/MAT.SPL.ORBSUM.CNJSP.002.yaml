@@ -1,0 +1,75 @@
+schema_version: 1
+
+question_code: MAT.SPL.ORBSUM.CNJSP.002
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: ORBSUM
+  sub_idea: CNJSP
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EIGEN
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A=\begin{pmatrix}2 & 3\\ -1 & -2\end{pmatrix}$. A square matrix $X$ is called **involutory** if $X^{2}=I$. Which of the following statements is/are correct?
+
+  - (A) $A$ is involutory and $\det(A+I)=0$.
+  - (B) If $X$ is a $2\times2$ involutory matrix with $X\neq\pm I$, then $\operatorname{tr}X=0$ and $\det X=-1$; writing $X=\begin{pmatrix}p & q\\ r & -p\end{pmatrix}$, the entries satisfy $p^{2}+qr=1$.
+  - (C) Every involutory matrix has determinant $+1$.
+  - (D) $A^{2}=-I$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  For a $2\times2$ matrix $X$ satisfying $X^{2}=I$, the minimal polynomial divides $x^{2}-1=(x-1)(x+1)$, so the eigenvalues lie in $\{+1,-1\}$. Excluding the trivial cases $X=\pm I$, the eigenvalues must be $+1$ and $-1$, forcing $\operatorname{tr}X=0$ and $\det X=-1$. This pins every non-trivial $2\times2$ involution onto the conic $p^{2}+qr=1$ in the entries.
+
+  ### Working
+  Compute $A^{2}$:
+  $$A^{2}=\begin{pmatrix}2 & 3\\ -1 & -2\end{pmatrix}\begin{pmatrix}2 & 3\\ -1 & -2\end{pmatrix}=\begin{pmatrix}4-3 & 6-6\\ -2+2 & -3+4\end{pmatrix}=\begin{pmatrix}1 & 0\\ 0 & 1\end{pmatrix}=I.$$
+  So $A$ is involutory. Its eigenvalues are $\pm1$, so $-1$ is an eigenvalue of $A$, giving $\det(A+I)=0$. Direct check: $A+I=\begin{pmatrix}3 & 3\\ -1 & -1\end{pmatrix}$ has $\det=-3-(-3)=0$. Hence **(A) is correct**.
+
+  For any $2\times2$ involutory $X$ with $X\neq\pm I$: $X^{2}-I=O$, so the minimal polynomial is exactly $x^{2}-1$ (it cannot be $x\pm1$, else $X=\pm I$). Thus $X$ is diagonalisable with eigenvalues $+1$ and $-1$, giving $\operatorname{tr}X=0$ and $\det X=(+1)(-1)=-1$. Writing $X=\begin{pmatrix}p & q\\ r & s\end{pmatrix}$, $\operatorname{tr}X=0\Rightarrow s=-p$, and $\det X=-p^{2}-qr=-1\Rightarrow p^{2}+qr=1$. Hence **(B) is correct**.
+
+  Statement (C) is false: $\det A=(2)(-2)-(3)(-1)=-4+3=-1\neq +1$. The non-trivial involution family always has determinant $-1$ (reflection-type), only $\pm I$ have determinant $+1$. **(C) is false.**
+
+  Statement (D): we showed $A^{2}=I$, not $-I$. (The matrix $\begin{pmatrix}0 & -1\\ 1 & 0\end{pmatrix}$ would satisfy $X^{2}=-I$, behaving like $i$, but $A$ does not.) **(D) is false.**
+
+wrong_paths:
+  - path: "Student notes that $A$ has $\\det A=-1$ and incorrectly concludes 'all involutory matrices share this determinant trait — but the statement (C) says $+1$, so since $A$ is a counterexample, (C) is false' — correct conclusion, but the same student then over-includes (D) by misremembering $A^{2}=-I$ since the eigenvalues are 'mixed signs $\\pm1$'."
+    landed_on_option: "Picks (A), (B), (D); misses that $A^{2}=+I$."
+    diagnosis: "TRAP-EIGEN: confusing $i^{2}=-1$ (whose eigenvalues are $\\pm i$) with eigenvalues $\\pm 1$ (whose square is $+1$). The eigenvalue signs of the matrix are squared independently when forming $X^{2}$."
+  - path: "Student computes $A^{2}=I$, accepts (A), but then assumes every involutory matrix must equal $\\pm I$ (forgets the off-diagonal reflections), so rejects the parametric family in (B)."
+    landed_on_option: "Picks only (A); also wrongly accepts (C) since $\\det(\\pm I)=+1$."
+    diagnosis: "TRAP-PARTIAL: treating the minimal polynomial $x^{2}-1$ as forcing $X=\\pm I$ instead of allowing mixed-eigenvalue diagonalisations; misses the full conjugacy class $\\{X:\\operatorname{tr}X=0,\\det X=-1\\}$."
+  - path: "Student verifies $A$ is involutory and then asserts (C) is true by NCERT-style mantra 'involutory matrices have determinant $\\pm1$, and $+1$ is the standard case' — without checking against $A$ itself."
+    landed_on_option: "Picks (A), (C); misses (B)."
+    diagnosis: "TRAP-NCERT: half-remembered textbook fact. The correct statement is $(\\det X)^{2}=1$, i.e.\\ $\\det X=\\pm1$; for $X\\neq\\pm I$ in $2\\times2$, it is forced to $-1$."
+
+review_notes: |
+  Source: 0609g_KA_8-17 Q4 (Matrices, involutory characterization). Key from \keyfoot{(A), (B)}{8} preceding \qhead{4}.
+  Fingerprint MAT.SPL.ORBSUM.CNJSP: characterizing a conjugacy class of special $2\times2$ matrices (involutions) via trace/det/parametric conic, reusing the "orbit-sum / conjugacy-spread" idea from the idempotent companion Q3. Could alternatively warrant a new IDEA code like INVCHAR (involutory characterization) if the bank grows; for now ORBSUM.CNJSP is the closest existing fit.
+  TRAP-EIGEN flagged because (D) is a classic eigenvalue-sign confusion ($\pm1$ vs $\pm i$).
+  Difficulty T3: standard hard — needs minimal polynomial / eigenvalue argument plus parametric conic derivation, but all within JEE syllabus.

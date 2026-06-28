@@ -1,0 +1,85 @@
+schema_version: 1
+
+question_code: MAT.DET.SGNDET.BFENUM.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: SGNDET
+  sub_idea: BFENUM
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609f_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $M$ range over all $3\times 3$ matrices with entries in $\{+1,-1\}$ (there are $512$ such matrices). Which of the following statements are correct?
+
+  - (A) $\max\det M = 4$.
+  - (B) $\det M$ is always even; in fact $\det M \in \{-4,0,4\}$.
+  - (C) Exactly $96$ of the $512$ matrices satisfy $\det M = 4$.
+  - (D) The expected value $E[\det M] = 4$ when $M$ is chosen uniformly at random from the $512$ matrices.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  When matrix entries lie in a finite symmetric set like $\{\pm1\}$, two structural tools pin down the determinant: (i) row operations reveal a common factor — subtracting one row from another turns $\pm 1$ entries into entries in $\{-2,0,2\}$, forcing every $2\times 2$ cofactor (and hence $\det M$) to be divisible by $4$; (ii) the sign-flip involution $M\mapsto -M$ is an order-$2$ map on the ensemble with $\det(-M) = -\det M$ (since the matrix is $3\times 3$, odd order), which pairs values up to cancel and forces the mean to be $0$.
+
+  ### Working
+  **Parity / divisibility (B, A).** Subtract row $1$ from rows $2$ and $3$. The new rows have entries in $\{-2,0,2\}$, so every $2\times 2$ minor of those two rows is a multiple of $4$. Expanding $\det M$ along row $1$ (entries $\pm1$), we get $\det M = 4k$ for some integer $k$. So $\det M$ is divisible by $4$, hence even. A structural check (using that each row is a sign vector of length $3$) rules out $|\det M|\ge 8$: the Hadamard bound gives $|\det M|\le \prod \|r_i\|_2 = 3\sqrt3\approx 5.2$, so $\det M\in\{-4,0,4\}$. The value $4$ is attained — e.g. the circulant of $(+,+,-)$:
+  $$M=\begin{pmatrix}+1&+1&-1\\-1&+1&+1\\+1&-1&+1\end{pmatrix},\quad \det M = 4.$$
+  So (A) and (B) are correct.
+
+  **Counting (C).** A direct enumeration over the $2^9=512$ sign matrices yields the distribution
+  $$\#\{\det = +4\}=96,\quad \#\{\det = -4\}=96,\quad \#\{\det = 0\}=320.$$
+  So exactly $96$ matrices give $\det M = 4$; (C) is correct. (Sanity: $P(\det\ne 0)=192/512 = 3/8$.)
+
+  **Expectation (D).** The map $\sigma:M\mapsto -M$ is a bijection on the $512$-element ensemble, and $\det(-M)=(-1)^3\det M=-\det M$. Pairing each $M$ with $-M$ gives
+  $$E[\det M] = \tfrac{1}{512}\sum_M \det M = \tfrac{1}{512}\sum_M \tfrac{\det M + \det(-M)}{2}\cdot 2 = 0.$$
+  In particular $E[\det M]=0 \ne 4$, so (D) is **false**.
+
+  **Correct options:** (A), (B), (C).
+
+wrong_paths:
+  - path: "Student notices the Hadamard-style upper bound $3\\sqrt3<6$ but forgets the divisibility-by-$4$ argument and concludes $\\det M$ can be $\\pm 2, \\pm 4$ or $0$, rejecting (B)."
+    landed_on_option: "Picks (A), (C) only; rejects (B)"
+    diagnosis: "Misses that the row-difference trick forces divisibility by $4$. Classic TRAP-PARTIAL: gets the bound right, misses the parity refinement."
+  - path: "Student reasons 'by symmetry $E[\\det M]=0$' for (D) — correct — but then double-counts the maximum: thinks the max is $\\pm 4$ achieved $96+96=192$ times and confuses 'exactly $96$ give $\\det = 4$' with '$192$ give $|\\det|=4$', rejecting (C)."
+    landed_on_option: "Picks (A), (B) only"
+    diagnosis: "Confuses signed count with absolute count — reads (C) as $|\\det|=4$. TRAP-PARTIAL on careful reading of the statement."
+  - path: "Student computes $E[\\det M]$ by linearity of expectation on the $3!=6$ permutation expansion: each term is a product of three independent $\\pm1$ entries, so each term has mean $0$, hence $E[\\det M]=0$. But then mistakenly marks (D) as 'true' because the student misreads (D) as '$E[\\det M] \\ne 4$' or as 'the expected value exists'."
+    landed_on_option: "Picks (A), (B), (C), (D) — all four"
+    diagnosis: "Misreading the assertion in (D). The computation is right ($E=0$) but the option claims $E=4$, which is false. TRAP-NCERT-style careless option reading."
+  - path: "Student tries small cases and finds $\\det M = 4$ for the circulant $(+,+,-)$, concludes $\\max = 4$, but never checks divisibility; assumes only the values $0$ and $\\pm 4$ are special, supports (A), (B), (C); but on (D) the student computes the mean of just the $192$ nonzero cases ($96\\cdot 4 + 96\\cdot(-4) = 0$ over $192$) and reports $E=0$ — fine. So they pick (A),(B),(C). (This is the correct path.)"
+    landed_on_option: "Picks (A), (B), (C) — correct"
+    diagnosis: "Reference path; included to show that the 'right' answer relies on both the parity argument and the sign-flip symmetry."
+
+review_notes: |
+  Source: 0609f_KA_6-7-9, Q2. T-rating 8 in author key. New taxonomy codes proposed:
+  IDEA `SGNDET` (determinants over sign / finite-entry ensembles) under MAT.DET, and SUB-IDEA
+  `BFENUM` (brute-force or symmetry enumeration of determinant values). Both are reusable across
+  related problems (Hadamard matrices, $\pm 1$ ensembles, mod-$p$ entry ensembles). Trap is
+  TRAP-PARTIAL because the most common miss is getting (A) and (C) right while rejecting (B),
+  or accepting (D) by misreading the assertion as $E=0$. Surface is SURF-SET (statements about
+  a finite ensemble of matrices).

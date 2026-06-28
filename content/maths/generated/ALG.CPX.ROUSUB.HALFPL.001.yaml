@@ -1,0 +1,74 @@
+schema_version: 1
+
+question_code: ALG.CPX.ROUSUB.HALFPL.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: ROUSUB
+  sub_idea: HALFPL
+  answer_type: MCQ-SC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\omega = e^{i\pi/3}$, so $1, \omega, \omega^{2}, \ldots, \omega^{5}$ are the sixth roots of unity. For each subset $T \subseteq \{0, 1, 2, 3, 4, 5\}$, define
+  $$z(T) = \sum_{k \in T} \omega^{k}.$$
+  Let $M = \max_{T} |z(T)|$ and $N = \#\{T : |z(T)| = M\}$. Then $(M, N)$ equals
+
+  - (A) $(2, 6)$
+  - (B) $(2, 3)$
+  - (C) $(1, 6)$
+  - (D) $(3, 6)$
+
+answer:
+  type: MCQ-SC
+  correct_options: [A]
+
+solution: |
+  ### The IDEA
+  The roots $\omega^{k} = e^{ik\pi/3}$ are the six unit vectors pointing to the vertices of a regular hexagon. For a subset sum of unit vectors to be maximised in modulus, the chosen vectors must all lie in the open half-plane on the side of the resultant direction $u$ — i.e. the subset is exactly the set of vertices with $\operatorname{Re}(\omega^{k}\bar u) > 0$. For a hexagon, an open half-plane through the centre contains exactly $3$ consecutive vertices.
+
+  ### Working
+  Let $u$ be the unit direction of an optimal $z(T)$. Including $\omega^{k}$ in $T$ changes $|z(T)|$ along $u$ by $\operatorname{Re}(\omega^{k}\bar u)$, so the optimum keeps exactly the roots with positive projection on $u$. For the hexagon this gives an arc of $3$ consecutive roots $\{\omega^{j}, \omega^{j+1}, \omega^{j+2}\}$.
+
+  Summing three consecutive unit vectors symmetric about the middle one:
+  $$|z(T)| = 1 + 2\cos\tfrac{\pi}{3} = 1 + 2 \cdot \tfrac{1}{2} = 2.$$
+  Equivalently, using the Dirichlet-style formula for $m$ consecutive roots,
+  $$\left|\sum_{k=0}^{m-1} \omega^{j+k}\right| = \frac{\sin(m\pi/6)}{\sin(\pi/6)},$$
+  which is maximised at $m = 3$ giving value $2$. Hence $M = 2$.
+
+  The maximising arcs start at any of the $6$ vertices $j = 0, 1, \ldots, 5$, and these arcs are all distinct subsets (no two are equal because their middle vertices differ). Therefore $N = 6$, and the answer is $(M, N) = (2, 6)$, option (A).
+
+wrong_paths:
+  - path: "Recognises $M = 2$ correctly via the consecutive-triple argument, but counts only the $3$ diameter axes of the hexagon, treating opposite arcs as the same subset."
+    landed_on_option: "B"
+    diagnosis: "Partial-credit slip (TRAP-PARTIAL): the $6$ consecutive-triple subsets are pairwise distinct (their middle vertices are all different), so $N = 6$, not $3$. The student conflates direction of the resultant with the subset itself."
+  - path: "Assumes a single root $\\omega^{k}$ already maximises since each has modulus $1$, gets $M = 1$ with $6$ choices of $k$."
+    landed_on_option: "C"
+    diagnosis: "Fails to test whether adding more vectors can increase the modulus; three consecutive roots give $2 > 1$, so a singleton is not optimal."
+  - path: "Adds moduli instead of vectors: three unit vectors give $1+1+1 = 3$, with $6$ starting positions."
+    landed_on_option: "D"
+    diagnosis: "Triangle-inequality misuse — equality $|\\sum v_k| = \\sum |v_k|$ requires the $v_k$ to be positive scalar multiples of one another, but the chosen roots are $60^{\\circ}$ apart, so the true modulus is $2$, not $3$."
+
+review_notes: |
+  New IDEA code ROUSUB (Roots-of-Unity SUBset sum) and SUB-IDEA HALFPL (HALF-PLane selection argument) introduced under ALG.CPX — no existing code captures the half-plane / consecutive-arc maximisation of subset sums of unit-modulus complex numbers. Difficulty T4: the geometric insight (open half-plane = consecutive arc) is non-routine; brute-forcing $2^{6} = 64$ subsets is possible but slow. Multi-correct framing in wrapper text is overridden by the source file's "Single correct" qhead and \keyfoot{(A)}.

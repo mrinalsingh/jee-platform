@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: TRG.INV.TELESC.ATANDIF.001
+
+fingerprint:
+  topic: TRG
+  subtopic: INV
+  idea: TELESC
+  sub_idea: ATANDIF
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $S(n)=\sum_{k=1}^{n}\tan^{-1}\dfrac{2}{k^{2}}$. Which of the following is/are correct?
+
+  - (A) $S(n)=\tan^{-1}n+\tan^{-1}(n+1)-\dfrac{\pi}{4}$
+  - (B) $\displaystyle\lim_{n\to\infty}S(n)=\dfrac{\pi}{4}$
+  - (C) $S(2)=\tan^{-1}2+\tan^{-1}3-\dfrac{\pi}{4}$
+  - (D) $\displaystyle\lim_{n\to\infty}S(n)=\dfrac{3\pi}{4}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C, D]
+
+solution: |
+  ### The IDEA
+  Write $\dfrac{2}{k^{2}}$ as $\dfrac{(k+1)-(k-1)}{1+(k+1)(k-1)}$ so that each term becomes a difference of two $\tan^{-1}$'s with arguments that step by $2$; the sum then telescopes, leaving only the two largest and two smallest boundary terms.
+
+  ### Working
+  Since $1+(k+1)(k-1)=k^{2}$, we have
+  $$\tan^{-1}\frac{2}{k^{2}}=\tan^{-1}\frac{(k+1)-(k-1)}{1+(k+1)(k-1)}=\tan^{-1}(k+1)-\tan^{-1}(k-1).$$
+  (The principal-branch identity $\tan^{-1}a-\tan^{-1}b=\tan^{-1}\dfrac{a-b}{1+ab}$ is valid here because $(k+1)(k-1)=k^{2}-1\ge 0$ for $k\ge 1$.)
+
+  Telescoping in steps of two:
+  $$S(n)=\sum_{k=1}^{n}\bigl[\tan^{-1}(k+1)-\tan^{-1}(k-1)\bigr]=\bigl[\tan^{-1}(n+1)+\tan^{-1}n\bigr]-\bigl[\tan^{-1}1+\tan^{-1}0\bigr]$$
+  $$=\tan^{-1}n+\tan^{-1}(n+1)-\frac{\pi}{4}.$$
+  This is **(A)**. Setting $n=2$: $S(2)=\tan^{-1}2+\tan^{-1}3-\dfrac{\pi}{4}$, which is **(C)**.
+
+  As $n\to\infty$, $\tan^{-1}n\to\dfrac{\pi}{2}$ and $\tan^{-1}(n+1)\to\dfrac{\pi}{2}$, so
+  $$\lim_{n\to\infty}S(n)=\frac{\pi}{2}+\frac{\pi}{2}-\frac{\pi}{4}=\frac{3\pi}{4},$$
+  giving **(D)**; hence **(B)** ($\pi/4$) is false.
+
+  Correct options: **(A), (C), (D)**.
+
+wrong_paths:
+  - path: "Student tries $\\tan^{-1}\\dfrac{2}{k^{2}}=\\tan^{-1}(k+1)-\\tan^{-1}(k-1)$ but telescopes as if the step were $1$, getting $S(n)=\\tan^{-1}(n+1)-\\tan^{-1}0=\\tan^{-1}(n+1)$, so the limit is $\\pi/2$. They reject (A) and (D) and may pick (B) as the 'standard $\\pi/4$ telescoping limit'."
+    landed_on_option: "(B)"
+    diagnosis: "TRAP-PARTIAL: incomplete recognition that the difference is over indices $k-1$ and $k+1$, not $k$ and $k+1$; only odd or only even boundary terms survive in the correct telescoping."
+  - path: "Student writes $\\tan^{-1}\\dfrac{2}{k^{2}}=\\tan^{-1}\\dfrac{1}{k-1}-\\tan^{-1}\\dfrac{1}{k+1}$ (a different valid decomposition via $\\tan^{-1}a+\\tan^{-1}b$), telescopes to $\\tan^{-1}1+\\tan^{-1}\\dfrac{1}{2}-\\tan^{-1}\\dfrac{1}{n}-\\tan^{-1}\\dfrac{1}{n+1}$, and as $n\\to\\infty$ obtains $\\tan^{-1}1+\\tan^{-1}\\dfrac{1}{2}\\ne 3\\pi/4$. Convinced the limit isn't $3\\pi/4$, they pick (B)."
+    landed_on_option: "(B)"
+    diagnosis: "Decomposition is correct but the closed form looks different from (A); failing to verify equivalence ($\\tan^{-1}n+\\tan^{-1}(n+1)-\\pi/4 = \\pi/2+\\tan^{-1}\\tfrac12-\\tan^{-1}\\tfrac1n-\\tan^{-1}\\tfrac1{n+1}$, with limit $3\\pi/4$) leads to rejecting (A) and (D)."
+  - path: "Student verifies only $n=1$: $S(1)=\\tan^{-1}2$. Checks (A) at $n=1$: $\\tan^{-1}1+\\tan^{-1}2-\\pi/4=\\tan^{-1}2$. Good. But then assumes the limit equals $\\tan^{-1}\\infty=\\pi/2$ (single term), picks neither (B) nor (D)."
+    landed_on_option: "(A), (C) only"
+    diagnosis: "TRAP-PARTIAL: correctly identifies (A) and (C) by sampling, but mishandles the limit by forgetting that BOTH $\\tan^{-1}n$ and $\\tan^{-1}(n+1)$ each contribute $\\pi/2$, missing (D)."
+
+review_notes: |
+  Inverse-trig telescoping with a step-2 partial-fraction-style decomposition of $\tan^{-1}\tfrac{2}{k^{2}}$. Multi-correct probes (i) the closed form, (ii) a numerical instance, (iii) the limit, with (B) acting as a 'standard $\pi/4$' distractor. Difficulty T3: the step-2 telescoping is non-obvious but standard JEE material. New axis-3 code TELESC (telescoping inverse-trig sum) and axis-4 code ATANDIF (arctan difference of indices $\pm 1$ around $k$) introduced — taxonomy extension required.

@@ -1,0 +1,106 @@
+schema_version: 1
+question_code: SOT.AGP.HARMASYM.MULTIORDER.001
+
+fingerprint:
+  topic: SOT
+  subtopic: AGP
+  idea: HARMASYM
+  sub_idea: MULTIORDER
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 240
+  R4_seconds: 180
+
+source_metadata:
+  jee_authenticity_score: 9.0
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 9.0
+    reviewed_at: "2026-06-14"
+    notes: "H_{2n}-H_n identity + multi-order asymptotic; 1/4-vs-1/8 trap"
+
+status: provisional
+
+provenance:
+  inspired_by: "0613c_Q2"
+  parallel_form: false
+  generator: "jee-mcq skill (0613c batch)"
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let
+  $$T_n=1-\dfrac{1}{2}+\dfrac{1}{3}-\dfrac{1}{4}+\cdots+\dfrac{1}{2n-1}-\dfrac{1}{2n}.$$
+  Which of the following is/are correct?
+
+  (A) $\displaystyle\lim_{n\to\infty} n\bigl(\ln 2 - T_n\bigr) = \dfrac{1}{4}$.
+
+  (B) The series $\displaystyle\sum_{n=1}^{\infty}\bigl(\ln 2 - T_n\bigr)$ is convergent.
+
+  (C) $\displaystyle\lim_{n\to\infty}\bigl(T_n\bigr)^{n} = 0$.
+
+  (D) $\displaystyle\lim_{n\to\infty} n\bigl(T_{2n} - T_n\bigr) = \dfrac{1}{4}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  **Identity.** Pair the partial sums:
+  $$T_n=\sum_{k=1}^{2n}\dfrac{1}{k}-2\sum_{k=1}^{n}\dfrac{1}{2k}=H_{2n}-H_n.$$
+
+  **Asymptotic.** Using
+  $$H_n=\ln n+\gamma+\dfrac{1}{2n}-\dfrac{1}{12n^{2}}+O(n^{-4}),$$
+  we get
+  $$T_n=\ln(2n)+\gamma+\dfrac{1}{4n}-\dfrac{1}{48n^{2}}-\Bigl(\ln n+\gamma+\dfrac{1}{2n}-\dfrac{1}{12n^{2}}\Bigr)+O(n^{-4})
+  =\ln 2-\dfrac{1}{4n}+\dfrac{1}{16n^{2}}+O(n^{-4}).$$
+
+  **(A)** $n(\ln 2 - T_n)=\dfrac{1}{4}-\dfrac{1}{16n}+O(n^{-3})\to \dfrac{1}{4}$. **TRUE.**
+
+  **(B)** From the leading order $\ln 2 - T_n\sim \dfrac{1}{4n}$, the series
+  $\sum(\ln 2 - T_n)$ behaves like $\dfrac{1}{4}\sum\dfrac{1}{n}$ which diverges. **FALSE.**
+
+  **(C)** Since $T_n\to \ln 2$ and $\ln 2 < 1$, fix $\varepsilon$ with
+  $\ln 2 + \varepsilon < 1$. For all sufficiently large $n$, $T_n < \ln 2 + \varepsilon$,
+  hence $T_n^{n} \le (\ln 2 + \varepsilon)^n \to 0$. **TRUE.**
+
+  **(D)** Apply the same asymptotic to $T_{2n}$:
+  $T_{2n}=\ln 2-\dfrac{1}{8n}+O(n^{-2})$, so
+  $T_{2n}-T_n=\Bigl(\ln 2-\dfrac{1}{8n}\Bigr)-\Bigl(\ln 2-\dfrac{1}{4n}\Bigr)+O(n^{-2})
+  =\dfrac{1}{8n}+O(n^{-2})$,
+  and $n(T_{2n}-T_n)\to \dfrac{1}{8}\neq \dfrac{1}{4}$. **FALSE.**
+
+  **Answer: (A), (C).**
+
+wrong_paths:
+  - path: "Treats $T_{2n}-T_n$ as if it were the same magnitude as $\\ln 2 - T_n$, picks (D) by 'symmetry'."
+    landed_on_option: [A, C, D]
+    diagnosis: "Misses that doubling $n$ in $\\ln 2 - T_n \\sim 1/(4n)$ halves the leading term, so the difference is $1/(8n)$, not $1/(4n)$. Classic 1/4-vs-1/8 multi-order trap."
+  - path: "Reasons that $\\ln 2 - T_n \\to 0$ implies $\\sum (\\ln 2 - T_n)$ converges (limit-zero fallacy)."
+    landed_on_option: [A, B, C]
+    diagnosis: "Confuses the necessary condition $a_n\\to 0$ with sufficiency. The leading-order $1/(4n)$ matches the harmonic series, which diverges."
+  - path: "Computes $\\lim T_n = \\ln 2$ and then writes $\\lim T_n^n = (\\ln 2)^\\infty = 0$ but worries that the form $1^\\infty$ might apply, leaving (C) unmarked."
+    landed_on_option: [A]
+    diagnosis: "Doesn't separate the limit of the base ($\\ln 2 \\approx 0.693 < 1$) from the $1^\\infty$ indeterminate form; a clean inequality $T_n < \\ln 2 + \\varepsilon < 1$ for large $n$ kills any doubt."
+
+review_notes: |
+  Multi-correct gate problem on the alternating-harmonic tail. The mathematical
+  spine is the finite-sum identity $T_n=H_{2n}-H_n$ plus a multi-order asymptotic
+  of $H_n$. Options (A) and (D) form the headline trap: students who track only
+  one order of the asymptotic will conflate $1/(4n)$ with $1/(8n)$ and over-mark.
+  Option (B) tests the limit-zero fallacy. Option (C) tests separation of
+  $\ln 2 < 1$ from a spurious $1^\infty$ form. Solid T4 / 9.0 calibration.

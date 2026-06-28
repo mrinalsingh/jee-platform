@@ -1,20 +1,29 @@
-// JEE Platform — data model (Stage 2 of build sequence)
+// JEE Platform — data model v2 (Stage 2 Architecture → Stage 3 Engineering)
 //
-// Binding spec: §6 of docs/PROJECT CONTEXT.md.
-// Five tables: problems, students, student_fingerprint_state, tests, attempts.
-// The 7 fingerprint axes live on `problems` as separate, indexed columns
-// (4 strings for axes 1–4, which grow organically per "no miscellaneous tags";
-//  3 enums for axes 5–7, which are closed sets per §4).
+// Binding spec: PROJECT CONTEXT.md §6, PRD-01 (diagnostic axes), PRD-16 (runtime),
+// architecture-input-notes Requirements A–P + Q.
 //
-// Append-only enforcement on `attempts` is at the app layer in v1 (the NestJS
-// service exposes only INSERT). A follow-up migration will add a Postgres RULE
-// rejecting UPDATE/DELETE — belt + suspenders. Not in v1 because it would block
-// local-dev seeding / reset.
+// v2 changes vs v1:
+//  - Dual rating (Req A): jee_authenticity_score, cross-walk CHECK
+//  - target_exam (Req B): enum, NOT NULL, indexed
+//  - reviews sub-table (Req C): ProblemReview + inter-rater view
+//  - DB-invariant for diagnostic summary (Req D / PRD-01 §6 A.3): BEFORE triggers (SECURITY DEFINER)
+//  - cohorts / cohort_members / test_assignments (Req F): assignment model
+//  - parents / student_parents (Req F): parent role
+//  - hints JSONB (Req G): authored ladder per problem
+//  - syllabus_status (Req H): WITHIN_SYLLABUS / BORDERLINE / BEYOND_SYLLABUS
+//  - test_sessions / test_session_snapshots / test_session_audit (Req I): runtime
+//  - AnswerType extended (Req J): MCQ_PASSAGE, NUM_DIGIT, MAT_LIST, MCQ_AR, FILL
+//  - student_drill_recommendations (Req K): drill audit log
+//  - Hint hardening (Req L): per-level fetch, server response padding (no schema change)
+//  - Dashboard UNION-DEDUPE (Req M): SQL composed in NestJS service
+//  - HMAC rotation (Req N): session_secret_current + session_secret_previous on test_sessions
+//  - attempts.auto_submit_source (Req O): enum — 4 canonical values
+//  - marking_scheme MAT-COL gating_rule (Req P): documented in JSONB shape
+//  - attempts.visit_index_in_test: per-session ordering for review screen
+//  - Req Q: is_above_target_difficulty + better_fit_exam (calibration mismatch)
 //
-// Taxonomy values for axes 1–4 (TOPIC/SUBTOPIC/IDEA/SUB-IDEA) are NOT enforced
-// at the DB level in v1 — the importer validates against /content/taxonomy/maths.yaml
-// before insert. A future migration can add lookup tables + FKs if we want strict
-// DB-level enforcement.
+// All migrations reversible — see backend/prisma/migrations/NNNN_*/down.sql.
 
 generator client {
   provider = "prisma-client"
@@ -26,16 +35,22 @@ datasource db {
 }
 
 // =============================================================================
-// ENUMS — closed sets (§4)
+// ENUMS
 // =============================================================================
 
-// Axis 5 — ANSWER-TYPE
+// Axis 5 — ANSWER-TYPE. v1 ships 5; v2 adds 5 placeholders (Req J).
 enum AnswerType {
-  MCQ_SC   // multiple choice, single correct
-  MCQ_MC   // multiple choice, multi-correct (with partial marking)
-  NUM_INT  // numerical, integer
-  NUM_DEC  // numerical, decimal (with specified precision)
-  MAT_COL  // match-the-column / match-the-list
+  MCQ_SC
+  MCQ_MC
+  NUM_INT
+  NUM_DEC
+  MAT_COL
+  // Placeholders — runtime renders a hard error block until a control is shipped.
+  MCQ_PASSAGE
+  NUM_DIGIT
+  MAT_LIST
+  MCQ_AR
+  FILL
 }
 
 // Axis 6 — SURFACE (cognitive-load dressing; NOT the math)
@@ -60,7 +75,7 @@ enum Trap {
   TRAP_LENGTH
 }
 
-// Intrinsic difficulty — fixed forever, anchored to top-10-rank-level student in last 4–5 months (§5)
+// Intrinsic difficulty — fixed forever, anchored to top-10-rank-level student.
 enum IntrinsicDifficulty {
   T1
   T2
@@ -69,7 +84,7 @@ enum IntrinsicDifficulty {
   T5
 }
 
-// Per-student preparation stage. NOT a problem axis (§5).
+// Per-student preparation stage. NOT a problem axis.
 enum Round {
   R1
   R2
@@ -79,56 +94,152 @@ enum Round {
 
 // Problem lifecycle
 enum ProblemStatus {
-  provisional  // no human approval and/or no empirical data yet
-  calibrated   // human-approved AND has ≥30 empirical attempts
+  provisional
+  calibrated
+}
+
+// Req B
+enum TargetExam {
+  JEE_ADVANCED
+  JEE_MAIN
+  IOQM
+  INMO
+  RMO
+  KVPY
+  COACHING
+  ORIGINAL
+  OTHER
+}
+
+// Req C
+enum ReviewerRole {
+  jee_platform_critic
+  jee_mcq_critic
+  human_reviewer_primary
+  human_reviewer_secondary
+  automated_calibration
+}
+
+// Req H
+enum SyllabusStatus {
+  WITHIN_SYLLABUS
+  BORDERLINE
+  BEYOND_SYLLABUS
+}
+
+// Req F
+enum AssignmentScope {
+  COHORT
+  STUDENT
+}
+
+enum ParentRelationship {
+  FATHER
+  MOTHER
+  GUARDIAN
+  OTHER
+}
+
+// Req I
+enum TestSessionStatus {
+  ACTIVE
+  SUBMITTED
+  EXPIRED
+}
+
+// Req O — Blocker 4 canonical 4-value enum
+enum AutoSubmitSource {
+  TIMER_EXPIRY
+  VIOLATION_THRESHOLD
+  NETWORK_FAILURE_FALLBACK
+  MANUAL
+}
+
+// Req I — anti-cheat violation types
+enum ViolationType {
+  TAB_SWITCH
+  WINDOW_BLUR
+  FULLSCREEN_EXIT
+  RIGHT_CLICK
+  COPY_ATTEMPT
+  CUT_ATTEMPT
+  PASTE_ATTEMPT
+  DEVTOOLS_KEYSTROKE
+  COPY_KEY_SHORTCUT
+}
+
+// Req K
+enum DrillRecommendationStatus {
+  GENERATED
+  ASSIGNED
+  ATTEMPTED
+  EXPIRED
 }
 
 // =============================================================================
-// PROBLEMS — the question bank
+// PROBLEMS
 // =============================================================================
 
 model Problem {
-  // Natural PK — the full question code, e.g. "MAT.SPL.ORBSUM.CNJSP.001"
   questionCode  String   @id @map("question_code")
 
-  // ---- Axes 1–4 (open enums; canonical values in /content/taxonomy/maths.yaml) ----
-  topicCode     String   @map("topic_code")       // e.g. "MAT"
-  subtopicCode  String   @map("subtopic_code")    // e.g. "SPL"
-  ideaCode      String   @map("idea_code")        // e.g. "ORBSUM"
-  subIdeaCode   String   @map("sub_idea_code")    // e.g. "CNJSP"
-  serial        Int                               // 1, 2, 3, ... within (topic, subtopic, idea, sub_idea)
+  topicCode     String   @map("topic_code")
+  subtopicCode  String   @map("subtopic_code")
+  ideaCode      String   @map("idea_code")
+  subIdeaCode   String   @map("sub_idea_code")
+  serial        Int
 
-  // ---- Axes 5–7 (closed enums) ----
   answerType    AnswerType @map("answer_type")
   surface       Surface
   trap          Trap
 
-  // ---- Difficulty ----
   authoredDifficulty         IntrinsicDifficulty @map("authored_difficulty")
-  authoredTimeByRound        Json                @map("authored_time_by_round")        // { R1_seconds, R2_seconds, R3_seconds, R4_seconds }
-  empiricalDifficultyByRound Json?               @map("empirical_difficulty_by_round") // { R1: success_rate, ... }; nullable until ≥30 attempts
-  empiricalTimeByRound       Json?               @map("empirical_time_by_round")       // { R1: median_seconds_correct, ... }; nullable
+  authoredTimeByRound        Json                @map("authored_time_by_round")
+  empiricalDifficultyByRound Json?               @map("empirical_difficulty_by_round")
+  empiricalTimeByRound       Json?               @map("empirical_time_by_round")
+
+  // ---- Req A: dual rating ----
+  jeeAuthenticityScore Float? @map("jee_authenticity_score")
+
+  // ---- Req B: target exam ----
+  targetExam TargetExam @default(JEE_ADVANCED) @map("target_exam")
+
+  // ---- Req H: syllabus status ----
+  syllabusStatus SyllabusStatus @default(WITHIN_SYLLABUS) @map("syllabus_status")
+
+  // ---- Req Q: calibration-mismatch columns ----
+  isAboveTargetDifficulty Boolean     @default(false) @map("is_above_target_difficulty")
+  betterFitExam           TargetExam? @map("better_fit_exam")
 
   // ---- Content ----
-  statement     String   @db.Text                 // markdown + LaTeX (KaTeX/MathJax compatible)
-  answer        Json                              // MCQ: { type, correct_options: ["A","B",...] }  ·  NUM: { type, value: <number>, precision?: <int> }
+  statement     String   @db.Text
+  answer        Json
   solution      String   @db.Text
-  wrongPaths    Json     @map("wrong_paths")      // [{ path, landed_on_option, diagnosis }, ...]
+  wrongPaths    Json     @map("wrong_paths")
 
-  // ---- Lifecycle ----
-  status        ProblemStatus @default(provisional)
+  // ---- Req G: hints ladder ----
+  hints         Json     @default("[]")
+  hintCount     Int      @default(0) @map("hint_count")
 
-  // ---- Provenance ----
-  sourceMetadata Json    @map("source_metadata")  // { inspired_by, parallel_form, generator, human_reviewer, approved_at, ... }
+  // ---- PRD-01 §6 A.3: DB-maintained summary columns (trigger-maintained) ----
+  errReadingTags  String[] @default([]) @map("err_reading_tags")
+  errCaseTags     String[] @default([]) @map("err_case_tags")
+  errCompTags     String[] @default([]) @map("err_comp_tags")
+  errStrategyTags String[] @default([]) @map("err_strategy_tags")
+  errParsingTags  String[] @default([]) @map("err_parsing_tags")
 
-  // ---- Timestamps ----
+  status         ProblemStatus @default(provisional)
+  sourceMetadata Json    @map("source_metadata")
+
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  // ---- Relations ----
-  attempts      Attempt[]
+  attempts         Attempt[]
+  reviews          ProblemReview[]
+  figures          ProblemFigure[]
+  snapshots        TestSessionSnapshot[]
+  diagnosticMisses ProblemDiagnosticMiss[]
 
-  // ---- Indexes: each of the 7 axes individually + difficulty + status ----
   @@unique([topicCode, subtopicCode, ideaCode, subIdeaCode, serial])
   @@index([topicCode])
   @@index([subtopicCode])
@@ -139,7 +250,57 @@ model Problem {
   @@index([trap])
   @@index([authoredDifficulty])
   @@index([status])
+  @@index([targetExam])
+  @@index([syllabusStatus])
+  @@index([jeeAuthenticityScore])
+  // GIN indexes on the 5 summary arrays created in raw SQL (migration 0006).
+  // Prisma 6's `type: Gin` was unreliable historically; we use raw SQL for the
+  // indexes to keep the migration deterministic. The composite (target_exam,
+  // syllabus_status) and partial indexes for Req Q also created in raw SQL.
   @@map("problems")
+}
+
+// =============================================================================
+// PROBLEM FIGURES (Req: figure storage — Postgres BYTEA in v1)
+// =============================================================================
+
+model ProblemFigure {
+  id            BigInt   @id @default(autoincrement())
+  questionCode  String   @map("question_code")
+  figureIndex   Int      @map("figure_index")
+  mimeType      String   @map("mime_type")
+  bytes         Bytes
+  width         Int?
+  height        Int?
+  altText       String?  @map("alt_text") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  problem       Problem  @relation(fields: [questionCode], references: [questionCode], onDelete: Cascade)
+
+  @@unique([questionCode, figureIndex])
+  @@map("problem_figures")
+}
+
+// =============================================================================
+// REVIEWS (Req C)
+// =============================================================================
+
+model ProblemReview {
+  id                    BigInt               @id @default(autoincrement())
+  questionCode          String               @map("question_code")
+  reviewerRole          ReviewerRole         @map("reviewer_role")
+  tRating               IntrinsicDifficulty  @map("t_rating")
+  jeeAuthenticityScore  Float?               @map("jee_authenticity_score")
+  reviewedAt            DateTime             @default(now()) @map("reviewed_at")
+  notes                 String?              @db.Text
+  provenance            Json                 @default("{}")
+
+  problem               Problem              @relation(fields: [questionCode], references: [questionCode], onDelete: Cascade)
+
+  @@index([questionCode])
+  @@index([reviewerRole])
+  @@index([questionCode, reviewerRole])
+  @@map("problem_reviews")
 }
 
 // =============================================================================
@@ -155,16 +316,18 @@ model Student {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  fingerprintStates StudentFingerprintState[]
-  attempts          Attempt[]
+  fingerprintStates       StudentFingerprintState[]
+  attempts                Attempt[]
+  cohortMemberships       CohortMember[]
+  testSessions            TestSession[]
+  parentLinks             StudentParent[]
+  drillRecommendations    StudentDrillRecommendation[]
+  individualAssignments   TestAssignment[]       @relation("StudentDirectAssignment")
+  authSessions            AuthSession[]
+  diagnosticMisses        ProblemDiagnosticMiss[]
 
   @@map("students")
 }
-
-// =============================================================================
-// STUDENT FINGERPRINT STATE — one row per student per (topic.subtopic.idea.sub_idea)
-// Round and mastery are per-student per-fingerprint, NOT a property of the problem.
-// =============================================================================
 
 model StudentFingerprintState {
   studentId    BigInt   @map("student_id")
@@ -172,13 +335,11 @@ model StudentFingerprintState {
   subtopicCode String   @map("subtopic_code")
   ideaCode     String   @map("idea_code")
   subIdeaCode  String   @map("sub_idea_code")
-
   round        Round
-  masteryScore Float    @map("mastery_score")    // 0.0 – 1.0
-
+  masteryScore Float    @map("mastery_score")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  student      Student  @relation(fields: [studentId], references: [id])
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@id([studentId, topicCode, subtopicCode, ideaCode, subIdeaCode])
   @@index([studentId])
@@ -186,52 +347,340 @@ model StudentFingerprintState {
 }
 
 // =============================================================================
-// TESTS — store question CODES, never copies of problems (§12 rule 4)
+// PARENTS (Req F)
+// =============================================================================
+
+model Parent {
+  id          BigInt   @id @default(autoincrement())
+  email       String   @unique
+  fullName    String   @map("full_name")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  children    StudentParent[]
+  authSessions AuthSession[]
+
+  @@map("parents")
+}
+
+model StudentParent {
+  studentId    BigInt              @map("student_id")
+  parentId     BigInt              @map("parent_id")
+  relationship ParentRelationship  @default(GUARDIAN)
+  createdAt    DateTime            @default(now()) @map("created_at")
+
+  student      Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parent       Parent  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, parentId])
+  @@index([parentId])
+  @@map("student_parents")
+}
+
+// =============================================================================
+// TEACHERS / ADMINS
+// =============================================================================
+
+model Teacher {
+  id          BigInt   @id @default(autoincrement())
+  email       String   @unique
+  fullName    String   @map("full_name")
+  isAdmin     Boolean  @default(false) @map("is_admin")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  cohortsCreated     Cohort[]
+  assignmentsCreated TestAssignment[]
+  authSessions       AuthSession[]
+
+  @@map("teachers")
+}
+
+// =============================================================================
+// AUTH SESSIONS
+// =============================================================================
+
+model AuthSession {
+  id           String   @id
+  studentId    BigInt?  @map("student_id")
+  teacherId    BigInt?  @map("teacher_id")
+  parentId     BigInt?  @map("parent_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  expiresAt    DateTime @map("expires_at")
+  lastUsedAt   DateTime @default(now()) @map("last_used_at")
+  userAgent    String?  @map("user_agent")
+  ipHash       String?  @map("ip_hash")
+
+  student      Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher      Teacher? @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  parent       Parent?  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([studentId])
+  @@index([teacherId])
+  @@index([parentId])
+  @@map("auth_sessions")
+}
+
+// =============================================================================
+// COHORTS + ASSIGNMENTS (Req F)
+// =============================================================================
+
+model Cohort {
+  id                  BigInt   @id @default(autoincrement())
+  name                String
+  batchLabel          String   @map("batch_label")
+  createdByTeacherId  BigInt   @map("created_by_teacher_id")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  members     CohortMember[]
+  assignments TestAssignment[] @relation("CohortAssignment")
+  createdBy   Teacher          @relation(fields: [createdByTeacherId], references: [id])
+
+  @@index([createdByTeacherId])
+  @@map("cohorts")
+}
+
+model CohortMember {
+  cohortId   BigInt   @map("cohort_id")
+  studentId  BigInt   @map("student_id")
+  joinedAt   DateTime @default(now()) @map("joined_at")
+
+  cohort   Cohort  @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  student  Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([cohortId, studentId])
+  @@index([studentId])
+  @@map("cohort_members")
+}
+
+// =============================================================================
+// TESTS
 // =============================================================================
 
 model Test {
   id              BigInt   @id @default(autoincrement())
   title           String
-  questionCodes   Json     @map("question_codes")    // ordered array of question_code strings
+  questionCodes   Json     @map("question_codes")
   durationSeconds Int      @map("duration_seconds")
-  markingScheme   Json     @map("marking_scheme")    // { correct_marks, wrong_marks, partial_rules, ... }
+  markingScheme   Json     @map("marking_scheme")
 
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   attempts        Attempt[]
+  assignments     TestAssignment[]
+  sessions        TestSession[]
 
   @@map("tests")
 }
 
 // =============================================================================
-// ATTEMPTS — APPEND-ONLY. The ground truth (§12 rule 3).
-// Indexes sized for tens of millions of rows (§6).
+// TEST ASSIGNMENTS (Req F + PRD-16 Blocker 3a)
+// =============================================================================
+
+model TestAssignment {
+  id                  BigInt   @id @default(autoincrement())
+  testId              BigInt   @map("test_id")
+  cohortId            BigInt?  @map("cohort_id")
+  studentId           BigInt?  @map("student_id")
+  windowStartAt       DateTime @map("window_start_at")
+  windowEndAt         DateTime @map("window_end_at")
+  markingScheme       Json?    @map("marking_scheme")
+  assignedByTeacherId BigInt   @map("assigned_by_teacher_id")
+  assignedAt          DateTime @default(now()) @map("assigned_at")
+
+  test        Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  cohort      Cohort?  @relation("CohortAssignment", fields: [cohortId], references: [id], onDelete: Cascade)
+  student     Student? @relation("StudentDirectAssignment", fields: [studentId], references: [id], onDelete: Cascade)
+  assignedBy  Teacher  @relation(fields: [assignedByTeacherId], references: [id])
+  sessions    TestSession[]
+
+  @@index([testId])
+  @@index([studentId, windowStartAt])
+  @@index([cohortId,  windowStartAt])
+  @@map("test_assignments")
+}
+
+// =============================================================================
+// TEST SESSIONS  (Req I + Req N)
+// =============================================================================
+// [PRESERVED FROM v1]: frozen_question_codes is the simplest solution to
+// "admins editing problems mid-session don't affect in-flight sessions".
+
+model TestSession {
+  id                     BigInt              @id @default(autoincrement())
+  testId                 BigInt              @map("test_id")
+  testAssignmentId       BigInt              @map("test_assignment_id")
+  studentId              BigInt              @map("student_id")
+
+  // ---- Req N: HMAC custody with grace ----
+  sessionSecretCurrent   Bytes               @map("session_secret_current")
+  sessionSecretPrevious  Bytes?              @map("session_secret_previous")
+  secretRotatedAt        DateTime?           @map("secret_rotated_at")
+
+  startedAt              DateTime?           @map("started_at")
+  expiresAt              DateTime?           @map("expires_at")
+  submittedAt            DateTime?           @map("submitted_at")
+
+  // ---- Req I + Req O ----
+  status                 TestSessionStatus   @default(ACTIVE)
+  autoSubmitSource       AutoSubmitSource?   @map("auto_submit_source")
+  violationsCount        Int                 @default(0) @map("violations_count")
+
+  // Frozen snapshot of the ordered question codes at START
+  frozenQuestionCodes    Json                @map("frozen_question_codes")
+
+  createdAt              DateTime            @default(now()) @map("created_at")
+
+  test          Test            @relation(fields: [testId], references: [id])
+  assignment    TestAssignment  @relation(fields: [testAssignmentId], references: [id])
+  student       Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  snapshots     TestSessionSnapshot[]
+  audit         TestSessionAudit[]
+  attempts      Attempt[]
+
+  @@index([studentId])
+  @@index([testId])
+  @@index([expiresAt])
+  @@index([submittedAt])
+  @@map("test_sessions")
+}
+// Partial unique index `uniq_active_session` created in migration 0011 raw SQL.
+
+// =============================================================================
+// TEST SESSION SNAPSHOTS (Req I — transient per-question state; UPDATE not append)
+// =============================================================================
+
+model TestSessionSnapshot {
+  sessionId          BigInt    @map("session_id")
+  slotIndex          Int       @map("slot_index")
+  questionCode       String    @map("question_code")
+  answerPayload      Json?     @map("answer_payload")
+  timeSeconds        Int       @default(0) @map("time_seconds")
+  visitCount         Int       @default(0) @map("visit_count")
+  markedForReview    Boolean   @default(false) @map("marked_for_review")
+  hintsUsed          Int       @default(0) @map("hints_used")
+  hintLevelsRevealed Int[]     @default([]) @map("hint_levels_revealed")
+  actionSeq          BigInt    @default(0) @map("action_seq")
+  lastActionAt       DateTime? @map("last_action_at")
+
+  session  TestSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  problem  Problem      @relation(fields: [questionCode], references: [questionCode])
+
+  @@id([sessionId, slotIndex])
+  @@index([sessionId])
+  @@map("test_session_snapshots")
+}
+
+// =============================================================================
+// TEST SESSION AUDIT  (Req I — APPEND-ONLY)
+// =============================================================================
+
+model TestSessionAudit {
+  id                BigInt           @id @default(autoincrement())
+  sessionId         BigInt           @map("session_id")
+  studentId         BigInt           @map("student_id")
+  endpoint          String
+  actionPayloadHash String           @map("action_payload_hash")
+  clientIp          String?          @map("client_ip")
+  userAgent         String?          @map("user_agent")
+  serverTimestamp   DateTime         @default(now()) @map("server_timestamp")
+
+  violationType        ViolationType? @map("violation_type")
+  violationTimestamp   DateTime?      @map("violation_timestamp")
+  wasActive            Boolean?       @map("was_active")
+  hintLevel            Int?           @map("hint_level")
+  slotIndex            Int?           @map("slot_index")
+
+  session  TestSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([sessionId, violationType])
+  @@index([serverTimestamp])
+  @@map("test_session_audit")
+}
+// Append-only enforcement is STRUCTURAL via role separation: app_user is REVOKEd
+// UPDATE, DELETE in migration 0012.
+
+// =============================================================================
+// ATTEMPTS — APPEND-ONLY.
 // =============================================================================
 
 model Attempt {
-  id              BigInt   @id @default(autoincrement())
-  studentId       BigInt   @map("student_id")
-  questionCode    String   @map("question_code")
-  testId          BigInt?  @map("test_id")            // null = standalone practice attempt
+  id              BigInt    @id @default(autoincrement())
+  studentId       BigInt    @map("student_id")
+  questionCode    String    @map("question_code")
+  testId          BigInt?   @map("test_id")
+  testSessionId   BigInt?   @map("test_session_id")
 
   correct         Boolean
-  timeSeconds     Int      @map("time_seconds")
-  visitCount      Int      @default(1) @map("visit_count")
-  markedForReview Boolean  @default(false) @map("marked_for_review")
-  attemptOrder    Int      @map("attempt_order")      // 1st, 2nd, 3rd attempt at this question by this student
-  roundAtTime     Round    @map("round_at_time")
-  hintsUsed       Int      @default(0) @map("hints_used")
+  timeSeconds     Int       @map("time_seconds")
+  visitCount      Int       @default(1) @map("visit_count")
+  markedForReview Boolean   @default(false) @map("marked_for_review")
+  attemptOrder    Int       @map("attempt_order")
+  visitIndexInTest Int?     @map("visit_index_in_test")
+  roundAtTime     Round     @map("round_at_time")
+  hintsUsed       Int       @default(0) @map("hints_used")
 
-  createdAt       DateTime @default(now()) @map("created_at")
+  // Req O — Blocker 4 canonical 4-value enum. NULL only for standalone-practice
+  // attempts. CHECK constraint chk_auto_submit_source_when_session enforces
+  // (test_session_id IS NULL OR auto_submit_source IS NOT NULL) — added in 0012.
+  autoSubmitSource AutoSubmitSource? @map("auto_submit_source")
 
-  student         Student  @relation(fields: [studentId], references: [id])
-  problem         Problem  @relation(fields: [questionCode], references: [questionCode])
-  test            Test?    @relation(fields: [testId], references: [id])
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  student         Student      @relation(fields: [studentId], references: [id])
+  problem         Problem      @relation(fields: [questionCode], references: [questionCode])
+  test            Test?        @relation(fields: [testId], references: [id])
+  session         TestSession? @relation(fields: [testSessionId], references: [id])
 
   @@index([studentId])
   @@index([questionCode])
   @@index([createdAt])
-  @@index([questionCode, createdAt])    // composite for nightly empirical-rating batch
+  @@index([questionCode, createdAt])
+  @@index([testSessionId])
+  @@index([studentId, questionCode])
   @@map("attempts")
+}
+
+// =============================================================================
+// DIAGNOSTIC MISSES  (PRD-01 US-1 E2)
+// =============================================================================
+
+model ProblemDiagnosticMiss {
+  id           BigInt   @id @default(autoincrement())
+  studentId    BigInt   @map("student_id")
+  questionCode String   @map("question_code")
+  wrongAnswer  String   @map("wrong_answer")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  problem      Problem  @relation(fields: [questionCode], references: [questionCode], onDelete: Cascade)
+
+  @@index([questionCode])
+  @@index([createdAt])
+  @@map("problem_diagnostic_misses")
+}
+
+// =============================================================================
+// STUDENT DRILL RECOMMENDATIONS (Req K)
+// =============================================================================
+
+model StudentDrillRecommendation {
+  id                 BigInt                    @id @default(autoincrement())
+  studentId          BigInt                    @map("student_id")
+  generatedAt        DateTime                  @default(now()) @map("generated_at")
+  sourceTestId       BigInt?                   @map("source_test_id")
+  problemCodes       String[]                  @map("problem_codes")
+  targetFailureMode  String?                   @map("target_failure_mode")
+  targetIdeaCode     String?                   @map("target_idea_code")
+  generatedTestId    BigInt?                   @map("generated_test_id")
+  status             DrillRecommendationStatus @default(GENERATED)
+  expiresAt          DateTime?                 @map("expires_at")
+
+  student            Student                   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, generatedAt])
+  @@index([status])
+  @@map("student_drill_recommendations")
 }

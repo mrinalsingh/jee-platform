@@ -1,0 +1,73 @@
+schema_version: 1
+
+question_code: LOG.EQN.LOGRED.LOGBC.003
+
+fingerprint:
+  topic: LOG
+  subtopic: EQN
+  idea: LOGRED
+  sub_idea: LOGBC
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-NONE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609h_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $P=3(2^2+1)(2^4+1)(2^8+1)(2^{16}+1)(2^{32}+1)$ and $N=P+1$. Which of the following are correct?
+
+  (A) $N=2^{64}$
+
+  (B) $\log_{256}N=8$
+
+  (C) popcount of $P$ (number of $1$'s in its binary expansion) equals $64$
+
+  (D) $\log_{2}N$ is a positive integer
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  Note $3=(2-1)(2+1)\cdot\dfrac{1}{2-1}=2+1$, so insert the factor $(2-1)=1$:
+  $$P=(2-1)(2+1)(2^2+1)(2^4+1)(2^8+1)(2^{16}+1)(2^{32}+1).$$
+  Apply the identity $(2^{2^k}-1)(2^{2^k}+1)=2^{2^{k+1}}-1$ repeatedly (telescoping):
+  $$(2-1)(2+1)=2^2-1,\quad (2^2-1)(2^2+1)=2^4-1,\ \ldots,\ (2^{32}-1)(2^{32}+1)=2^{64}-1.$$
+  Hence $P=2^{64}-1$ and $N=P+1=2^{64}$, giving (A).
+
+  Then $\log_{256}N=\log_{2^{8}}2^{64}=\dfrac{64}{8}=8$, giving (B), and $\log_{2}N=64\in\mathbb Z_{>0}$, giving (D).
+
+  Since $P=2^{64}-1$ has binary expansion $\underbrace{11\cdots1}_{64\text{ ones}}$, its popcount is $64$, giving (C).
+
+  All four options are correct.
+
+wrong_paths:
+  - path: "Student computes $P$ numerically without spotting the telescoping, fails to confirm $N$ is a power of two, and rejects (A) and (D)."
+    landed_on_option: "Marks only (B), (C) or none."
+    diagnosis: "Missed Fermat-style telescoping identity $(x-1)(x+1)=x^2-1$."
+  - path: "Student gets $P=2^{64}-1$ but evaluates $\\log_{256}N$ as $\\log_{256}2^{64}=64\\log_{256}2=64/8=8$ correctly, yet misreads popcount as the number of digits including leading zeros, or counts only the leading bit, rejecting (C)."
+    landed_on_option: "Marks (A), (B), (D) only."
+    diagnosis: "Misapplied binary-representation count to $2^{64}-1$."
+  - path: "Student inserts the $(2-1)$ factor but forgets the original $3=2+1$ replacement, so the chain starts from $(2+1)$ alone, producing $P=(2^{64}-1)/(2-1)$ but then mis-tracks the index and concludes $N=2^{63}$, rejecting (B) and (D)."
+    landed_on_option: "Marks only (A) or (C)."
+    diagnosis: "Off-by-one in telescoping exponent chain."
+
+review_notes: |
+  Classic Fermat-style telescoping product disguised as a logarithm problem; the prefactor $3=2+1$ is the hidden seed that makes the chain start from $k=0$. All four options are correct — this tests whether the student recognizes the closed form $P=2^{64}-1$ and then competently reads off log values and popcount. Difficulty T3: one key idea (telescoping) but four consistency checks. Tagging under LOG.EQN.LOGRED.LOGBC because the option layer (B,D) hinges on log-base-change reductions; the underlying identity is algebraic but the answer surface is logarithmic. Could alternatively sit in ALG (Fermat product) — flag for reviewer.

@@ -1,0 +1,111 @@
+schema_version: 1
+
+question_code: CAL.CON.PWLIM.COSPOW.002
+
+fingerprint:
+  topic: CAL
+  subtopic: CON
+  idea: PWLIM
+  sub_idea: COSPOW
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 210
+  R4_seconds: 150
+
+source_metadata:
+  jee_authenticity_score: 8.6
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.6
+    reviewed_at: "2026-06-14"
+    notes: "continuity × differentiability case-driven"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613a_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For $x\in(-\pi,\pi)$, define
+  $$f(x)=\lim_{n\to\infty}\frac{(1+\cos x)^{n}+x\,\ln(1+x^{2})}{3+(1+\cos x)^{n}}.$$
+  Which of the following statement(s) is/are TRUE?
+
+  - (A) $f$ has exactly two points of discontinuity in $(-\pi,\pi)$
+  - (B) $f\!\left(\tfrac{2\pi}{3}\right)=1$
+  - (C) $f$ is right-continuous at $x=\tfrac{\pi}{2}$
+  - (D) $\displaystyle\lim_{x\to\pi^{-}}f(x)=\dfrac{\pi\,\ln(1+\pi^{2})}{3}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, D]
+
+solution: |
+  ### The IDEA
+  When a parameter-dependent limit involves $r^{n}$ with $r=1+\cos x$, the long-run behaviour splits by whether $r>1$, $0<r<1$, or $r=1$. Each regime gives a different closed form for $f$; the branch boundaries are the candidate discontinuity points, and at each boundary the value $f(x_0)$ (computed by direct substitution at $r=1$) is a third number, distinct from the one-sided limits.
+
+  ### Working
+  Write $r(x)=1+\cos x\in[0,2]$ on $(-\pi,\pi)$.
+
+  **Branch (i) $r>1$, i.e.\ $\cos x>0$:** $r^{n}\to\infty$, so the ratio $\to 1$. Hence $f(x)=1$ on $(-\pi/2,\pi/2)\setminus\{0\}$ — and at $x=0$ as well since $r(0)=2>1$.
+
+  **Branch (ii) $0<r<1$, i.e.\ $-1<\cos x<0$:** $r^{n}\to 0$, so the ratio $\to\dfrac{x\ln(1+x^{2})}{3}$.
+
+  **Branch (iii) $r=1$, i.e.\ $\cos x=0$, i.e.\ $x=\pm\pi/2$:** numerator $=1+x\ln(1+x^{2})$, denominator $=4$, so $f(\pm\pi/2)=\dfrac{1+x\ln(1+x^{2})}{4}$.
+
+  **Branch (iv) $r\to 0^{+}$ (as $x\to\pm\pi$):** since $r<1$ in a deleted neighbourhood, $r^{n}\to 0$ and the limit equals $\dfrac{x\ln(1+x^{2})}{3}$.
+
+  **(A)** Discontinuities of $f$ can occur only at the branch boundaries $x=\pm\pi/2$. At $x=\pi/2$:
+  $$\lim_{x\to(\pi/2)^{-}}f(x)=1,\quad \lim_{x\to(\pi/2)^{+}}f(x)=\tfrac{(\pi/2)\ln(1+\pi^{2}/4)}{3}\approx 0.651,\quad f(\pi/2)=\tfrac{1+(\pi/2)\ln(1+\pi^{2}/4)}{4}\approx 0.738.$$
+  All three are distinct, so $f$ is discontinuous at $\pi/2$. By the same calculation (the formula is odd-symmetric in the sense that the left/right roles swap, but the values remain pairwise distinct), $f$ is discontinuous at $-\pi/2$ too. Everywhere else $f$ is a composition of continuous functions on an open branch. Exactly two discontinuities: **TRUE**.
+
+  **(B)** $\cos(2\pi/3)=-1/2$, so $r=1/2<1$; branch (ii) gives
+  $$f(2\pi/3)=\tfrac{(2\pi/3)\ln(1+4\pi^{2}/9)}{3}\approx 0.998\ne 1.$$
+  **FALSE** (and the trap: numerically very close to $1$).
+
+  **(C)** From (A), right limit $\approx 0.651\ne f(\pi/2)\approx 0.738$. **FALSE**.
+
+  **(D)** Branch (iv): $\lim_{x\to\pi^{-}}f(x)=\dfrac{\pi\ln(1+\pi^{2})}{3}$. **TRUE**.
+
+  Correct: **(A), (D)**.
+
+wrong_paths:
+  - path: 'Student misses branch (iii) at $r=1$ entirely — substitutes $r^{n}\to 0$ or $r^{n}\to\infty$ at $x=\pm\pi/2$ without checking the equality case. They then conclude $f(\pi/2)$ equals one of the one-sided limits, so $f$ is right- (or left-)continuous at $\pi/2$.'
+    landed_on_option: "(A), (C), (D)"
+    diagnosis: 'TRAP-EDGE on $t^{n}$ at $t=1$. The third value $\tfrac{1+x\ln(1+x^{2})}{4}$ — coming from the literal denominator $3+1=4$ — is the whole point of the question.'
+  - path: 'Student evaluates $f(2\pi/3)$ numerically, sees it is close to $1$ ($\approx 0.998$), and ticks (B) without checking analytically.'
+    landed_on_option: "(A), (B), (D)"
+    diagnosis: 'Numerical-coincidence trap: $r=1/2$ is in branch (ii), so $f=\tfrac{x\ln(1+x^{2})}{3}\ne 1$. The value happens to land near $1$ but is not equal.'
+  - path: 'Student forgets branch (iv) and computes the $x\to\pi^{-}$ limit using branch (i) value $f=1$, since at $x=\pi-\varepsilon$, $\cos x$ is close to $-1$ and they overlook that $r=1+\cos x<1$ in that regime.'
+    landed_on_option: "(A) only"
+    diagnosis: 'Sign-of-$\cos x$ slip near $x=\pi$: $\cos x<0$ there, so $r<1$ and branch (ii)/(iv) applies, not branch (i).'
+
+review_notes: |
+  T4 / 8.6 calibration. Reuses the PWLIM idea + COSPOW sub-idea already
+  in use by CAL.CON.PWLIM.COSPOW.001, extending it to the
+  $r=1+\cos x$ variant where the equality branch ($r=1$) produces a
+  third, non-trivial value (numerator/denominator both $3+1=4$). Multi-correct
+  is calibrated for partial-marking play: the (B) trap is a near-miss
+  numerical coincidence ($\approx 0.998$ vs $1$), the (C) trap rewards
+  students who miss branch (iii), and (D) is a straightforward branch (iv)
+  application that students may skip if they already think they have the
+  answer. Solution stays inside the JEE syllabus (limit of $t^n$, piecewise
+  continuity, no $\varepsilon$-$\delta$).

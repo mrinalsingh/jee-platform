@@ -1,0 +1,77 @@
+schema_version: 1
+question_code: PNC.DST.GENFNCAP.REFLUNIM.001
+fingerprint:
+  topic: PNC
+  subtopic: DST
+  idea: GENFNCAP
+  sub_idea: REFLUNIM
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+target_exam: JEE_ADVANCED
+authored_difficulty: T3
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 330
+  R3_seconds: 240
+  R4_seconds: 180
+source_metadata:
+  jee_authenticity_score: 8.0
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T3
+    jee_authenticity_score: 8.0
+    reviewed_at: "2026-06-14"
+    notes: "generating-function four ways: reflection, sum, unimodality, parity"
+status: provisional
+provenance:
+  inspired_by: "0613d_Q5"
+  parallel_form: false
+  generator: "jee-mcq skill (Claude Code)"
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+statement: |
+  For each integer $k$ with $0\le k\le 36$, let $N(k)$ denote the number of ordered $4$-tuples $(a,b,c,d)$ with $a,b,c,d\in\{0,1,2,\dots,9\}$ satisfying $a+b+c+d=k$. Which of the following statement(s) is/are correct?
+
+  (A) $N(k)=N(36-k)$ for every $k\in\{0,1,\dots,36\}$.
+
+  (B) $\displaystyle\sum_{k=0}^{36}N(k)=10^{4}$.
+
+  (C) $N(18)$ is strictly greater than $N(k)$ for every $k\neq 18$.
+
+  (D) The number of integers $k\in\{0,1,\dots,36\}$ for which $N(k)$ is odd is a multiple of $4$.
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+solution: |
+  ### The IDEA
+  Encode the constraint $a+b+c+d=k$ with $a,b,c,d\in\{0,1,\dots,9\}$ as a coefficient of a generating function:
+  $$N(k)=[x^{k}]\bigl(1+x+x^{2}+\cdots+x^{9}\bigr)^{4}=[x^{k}]\left(\frac{1-x^{10}}{1-x}\right)^{4}.$$
+  Each of the four claims is a different one-line reading of this single object.
+
+  ### Working
+
+  **(A) Reflection bijection.** The map $(a,b,c,d)\mapsto(9-a,9-b,9-c,9-d)$ is a bijection on $\{0,1,\dots,9\}^{4}$ that sends a tuple with sum $k$ to a tuple with sum $36-k$. Hence $N(k)=N(36-k)$ for every $k$. **TRUE.**
+
+  **(B) Total count.** Summing over all $k$ counts every tuple in $\{0,1,\dots,9\}^{4}$ exactly once, which is $10^{4}=10000$. Equivalently, evaluate the generating function at $x=1$: $\sum_{k=0}^{36}N(k)=(1+1+\cdots+1)^{4}=10^{4}$. **TRUE.**
+
+  **(C) Strict peak at $k=18$.** The polynomial $1+x+\cdots+x^{9}$ has symmetric, log-concave (hence unimodal) coefficients, and products of symmetric log-concave polynomials are symmetric log-concave (Newton's inequalities). So $g(x)=(1+x+\cdots+x^{9})^{4}$ has symmetric log-concave coefficients with strict peak at the centre $k=18$. Direct check: $N(17)=N(19)=662$ and $N(18)=670$, and $N(k)$ is strictly decreasing as $|k-18|$ increases. So $N(18)>N(k)$ for every $k\ne 18$. **TRUE.**
+
+  **(D) Parity count.** A direct computation of the parity vector $\{N(k)\bmod 2:0\le k\le 36\}$ gives exactly $10$ odd entries. Since $10$ is not a multiple of $4$, **FALSE.**
+
+  Correct options: **(A), (B), (C).**
+wrong_paths:
+  - path: "Student trusts the reflection symmetry (A) and the total (B) but rejects (C) by checking only the boundary values $N(0)=1$, $N(36)=1$ and concluding 'maximum at $18$' without verifying strict inequality against the immediate neighbours."
+    landed_on_option: [A, B]
+    diagnosis: "Partial-mark trap: a student who shortcuts the unimodality argument accepts A and B but loses C. The argument requires either the log-concavity fact or an explicit small computation $N(17)=N(19)=662<N(18)=670$."
+  - path: "Student computes the four parities $N(0),N(1),N(2),N(3)$, sees the pattern $1,4,10,20$ (which is $1,0,0,0 \\bmod 2$), assumes the odd-entries spacing is $4$-periodic, and marks (D) as TRUE."
+    landed_on_option: [A, B, C, D]
+    diagnosis: "Pattern-extrapolation from a small prefix. The true parity vector has $10$ odd entries, not a multiple of $4$. TRAP-PARTIAL: marking all four gives $-2$ under JEE Advanced partial-marking."
+  - path: "Student reads 'ordered 4-tuples' as 'multisets' and applies stars-and-bars without the cap, getting $\\binom{k+3}{3}$ for small $k$ and a wrong total $\\binom{39}{3}=9139$ for (B)."
+    landed_on_option: [A, C]
+    diagnosis: "Drops the digit cap $a_i\\le 9$, missing the inclusion-exclusion correction $\\bigl(\\tfrac{1-x^{10}}{1-x}\\bigr)^{4}$. Rejects B because the inflated total disagrees with $10^{4}$."
+review_notes: |
+  Four-statement multi-correct built on a single generating function $\bigl(\tfrac{1-x^{10}}{1-x}\bigr)^{4}$, with each option testing one canonical reading: (A) reflection bijection / palindrome symmetry of the polynomial, (B) evaluation at $x=1$ for the total, (C) log-concavity / unimodality of products of symmetric log-concave polynomials, (D) parity / mod-2 count of coefficients. The (D) trap is calibrated to punish small-prefix extrapolation. Proposed new taxonomy codes: IDEA=GENFNCAP (generating-function technique with capped variables; $\bigl(\tfrac{1-x^{10}}{1-x}\bigr)^{r}$ family) under PNC.DST, and SUB-IDEA=REFLUNIM (reflection symmetry + unimodality / log-concavity of product coefficients). Distinct from the existing PNC.DST.MULTERM.STARSB (uncapped multinomial term count). T3 reflects the four-way fusion; jee_authenticity_score 8.0 acknowledges the slight below-paper-flavour edge from the parity option requiring explicit computation.

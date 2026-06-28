@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: CAL.ARE.AFFMAP.ELLDISK.001
+
+fingerprint:
+  topic: CAL
+  subtopic: ARE
+  idea: AFFMAP
+  sub_idea: ELLDISK
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609e_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $A(k)=\bigl|\{(x,y):\tfrac{x^{2}}{4}+y^{2}\le1,\ y\ge x+k\}\bigr|$ denote the area of the region inside the ellipse $\tfrac{x^{2}}{4}+y^{2}\le1$ lying above the line $y=x+k$. Which of the following are correct?
+
+  - (A) $A(0)=\dfrac{\pi}{2}$
+  - (B) $A(k)=A(-k)$ for all $k\in\mathbb{R}$
+  - (C) $A(2)=2\arctan\tfrac12-\tfrac{4}{5}$
+  - (D) $A(k)=0\iff k\ge\sqrt5$; and $A(2)>0$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  For an area cut from an ellipse by a straight line, apply the area-preserving-up-to-scale affine map that turns the ellipse into the unit disk. Distances change anisotropically, so the perpendicular distance from the origin to the transformed chord must be recomputed; once in the disk picture, the area is a standard circular-segment integral.
+
+  ### Working
+  Use the substitution $(X,Y)=(x/2,\ y)$. The ellipse $\tfrac{x^{2}}{4}+y^{2}\le1$ becomes the unit disk $X^{2}+Y^{2}\le1$, the area element scales as $dx\,dy=2\,dX\,dY$, and the line $y=x+k$ becomes $Y=2X+k$, whose perpendicular distance from the origin is
+  $$\rho=\frac{|k|}{\sqrt{1^{2}+2^{2}}}=\frac{|k|}{\sqrt5}.$$
+  Define the circular-segment function $\mathrm{seg}(\rho)=\arccos\rho-\rho\sqrt{1-\rho^{2}}$ for $0\le\rho\le1$, which gives the area of a unit-disk cap at signed distance $\rho$ from the centre. Including the Jacobian $2$,
+  $$A(k)=\begin{cases}2\,\mathrm{seg}(\rho),& k>0,\\[2pt] 2\bigl(\pi-\mathrm{seg}(\rho)\bigr),& k\le0.\end{cases}$$
+
+  **(A):** At $k=0$ the chord passes through the centre, splitting the disk in half, so $A(0)=2\cdot\tfrac{\pi}{2}=\pi\ne\tfrac{\pi}{2}$. False.
+
+  **(B):** The two halves are complementary, giving $A(k)+A(-k)=2\pi$, not $A(k)=A(-k)$ (which would force $A(k)=\pi$ for all $k$). False.
+
+  **(C):** At $k=2$, $\rho=2/\sqrt5$, so $\sqrt{1-\rho^{2}}=1/\sqrt5$. Using $\arccos(2/\sqrt5)=\arctan(1/2)$,
+  $$A(2)=2\Bigl(\arctan\tfrac12-\tfrac{2}{\sqrt5}\cdot\tfrac{1}{\sqrt5}\Bigr)=2\arctan\tfrac12-\tfrac{4}{5}.$$
+  True.
+
+  **(D):** $A(k)=0$ iff the line clears the ellipse on the upper side, i.e.\ $\rho\ge1\Leftrightarrow k\ge\sqrt5$. Since $\sqrt5\approx2.236>2$, $A(2)>0$. True.
+
+wrong_paths:
+  - path: "Using the wrong perpendicular distance $\\rho=|k|/\\sqrt2$ (forgetting that the affine map $x\\to x/2$ stretches the line's coefficients) and concluding $A(0)=\\pi/2$ by treating the original tilted chord as halving the ellipse area $\\pi/2$ rather than the disk area."
+    landed_on_option: "A"
+    diagnosis: "Classic 'half of a half' slip: students remember the ellipse has area $2\\pi$ for semi-axes $2,1$ but then mistakenly halve $\\pi$ (the area of the disk image) or take half of $\\pi$ — TRAP-PARTIAL: a half-completed computation feels like the answer."
+  - path: "Asserting $A(k)=A(-k)$ from the symmetry $y\\to -y$, forgetting that the line $y=x+k$ is not horizontal so the two regions on either side of $k=0$ are complementary, not congruent."
+    landed_on_option: "B"
+    diagnosis: "Confusing the genuine relation $A(k)+A(-k)=2\\pi$ with even symmetry. The chord's slope breaks the reflective symmetry the student is invoking."
+  - path: "Computing the chord-clearance condition by ignoring the affine scaling: setting the distance from origin to $y=x+k$ as $|k|/\\sqrt2\\ge1$, giving threshold $k\\ge\\sqrt2$ and wrongly concluding $A(2)=0$."
+    landed_on_option: "Rejects (D)"
+    diagnosis: "TRAP-EDGE: boundary value computed in the wrong coordinate frame. The Euclidean distance in $(x,y)$ does not equal the distance after the area-preserving map; the affine map is non-isometric."
+
+review_notes: |
+  New axis-3 code AFFMAP and axis-4 code ELLDISK introduced under CAL.ARE — first item populating
+  this branch. AFFMAP = "area via affine map to disk/standard shape"; ELLDISK = "ellipse-to-unit-disk
+  substitution with Jacobian and recomputed chord distance". T4: the trap is selecting (A) or (B) by
+  a plausible symmetry argument; resisting requires the affine-map insight, which is non-syllabus-routine
+  but JEE-permissible. Multiple correct (C,D) matches the keyfoot. Calibrate R1 long because students
+  rarely think to substitute.

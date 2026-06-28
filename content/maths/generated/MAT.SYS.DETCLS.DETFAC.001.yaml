@@ -1,0 +1,94 @@
+schema_version: 1
+
+question_code: MAT.SYS.DETCLS.DETFAC.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SYS
+  idea: DETCLS
+  sub_idea: DETFAC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 300   # ~5 min — must check four claims, including the rank test at both roots of D(n)
+  R2_seconds: 210   # ~3.5 min — recognises the (n-1)^2(n+2) factoring and the two degenerate cases
+  R3_seconds: 150   # ~2.5 min — fluent: read off the 9 unique-point integers, handle n=1 and n=-2 quickly
+  R4_seconds: 100   # ~1.7 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q7"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For an integer parameter $n$ consider the three planes
+  $$
+  Q_1:\ nx+y+z=1,\qquad Q_2:\ x+ny+z=1,\qquad Q_3:\ x+y+nz=n^{2},
+  $$
+  with coefficient determinant
+  $$
+  D(n)=\det\!\begin{pmatrix}n&1&1\\1&n&1\\1&1&n\end{pmatrix}=(n-1)^{2}(n+2).
+  $$
+
+  Which of the following are correct?
+
+  - **(A)** For exactly $9$ of the integers $n\in\{-5,-4,\dots,5\}$ the three planes meet in a unique point.
+  - **(B)** At $n=1$ the system has no solution.
+  - **(C)** At $n=-2$ the system is consistent.
+  - **(D)** At $n=1$ the three planes are coincident (one and the same plane).
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, D]
+
+solution: |
+  ### The IDEA
+  A unique point of intersection exists exactly when $D(n)\ne 0$. Since
+  $$D(n)=(n-1)^{2}(n+2)=0 \iff n\in\{1,-2\},$$
+  the only candidates for degeneracy are $n=1$ and $n=-2$. At each of these we compare the rank of the coefficient matrix with the rank of the augmented matrix — and here the right-hand side $(1,1,n^{2})$ depends on $n$, so each case must be checked separately.
+
+  ### (A) — counting the unique-intersection integers
+  The set $\{-5,-4,\dots,5\}$ contains $11$ integers. Exactly two of them, $n=1$ and $n=-2$, make $D(n)=0$. For the other $11-2=9$ integers $D(n)\ne 0$, so the planes meet in a unique point. **(A) is true.**
+
+  ### (D) and (B) — the case $n=1$
+  At $n=1$ every coefficient row becomes $(1,1,1)$, and the right-hand sides are
+  $$1,\quad 1,\quad n^{2}=1.$$
+  So all three equations collapse to the single plane
+  $$x+y+z=1.$$
+  The three planes are literally one and the same plane: they are **coincident**, and the system has **infinitely many** solutions (every point of that plane). Hence **(D) is true**, and since the system does have solutions, **(B) (“no solution”) is false.**
+
+  ### (C) — the case $n=-2$
+  At $n=-2$ the coefficient matrix is
+  $$\begin{pmatrix}-2&1&1\\1&-2&1\\1&1&-2\end{pmatrix},$$
+  whose rows sum to $(0,0,0)$, so its rank is $2$ (the rows satisfy $R_1+R_2+R_3=0$ but no two are proportional). The right-hand side is $(1,1,n^{2})=(1,1,4)$. Applying the same dependence $R_1+R_2+R_3$ to the augmented column gives $1+1+4=6\ne 0$, so the augmented matrix has rank $3>2$. Coefficient rank $<$ augmented rank $\Rightarrow$ the system is **inconsistent**. Hence **(C) (“consistent”) is false.**
+
+  ### Verdict
+  Correct options: **(A), (D)**. The discriminating insight is that the *same* vanishing determinant produces two opposite outcomes — coincident planes at $n=1$ but no solution at $n=-2$ — entirely because of how the parameter-dependent RHS lines up with (or breaks) the row dependence.
+
+wrong_paths:
+  - path: "Treats D(n)=0 as automatically meaning 'no unique solution, so no solution.' Applies this blanket rule at n=1 and concludes the system has no solution there, never noticing that the three equations collapse to one identical plane."
+    landed_on_option: "Picks B (and likely drops D)."
+    diagnosis: "TRAP-EDGE: a zero determinant only rules out a *unique* solution; it does not distinguish 'infinitely many' from 'none.' The rank-of-augmented test is skipped. At n=1 the RHS values are all 1 (since n^2=1), so the planes coincide — infinitely many solutions, not zero."
+  - path: "Checks n=-2, sees rank of the coefficient matrix drop to 2 (rows sum to zero), and assumes a rank-deficient square system is always consistent with infinitely many solutions — without testing the augmented column."
+    landed_on_option: "Picks C."
+    diagnosis: "Fails the augmented-rank check: the same row dependence R1+R2+R3 applied to the RHS (1,1,4) gives 6 ≠ 0, so augmented rank is 3 while coefficient rank is 2 — inconsistent. Consistency at a degenerate parameter must be verified against the actual RHS, here (1,1,n^2)."
+  - path: "Counts the unique-intersection integers but forgets that D(n)=(n-1)^2(n+2) has the *repeated* root n=1 contributing only one integer, or miscounts the size of {-5,...,5} as 10 instead of 11, landing on '8' or '10' unique-point values."
+    landed_on_option: "Rejects A."
+    diagnosis: "Arithmetic/edge slip on the integer count: |{-5,...,5}| = 11, and the distinct degenerate integers are exactly {1,-2} (the double root at n=1 still removes only one integer), leaving 11-2 = 9. Option A is correct; rejecting it is the off-by-one/repeated-root error."
+
+review_notes: |
+  - Variant of 0609d_Q1 (same symmetric (n-1)^2(n+2) determinant) but NOT a parallel form of any banked item: the RHS is deliberately set to (1,1,n^2) so that the two roots of D give *opposite* verdicts — coincident/infinite at n=1 versus inconsistent at n=-2. That asymmetry is the whole point and is what separates a careful solver from a determinant-only solver.
+  - surface = SURF-PARAM (n is a genuine real/integer unknown driving the structure); trap = TRAP-EDGE (the degenerate-determinant edge cases, where det=0 is wrongly equated with 'no solution').
+  - authored_difficulty T2: the determinant is pre-factored for the student, so the load is purely the rank/consistency casework. The discriminating step (separate verdicts at the two roots) nudges it above a pure T1.
+  - First IDEA/SUB-IDEA created under MAT.SYS — see taxonomy extension (RANKCON / DETFAC). Future variants under this fingerprint could vary the RHS pattern or ask for the parameter set giving infinitely many vs no solution as a NUM-INT.
+  - Times are estimates pending empirical calibration.

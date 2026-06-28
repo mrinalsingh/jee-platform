@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: ALG.BIN.CONSAP.PERFSQ.001
+
+fingerprint:
+  topic: ALG
+  subtopic: BIN
+  idea: CONSAP
+  sub_idea: PERFSQ
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $S=\{n\in[2,100]:\binom{n}{r-1},\binom{n}{r},\binom{n}{r+1}$ are in A.P. for some $r\}$.
+
+  - (A) $\min S=7$
+  - (B) $n+2$ is a perfect square for every $n\in S$
+  - (C) $\lvert S\rvert=8$
+  - (D) for $n=14$ the A.P. occurs at $r=4$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  Three consecutive binomial coefficients $\binom{n}{r-1},\binom{n}{r},\binom{n}{r+1}$ are in A.P. iff
+  $\binom{n}{r-1}+\binom{n}{r+1}=2\binom{n}{r}$. Dividing through by $\binom{n}{r}$ and using the
+  consecutive-ratio identities reduces the condition to the clean Diophantine statement
+  $n+2=(2r-n)^{2}$, i.e. $n+2$ must be a perfect square.
+
+  ### Working
+  Using $\dfrac{\binom{n}{r-1}}{\binom{n}{r}}=\dfrac{r}{n-r+1}$ and $\dfrac{\binom{n}{r+1}}{\binom{n}{r}}=\dfrac{n-r}{r+1}$,
+  the A.P. condition becomes
+  $$\frac{r}{n-r+1}+\frac{n-r}{r+1}=2.$$
+  Clearing denominators yields $n^{2}-(4r+1)n+(4r^{2}-2)=0$. Treating this as a quadratic in $n$
+  with discriminant $8r^{2}+8r+9$, after simplification the condition is equivalent to
+  $$n+2=(2r-n)^{2}=k^{2}\quad(k\ge 3).$$
+  Conversely, every perfect square $n+2=k^{2}$ with $k\ge 3$ yields a valid integer $r$
+  (specifically $r=\tfrac{n\pm k}{2}$). For $n\in[2,100]$, $n+2\in[4,102]$, so the admissible
+  perfect squares are $9,16,25,36,49,64,81,100$, giving
+  $$S=\{7,14,23,34,47,62,79,98\},\qquad |S|=8.$$
+  Hence $\min S=7$ (A), $n+2$ is always a perfect square (B), and $|S|=8$ (C). For $n=14$
+  we have $k=4$ and $r=\tfrac{14\pm 4}{2}\in\{5,9\}$, not $r=4$, so (D) is false.
+
+wrong_paths:
+  - path: "Student solves $n^{2}-(4r+1)n+(4r^{2}-2)=0$ for $n$ but botches the discriminant and concludes only that $n$ must be odd, accepting $D$ by checking some small $r$."
+    landed_on_option: "D (extra), missing the perfect-square structure"
+    diagnosis: "TRAP-PARTIAL: the algebraic condition is not pushed to the clean $(2r-n)^{2}=n+2$ form, so the student verifies $r=4$ at $n=14$ without re-examining whether $14+2=16$ forces $|2r-14|=4$."
+  - path: "Student counts perfect squares of the form $n+2$ with $n\\in[2,100]$ starting from $k=2$, getting $\\{2,7,14,\\dots,98\\}$ and $|S|=9$, rejecting (C)."
+    landed_on_option: "A, B but not C"
+    diagnosis: "Boundary slip: $k=2$ gives $n=2$, but at $n=2$ the only valid $r$ is $r=1$, making $\\binom{2}{0},\\binom{2}{1},\\binom{2}{2}=1,2,1$ — not an A.P. unless one allows $r$ outside $\\{1,\\dots,n-1\\}$. The correct lower bound is $k\\ge 3$."
+  - path: "Student writes the A.P. condition, divides by $\\binom{n}{r}$, but forgets the $-1$ in the second ratio, getting $\\frac{r}{n-r}+\\frac{n-r}{r+1}=2$ and never finds the perfect-square identity."
+    landed_on_option: "Picks only (A) after numerical search, missing (B), (C)"
+    diagnosis: "Algebraic slip in the consecutive-ratio identity; the student misses the elegant invariant and falls back to numerical enumeration, which is unreliable for the structural claims (B) and (C)."
+
+review_notes: |
+  Classic JEE binomial-A.P. identity; the elegance is the reduction to $n+2=(2r-n)^{2}$.
+  Multi-correct surface is "set characterization" (SURF-SET): three claims about $S$ are
+  structural and one is a specific numerical verification at $n=14$. New taxonomy nodes
+  proposed: IDEA `CONSAP` (consecutive binomial coefficients in arithmetic progression)
+  and SUB-IDEA `PERFSQ` (the perfect-square invariant $n+2=(2r-n)^{2}$). Both are under
+  ALG.BIN. Difficulty T3 — standard but requires the key algebraic insight.

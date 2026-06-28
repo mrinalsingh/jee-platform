@@ -1,0 +1,96 @@
+schema_version: 1
+
+question_code: ALG.CPX.SUBROU.MAXORB.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: SUBROU
+  sub_idea: MAXORB
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q4"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\omega = e^{i\pi/3}$ and for each subset $T \subseteq \{0,1,2,3,4,5\}$ define
+  $$z(T) = \sum_{k \in T} \omega^{k}.$$
+  Let $M = \max_{T} |z(T)|$ and $N = \#\{T : |z(T)| = M\}$. Then:
+
+  - (A) $(M,N) = (2,3)$
+  - (B) $(M,N) = (3,6)$
+  - (C) $(M,N) = (2,6)$
+  - (D) $(M,N) = (1,6)$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C]
+
+solution: |
+  ### The IDEA
+  The six values $1,\omega,\omega^{2},\dots,\omega^{5}$ are the sixth roots of unity, unit vectors at angles
+  $0^{\circ},60^{\circ},\dots,300^{\circ}$. Maximising $|z(T)|$ over subsets is a geometric "vector-pile-up" problem:
+  the optimum is achieved by piles concentrated in a half-plane, and the symmetry group of the hexagon (rotations
+  by multiples of $60^{\circ}$) acts on the family of maximisers, so the count $N$ is a multiple of $6$ unless the
+  maximiser is fixed by some rotation.
+
+  ### Working
+  Pair opposite roots: $\omega^{k+3} = -\omega^{k}$, so including both $\omega^{k}$ and $\omega^{k+3}$
+  contributes $0$ to $z(T)$. Hence we may restrict attention to subsets $T$ that contain at most one element
+  from each opposite pair $\{0,3\},\{1,4\},\{2,5\}$. Such a subset has at most $3$ unit vectors lying in a
+  half-plane.
+
+  Take any choice of one representative from each of the three opposite pairs (there are $2^{3}=8$ such choices,
+  including the empty pile of $0$ representatives picked). Choosing one representative from each pair and
+  summing: e.g.\ $1 + \omega + \omega^{2}$. The three unit vectors at $0^{\circ},60^{\circ},120^{\circ}$ have
+  resultant of length $2$ (the middle vector has length $1$, the two outer ones project a total of $1$ onto its
+  direction, giving $2$). So $M \ge 2$.
+
+  Could $M = 3$? That would need three unit vectors with equal direction, impossible among distinct sixth roots.
+  Any subset $T$ has $|z(T)| \le |T|$, with equality iff all chosen vectors are collinear and codirectional --
+  impossible for $|T| \ge 2$ among the six distinct roots. A careful triangle-inequality check (or direct
+  enumeration of all $2^{6}=64$ subsets) confirms $M = 2$ exactly.
+
+  Counting maximisers: a sum of three \emph{consecutive} sixth roots
+  $\omega^{j} + \omega^{j+1} + \omega^{j+2}$ has modulus $2$. There are $6$ such "consecutive triples"
+  (one for each starting index $j=0,1,\dots,5$). Any other subset of three roots either skips one of the
+  six positions (giving a smaller resultant) or includes opposite pairs (which cancel). So $N = 6$.
+
+  Therefore $(M,N) = (2,6)$, and the correct option is \textbf{(C)}.
+
+wrong_paths:
+  - path: "Sums three consecutive roots and notes that the resultant has length 2, but only counts the rotational orbit up to the half-turn symmetry (identifying T with its complementary triple of opposites), getting N = 3."
+    landed_on_option: "A"
+    diagnosis: "Confuses the geometric orbit under the rotation group (order 6) with the orbit under rotation + reflection that maps a triple to its opposite. The opposite triple {3,4,5} is NOT the same set as {0,1,2}, so it is a distinct maximiser. TRAP-PARTIAL: undercounts the symmetry orbit."
+  - path: "Assumes M = number of roots in a half-plane = 3 (the three roots in the upper half-plane add to a resultant — student mistakenly equates |sum| with cardinality), getting M = 3 with N = 6 (the six rotations)."
+    landed_on_option: "B"
+    diagnosis: "Confuses |z(T)| with |T|. Triangle inequality gives only |z(T)| <= |T|, with equality requiring all vectors collinear — impossible for distinct sixth roots beyond a single vector."
+  - path: "Computes the resultant of a single root (M=1) and the six rotational images, getting (1,6)."
+    landed_on_option: "D"
+    diagnosis: "Stops at a one-element subset T={k} which gives |z(T)|=1 and 6 such singletons. Fails to test larger T that pile up vectors in a half-plane."
+
+review_notes: |
+  Inspired by source 0609c_Q4. Multi-correct format with a single correct option (C). Difficulty T4 because
+  the optimisation requires both a half-plane / opposite-pair argument (for M=2) and a careful count of the
+  rotational orbit (for N=6). The trap TRAP-PARTIAL targets students who undercount the orbit (option A) or
+  conflate |sum| with the number of summands (option B). Tagged as ALG.CPX since the underlying objects are
+  complex numbers (roots of unity); SUBROU (subset-sum of roots of unity) and MAXORB (maximiser orbit count)
+  are proposed new codes.

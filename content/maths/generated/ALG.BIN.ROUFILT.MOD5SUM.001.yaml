@@ -1,0 +1,90 @@
+schema_version: 1
+
+question_code: ALG.BIN.ROUFILT.MOD5SUM.001
+
+fingerprint:
+  topic: ALG
+  subtopic: BIN
+  idea: ROUFILT
+  sub_idea: MOD5SUM
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609c_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\omega = e^{2\pi i/5}$ and for $j \in \{0,1,2,3,4\}$ define
+  $$A_j = \sum_{\substack{0 \le k \le 20 \\ k \equiv j \pmod 5}} \binom{20}{k}.$$
+  Let $(F_m)$ denote the Fibonacci sequence with $F_1 = F_2 = 1$. Which of the following statements are TRUE?
+
+  - (A) $A_0 = 215766$
+  - (B) $A_1 = A_2$
+  - (C) $\displaystyle\sum_{\substack{k \ge 1 \\ k \equiv 0 \pmod 5}} \binom{20}{k} = 215766$
+  - (D) $A_0 - A_2 = F_{21}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, D]
+
+solution: |
+  ### The IDEA
+  The roots-of-unity filter: if $\omega = e^{2\pi i/5}$ is a primitive 5th root of unity, then for any polynomial $P(x) = \sum_k c_k x^k$,
+  $$\sum_{k \equiv j \pmod 5} c_k = \frac{1}{5}\sum_{t=0}^{4}\omega^{-jt}P(\omega^{t}).$$
+  Apply this to $P(x) = (1+x)^{20}$ to extract residue-class binomial sums.
+
+  ### Working
+  With $P(x) = (1+x)^{20}$,
+  $$A_j = \frac{1}{5}\sum_{t=0}^{4}\omega^{-jt}(1+\omega^{t})^{20}.$$
+  Note $(1+\omega^0)^{20} = 2^{20} = 1048576$. For $t = 1,2,3,4$ one computes $|1+\omega^{t}|^{20}$ and the conjugate-pair structure. The full evaluation gives
+  $$A_0 = 215766,\qquad A_1 = A_4 = 211585,\qquad A_2 = A_3 = 204820.$$
+  (Check: $A_0+A_1+A_2+A_3+A_4 = 215766 + 2(211585) + 2(204820) = 1048576 = 2^{20}$.) So **(A) is TRUE**.
+
+  **(B)** The genuine symmetry from $\binom{20}{k} = \binom{20}{20-k}$ pairs residue $j$ with residue $20-j \equiv -j \pmod 5$, i.e. $A_1 = A_4$ and $A_2 = A_3$. It does NOT force $A_1 = A_2$; indeed $211585 \neq 204820$. **(B) is FALSE**.
+
+  **(C)** The sum starts at $k = 1$, which drops $\binom{20}{0} = 1$ from $A_0$. So the value is $215766 - 1 = 215765 \neq 215766$. **(C) is FALSE** (off-by-one in the index).
+
+  **(D)** $A_0 - A_2 = 215766 - 204820 = 10946$. The Fibonacci numbers are $F_{19}=4181,\;F_{20}=6765,\;F_{21}=10946$. So $A_0 - A_2 = F_{21}$. **(D) is TRUE**.
+
+  Final answer: **(A), (D)**.
+
+wrong_paths:
+  - path: "Assume the residue-class sums are symmetric under $j \\leftrightarrow j+1$ instead of $j \\leftrightarrow -j$, marking $A_1 = A_2$."
+    landed_on_option: "B"
+    diagnosis: "Misreads the symmetry of $\\binom{20}{k}$. The reflection $k \\to 20-k$ gives residue pairs $(0,0),(1,4),(2,3)$, not adjacent equality. Classic TRAP-PARTIAL: confusing one symmetry for another."
+  - path: "Read option (C) as $A_0 = 215766$ without noticing the lower index $k \\ge 1$, and mark it true alongside (A)."
+    landed_on_option: "C"
+    diagnosis: "Off-by-one trap: $\\binom{20}{0} = 1$ is excluded by the $k \\ge 1$ condition, so the displayed sum equals $215765$. Students who skim the index condition fall for this."
+  - path: "Skip (D) because they cannot guess any Fibonacci connection without performing the full roots-of-unity computation, marking only (A)."
+    landed_on_option: "A only"
+    diagnosis: "Partial-credit failure: (D) requires actually computing $A_2 = 204820$ to see the Fibonacci hit. Students who stop after verifying (A) miss it. TRAP-PARTIAL."
+  - path: "Compute $A_0$ incorrectly by forgetting the factor $1/5$ in the filter formula."
+    landed_on_option: "neither A nor D"
+    diagnosis: "Forgetting the $\\tfrac15$ normalization in the roots-of-unity filter inflates every $A_j$ by a factor of 5, so $A_0$ is reported as $5 \\cdot 215766$, falsifying (A) and (D)."
+
+review_notes: |
+  Multi-correct with two true options (A) and (D). (A) tests the basic roots-of-unity filter computation;
+  (D) is the "hidden Fibonacci" surprise that requires the full evaluation of $A_2$.
+  (B) is a symmetry trap (wrong pairing of residue classes); (C) is an off-by-one index trap.
+  Difficulty T4: requires correct setup of roots-of-unity filter PLUS numerical execution PLUS recognizing
+  $10946 = F_{21}$. Time budgets reflect a strong student who knows the filter technique.
+  Taxonomy note: introduces new IDEA "ROUFILT" (roots-of-unity filter for binomial residue sums) and
+  SUB-IDEA "MOD5SUM" (mod-5 residue partition of $\binom{n}{k}$) under ALG.BIN. No existing ALG.BIN
+  IDEA/SUB-IDEA codes were listed in the provided taxonomy.

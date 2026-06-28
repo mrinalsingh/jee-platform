@@ -1,0 +1,93 @@
+schema_version: 1
+
+question_code: MAT.ALG.QUADFORM.VIETACOR.001
+
+fingerprint:
+  topic: MAT
+  subtopic: ALG
+  idea: QUADFORM
+  sub_idea: VIETACOR
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $M=\begin{bmatrix}1&3&2\\2&5&1\\15&3&2\end{bmatrix}$ and define
+  $$S=\Big\{x\in\mathbb R:\ \begin{bmatrix}1&x&1\end{bmatrix}\,M\,\begin{bmatrix}1\\2\\x\end{bmatrix}=0\Big\}.$$
+  Which of the following statement(s) is/are correct?
+
+  (A) The smaller element of $S$ equals $-10$.
+
+  (B) $|S|=2$.
+
+  (C) $\displaystyle\prod_{x\in S}x=28$.
+
+  (D) $\displaystyle\sum_{x\in S}x^{2}=256$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  The scalar $v^{T}Mw$ with $v=(1,x,1)^{T}$ and $w=(1,2,x)^{T}$ is a quadratic in $x$.
+  Expand carefully via $\sum_{i,j}M_{ij}v_{i}w_{j}$, then apply Vieta to read off
+  $|S|$, $\sum x$, $\prod x$, and $\sum x^{2}=(\sum x)^{2}-2\prod x$.
+
+  ### Working
+  Compute $Mw$ with $w=(1,2,x)^{T}$:
+  $$Mw=\begin{bmatrix}1+6+2x\\2+10+x\\15+6+2x\end{bmatrix}=\begin{bmatrix}7+2x\\12+x\\21+2x\end{bmatrix}.$$
+  Then
+  $$v^{T}Mw=1\cdot(7+2x)+x\cdot(12+x)+1\cdot(21+2x)=x^{2}+16x+28.$$
+  Setting this to $0$ gives $x^{2}+16x+28=0$, so
+  $$x=\frac{-16\pm\sqrt{256-112}}{2}=\frac{-16\pm12}{2}=-2,\,-14.$$
+  Hence $S=\{-2,-14\}$.
+
+  - $|S|=2$ — option (B) is TRUE.
+  - $\prod_{x\in S}x=(-2)(-14)=28$ — option (C) is TRUE.
+  - Smaller element is $-14$, not $-10$ — option (A) is FALSE.
+  - $\sum x^{2}=(\sum x)^{2}-2\prod x=(-16)^{2}-2(28)=256-56=200\neq 256$ — option (D) is FALSE.
+
+wrong_paths:
+  - path: "Misexpand $v^{T}Mw$ (drop a cross term such as the $M_{22}v_{2}w_{2}=5\\cdot x\\cdot 2=10x$) and get $x^{2}+6x+20=0$ or land on $x=-10$ as the smaller root via an arithmetic slip."
+    landed_on_option: "A"
+    diagnosis: "Bilinear-form expansion error: students compute $Mw$ and then forget that $v_{2}=x$ multiplies all of row 2 of $Mw$, or skip a cross term. The fabricated root $-10$ is a planted trap."
+  - path: "Compute $\\sum x^{2}$ as $(\\sum x)^{2}=(-16)^{2}=256$, forgetting the $-2\\prod x$ correction in $\\sum x^{2}=(\\sum x)^{2}-2\\prod x$."
+    landed_on_option: "D"
+    diagnosis: "Classic Vieta-identity slip: confusing $\\sum x_i^{2}$ with $(\\sum x_i)^{2}$. The constant 28 was chosen so that the wrong answer 256 looks clean."
+  - path: "Set up the quadratic correctly as $x^{2}+16x+28=0$ but then conclude (D) is true because $(-16)^{2}=256$, ignoring the product correction."
+    landed_on_option: "B, C, D"
+    diagnosis: "Partial-credit trap: gets (B) and (C) right but adds (D) via the same Vieta misidentity. This is the most common 3-tick wrong answer."
+
+review_notes: |
+  Source key (\keyfoot in with_key file) reads "(B), (C), (D)" but the worked solution
+  (and a direct recomputation) gives (B), (C). The (D) tick in the keyfoot appears to be
+  a typo — $\sum x^{2}=200$, not 256. Used the solution's correct answer here.
+  Taxonomy: MAT.ALG (matrix algebra / bilinear-form products) is not in the current
+  axis-2 list (only ALG, DET, INV, SYS, SPL, TRN under MAT). Closest existing fit might
+  be MAT.ALG since the core skill is computing a matrix-vector-vector product, but the
+  IDEA (quadratic-in-$x$ from a bilinear form, then Vieta) and SUB-IDEA (use of Vieta
+  corrections for $\sum x^{2}$) are novel. Flagging for taxonomy extension:
+  - axis-2 MAT.ALG (matrix arithmetic, products $v^{T}Mw$)
+  - axis-3 QUADFORM (a matrix-form expression reduces to a univariate quadratic)
+  - axis-4 VIETACOR (read $|S|$, $\prod$, $\sum$, $\sum^{2}$ off Vieta with the
+    standard $\sum x^{2}=(\sum x)^{2}-2\prod x$ correction)

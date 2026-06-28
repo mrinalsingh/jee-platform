@@ -1,0 +1,111 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.008
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 225
+  R4_seconds: 180
+
+source_metadata:
+  jee_authenticity_score: 8.5
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.5
+    reviewed_at: "2026-06-14"
+    notes: "case-driven positive-root existence; D=0 boundary"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613b_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $a$ be a real parameter. The equation
+  $$ 4^{x} \;-\; (a-3)\,2^{x} \;+\; (a+4) \;=\; 0 $$
+  is required to have at least one real solution in $x$. Which of the following statement(s) is/are correct?
+
+  **(A)** Every $a$ with $a < -4$ makes the equation solvable.
+
+  **(B)** $a = 5 + 4\sqrt{2}$ makes the equation solvable.
+
+  **(C)** Every $a$ in the interval $(-4,\, 3)$ makes the equation solvable.
+
+  **(D)** $a = -4$ makes the equation solvable.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  Substitute $u = 2^{x}$. Since $2^{x}$ ranges over $(0,\infty)$, the original equation is
+  solvable in $x$ iff the resulting quadratic in $u$ has at least one **strictly positive** real root.
+  This is a textbook root-location problem for a real quadratic with three sign tests
+  (discriminant, sum, product) — but with the twist that we only need **one** positive root, so
+  the natural split is on the sign of the product.
+
+  ### Working
+  With $u = 2^{x} > 0$ the equation becomes
+  $$ u^{2} - (a-3)u + (a+4) = 0 \qquad (*) $$
+  with Vieta sum $S = a-3$, product $P = a+4$, and discriminant
+  $$ \Delta = (a-3)^{2} - 4(a+4) = a^{2} - 10a - 7. $$
+
+  **Case 1: $P < 0$, i.e.\ $a < -4$.** Then $(*)$ has two real roots of opposite sign, so one is
+  positive — equation is always solvable. **(A) TRUE.**
+
+  **Case 2: $P \ge 0$, i.e.\ $a \ge -4$.** Both roots (if real) have the same sign, so we need them
+  *both positive*: require $S > 0$ ($a > 3$), $P \ge 0$ ($a \ge -4$), and $\Delta \ge 0$, i.e.\
+  $a \ge 5 + 4\sqrt{2}$ or $a \le 5 - 4\sqrt{2}$.  Intersected with $a > 3$ this gives
+  $a \ge 5 + 4\sqrt{2} \approx 10.657$.
+
+  At $a = 5 + 4\sqrt{2}$, $\Delta = 0$ gives a repeated root $u = (a-3)/2 = 1 + 2\sqrt{2} > 0$.
+  **(B) TRUE.**
+
+  For $a \in (-4, 3)$: $P > 0$ and $S = a - 3 < 0$, so any real roots are both negative; on most of
+  this range $\Delta < 0$ anyway. No positive root. **(C) FALSE.**
+
+  At $a = -4$: $(*)$ becomes $u^{2} + 7u = 0$, with roots $u = 0$ and $u = -7$. Neither is strictly
+  positive ($2^{x} = 0$ has no real $x$). **(D) FALSE.**
+
+wrong_paths:
+  - path: "Reads $u = 2^x \\ge 0$ rather than $u > 0$ and accepts $u = 0$ as a valid root at $a = -4$, picking (D) in addition to (A) and (B)."
+    landed_on_option: "A, B, D"
+    diagnosis: "TRAP-EDGE on the strict positivity of $2^x$: the exponential never hits $0$, so $u = 0$ does not correspond to any real $x$. Standard 'product = 0 means a root exists' slip."
+  - path: "Uses only sum/product Vieta tests without enforcing $\\Delta \\ge 0$; concludes that on $(-4, 3)$ the quadratic has at least one positive root because $P > 0$ 'guarantees same-sign roots'."
+    landed_on_option: "A, B, C"
+    diagnosis: "Forgets that 'same-sign roots' is conditional on $\\Delta \\ge 0$ — and that the sign of $S$ then decides whether they are both positive or both negative. Adds the spurious interval $(-4, 3)$."
+  - path: "Solves Case 2 correctly to $a \\ge 5 + 4\\sqrt{2}$ but rejects equality, so $a = 5 + 4\\sqrt{2}$ is excluded; picks only (A)."
+    landed_on_option: "A"
+    diagnosis: "TRAP-EDGE on the discriminant boundary: at $\\Delta = 0$ the repeated root is positive, so the equation is still solvable. Treating the inequality as strict throws away the boundary case."
+
+review_notes: |
+  Exponential equation reduced to a parameter-quadratic in $u = 2^x$ requiring at least one
+  strictly positive root. The case split on $\mathrm{sgn}(P)$ keeps it short, but the
+  edge-case checks at $a = -4$ ($u = 0$ trap) and at $a = 5 + 4\sqrt{2}$ ($\Delta = 0$ boundary)
+  are what separate clean from sloppy work. Multi-correct with a calibrated $(-4, 3)$ distractor
+  that targets students who skip the discriminant test.

@@ -1,0 +1,80 @@
+schema_version: 1
+
+question_code: SOT.DIO.POWTOWER.ORDRED.001
+
+fingerprint:
+  topic: SOT
+  subtopic: DIO
+  idea: POWTOWER
+  sub_idea: ORDRED
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 420
+  R3_seconds: 330
+  R4_seconds: 240
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Remainders of large towers $7^{7^{7}},\ 17^{17^{17}},\ 23^{23},\ 13^{13^{13}}$ modulo $100,\ 25,\ 1000,\ 17$ respectively. Which of the following is/are correct?
+
+  (A) $7^{7^{7}}\bmod 100 = 43$
+
+  (B) $17^{17^{17}}\bmod 25 = 2$
+
+  (C) $23^{23}\bmod 1000 = 657$
+
+  (D) $13^{13^{13}}\bmod 17 = 4$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  **(A)** $\gcd(7,100)=1$ and $\mathrm{ord}_{100}(7)=4$ (since $7^2=49$, $7^4=2401\equiv 1$). Reduce the exponent $7^{7}$ modulo $4$: $7\equiv -1\pmod 4$, so $7^7\equiv -1\equiv 3\pmod 4$. Hence $7^{7^{7}}\equiv 7^{3}=343\equiv 43\pmod{100}$. **True.**
+
+  **(B)** $\mathrm{ord}_{25}(17)\mid \varphi(25)=20$; in fact $\mathrm{ord}_{25}(17)=20$. Reduce $17^{17}\pmod{20}$: $17\equiv -3\pmod{20}$, $17^2\equiv 9$, $17^4\equiv 81\equiv 1$, so $17^{17}=17^{16}\cdot 17\equiv 17$. Thus $17^{17^{17}}\equiv 17^{17}\pmod{25}$. Now $17^2=289\equiv 14$, $17^4\equiv 196\equiv 21$, $17^8\equiv 441\equiv 16$, $17^{16}\equiv 256\equiv 6$, $17^{17}\equiv 6\cdot 17=102\equiv 2$. **True.**
+
+  **(C)** Compute $23^{23}\pmod{1000}$ by squaring: $23^2=529$, $23^4\equiv 529^2=279841\equiv 841$, $23^8\equiv 841^2=707281\equiv 281$, $23^{16}\equiv 281^2=78961\equiv 961$. Then $23^{23}=23^{16}\cdot 23^{4}\cdot 23^{2}\cdot 23\equiv 961\cdot 841\cdot 529\cdot 23\pmod{1000}$. $961\cdot 841\equiv 808201\equiv 201$; $201\cdot 529\equiv 106329\equiv 329$; $329\cdot 23=7567\equiv 567$. So $23^{23}\equiv \mathbf{567}\pmod{1000}$, not $657$. **False** (digit-transposition trap).
+
+  **(D)** By Fermat, $\mathrm{ord}_{17}(13)\mid 16$; check $13^2=169\equiv -1$, so $\mathrm{ord}_{17}(13)=4$. Reduce $13^{13}\pmod 4$: $13\equiv 1$, so $13^{13}\equiv 1$. Hence $13^{13^{13}}\equiv 13^{1}=13\pmod{17}$, not $4$. **False** (classic "reduced mod $\varphi$ instead of mod $\mathrm{ord}$" trap, since $13^{13}\bmod 16 = 13^{13}\bmod 16$ would give a different value).
+
+  **Answer: (A), (B).**
+
+wrong_paths:
+  - path: "On (C), student computes $23^{23}\\bmod 1000$ by partial squaring but transposes the last two digits of $567$ to read $657$, or makes an arithmetic slip in $329\\cdot 23$ reading it as $7567\\to 657$."
+    landed_on_option: "C"
+    diagnosis: "digit-transposition / arithmetic slip in last 3 digits"
+  - path: "On (D), student reduces the exponent $13^{13}$ modulo $\\varphi(17)=16$ instead of modulo $\\mathrm{ord}_{17}(13)=4$. Then $13^{13}\\bmod 16 = 13$ (since $13\\equiv -3$, $13^2\\equiv 9$, $13^4\\equiv 81\\equiv 1$, $13^{13}\\equiv 13$), giving $13^{13}\\pmod{17}\\equiv 13^{13}$ reduced via Fermat. A careless chain yields $4$ instead of $13$."
+    landed_on_option: "D"
+    diagnosis: "uses $\\varphi$ blindly instead of true order (Euler-vs-order confusion)"
+  - path: "On (A), student forgets to first determine $\\mathrm{ord}_{100}(7)=4$ and instead reduces exponent modulo $\\varphi(100)=40$. Then $7^7\\bmod 40$ requires more work; an error here can produce e.g. $07$ or $43$ accidentally — but the correct path through ord gives $43$."
+    landed_on_option: "not-A (wrongly marks A false)"
+    diagnosis: "fails to use the true multiplicative order"
+
+review_notes: |
+  Multi-correct number-theory question on power-tower reductions modulo $n$. Tests:
+  - reduction of exponent modulo $\mathrm{ord}_n(a)$ (not blindly $\varphi(n)$),
+  - careful arithmetic mod $1000$ (a long carry-prone computation),
+  - Euler/Fermat theorems and order-of-element calculation.
+  Required new taxonomy codes (not present in current bank):
+  - axis-1 TOPIC `NUM` (Number theory / modular arithmetic) — distinct from `SOT.DIO` which is Diophantine within sequences.
+  - axis-2 SUBTOPIC `NUM.MOD` (modular arithmetic / orders / Euler-Fermat).
+  - axis-3 IDEA `NUM.MOD.POWTOWER` (power towers $a^{b^{c}}\bmod n$ via repeated order-reduction).
+  - axis-4 SUB-IDEA `NUM.MOD.POWTOWER.ORDRED` (the technique of reducing the exponent modulo $\mathrm{ord}_n(a)$, not $\varphi(n)$).
+  Trap classification: TRAP-PARTIAL — distractors (C) and (D) are reached by partial-execution errors (arithmetic slip / using $\varphi$ instead of ord), not by clean Cayley/eigen/L'Hop-style canonical traps. Time/T-rating: T4 (a strong JEE-Advanced multi-correct, 5–7 min target after practice).

@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: COG.CON.COOREXT.DISCRQ.001
+
+fingerprint:
+  topic: COG
+  subtopic: CON
+  idea: COOREXT
+  sub_idea: DISCRQ
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-NONE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{C}$ be the curve $4x^2 + 6xy + 9y^2 - 8x - 24y + 4 = 0$. Which of the following statement(s) is/are correct?
+
+  - (A) $\max y = 8/3$
+  - (B) $\min y = 0$
+  - (C) $\max x = 2$
+  - (D) $\min x = -2$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  The general second-degree equation $Ax^2 + Bxy + Cy^2 + Dx + Ey + F = 0$ has discriminant $B^2 - 4AC$. Here $B^2 - 4AC = 36 - 4\cdot 4\cdot 9 = -108 < 0$, so $\mathcal{C}$ is an ellipse and the extrema of each coordinate exist; they occur exactly where the quadratic in the other coordinate has a repeated root (the tangent lines parallel to the corresponding axis touch the conic).
+
+  **Extrema of $y$.** Treating the equation as a quadratic in $x$:
+  $$4x^2 + (6y - 8)x + (9y^2 - 24y + 4) = 0.$$
+  Its discriminant in $x$ is
+  $$\Delta_x = (6y - 8)^2 - 16(9y^2 - 24y + 4) = -108y^2 + 288y = -36y(3y - 8).$$
+  Real $x$ exists $\iff \Delta_x \ge 0 \iff y \in [0,\,8/3]$. Hence $\min y = 0$ (B) and $\max y = 8/3$ (A).
+
+  **Extrema of $x$.** Treating the equation as a quadratic in $y$:
+  $$9y^2 + (6x - 24)y + (4x^2 - 8x + 4) = 0.$$
+  Its discriminant in $y$ is
+  $$\Delta_y = (6x - 24)^2 - 36(4x^2 - 8x + 4) = 432 - 108x^2 = -108(x^2 - 4).$$
+  Real $y$ exists $\iff \Delta_y \ge 0 \iff x^2 \le 4 \iff x \in [-2,\,2]$. Hence $\min x = -2$ (D) and $\max x = 2$ (C).
+
+  All four options are correct.
+
+wrong_paths:
+  - path: "Student misidentifies the conic. From the negative discriminant $B^2 - 4AC = -108$ they conclude (correctly) it is an ellipse, but then attempts to rotate axes to remove the $xy$ term. The algebra becomes heavy and they abort, picking only the 'tidy' values $\\max y = 8/3$ and $\\min y = 0$ and stopping there."
+    landed_on_option: "A, B"
+    diagnosis: "Method-overcomplication; abandons coordinate-quadratic-in-other-variable technique."
+  - path: "Student tries to parametrize after rotation but mis-handles the $xy$ cross-term and gets $x \\in [-1, 2]$ from a flawed completion of the square, so they reject (D) while accepting (A), (B), (C)."
+    landed_on_option: "A, B, C"
+    diagnosis: "Algebraic slip in rotation/translation of the conic."
+  - path: "Student treats the curve as a function $y(x)$ implicitly and sets $dy/dx = 0$ to find horizontal tangents, getting $y = 0$ and $y = 8/3$, but then forgets to repeat the symmetric calculation for vertical tangents."
+    landed_on_option: "A, B"
+    diagnosis: "Partial-attempt; only one direction of extremization analysed."
+  - path: "Student computes $\\Delta_x = (6y-8)^2 - 4\\cdot 4\\cdot(9y^2-24y+4)$ but forgets the coefficient $16 = 4\\cdot 4$, using $4$ instead, obtaining the wrong $y$-range and selecting only (C), (D) after correctly doing the $x$-side."
+    landed_on_option: "C, D"
+    diagnosis: "Discriminant-coefficient slip on one side only."
+
+review_notes: |
+  Classic ellipse-coordinate-extremum item: extrema of $x,y$ along an oblique-axis ellipse via the tangent-as-repeated-root condition. All four options true makes the discriminator-symmetry the central craft. Difficulty T3: students who know the technique finish in ~3 min; students who try rotation lose time. Needs new axis-2 / axis-3 / axis-4 codes since COG taxonomy is not yet populated.

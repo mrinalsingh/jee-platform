@@ -1,0 +1,77 @@
+schema_version: 1
+
+question_code: CAL.CON.LIMDISC.GEOMSER.001
+
+fingerprint:
+  topic: CAL
+  subtopic: CON
+  idea: LIMDISC
+  sub_idea: GEOMSER
+  answer_type: NUM-INT
+  surface: SURF-FUNC
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 240
+  R3_seconds: 180
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $c=\displaystyle\sum_{n=0}^{\infty} 4^{-n}$ and define
+  $$f(x)=\lim_{m\to\infty}\frac{\sin^{2}(\pi x)}{1+\big(c\sin^{2}(\pi x)\big)^{m}}.$$
+  Let $S=\{x\in\mathbb{R}: f \text{ is discontinuous at } x\}$. Find the value of
+  $$8\sum_{x\in S\cap[0,2]} f(x).$$
+
+answer:
+  type: NUM-INT
+  value: 12
+
+solution: |
+  ### The IDEA
+  A limit of the form $\displaystyle\lim_{m\to\infty}\frac{A}{1+B^{m}}$ is a three-case step: it equals $A$ when $|B|<1$, equals $0$ when $|B|>1$, and equals $A/2$ when $B=1$. The discontinuities of $f$ therefore live exactly on the boundary level set $\{B=1\}$, where the limit jumps between branches.
+
+  ### Working
+  First, $c=\displaystyle\sum_{n=0}^{\infty}4^{-n}=\dfrac{1}{1-1/4}=\dfrac{4}{3}$.
+
+  Let $u=\sin^{2}(\pi x)\in[0,1]$ and $B=cu=\tfrac{4u}{3}$. Then
+  $$f(x)=\begin{cases} u, & cu<1\ \text{i.e.}\ u<\tfrac34,\\[2pt] 0, & cu>1\ \text{i.e.}\ u>\tfrac34,\\[2pt] \dfrac{u}{2}=\dfrac{3}{8}, & cu=1\ \text{i.e.}\ u=\tfrac34. \end{cases}$$
+
+  On either side of $u=\tfrac34$ the two branches give limits $\tfrac34$ and $0$, while the value at $u=\tfrac34$ is $\tfrac38$; hence $f$ is discontinuous exactly where $\sin^{2}(\pi x)=\tfrac34$, i.e. $\sin(\pi x)=\pm\dfrac{\sqrt 3}{2}$, i.e. $\pi x\equiv \pm\tfrac{\pi}{3}\pmod{\pi}$.
+
+  In $[0,2]$ this yields $x\in\left\{\tfrac13,\tfrac23,\tfrac43,\tfrac53\right\}$ — four points, with $f(x)=\tfrac38$ at each.
+
+  Therefore $\displaystyle 8\sum_{x\in S\cap[0,2]} f(x)=8\cdot 4\cdot\tfrac38=12.$
+
+wrong_paths:
+  - path: "Treats $f$ as just $u=\\sin^2(\\pi x)$ everywhere and looks for points where $u$ itself is discontinuous (none), reporting $0$."
+    landed_on_option: "0"
+    diagnosis: "Misses that the $\\frac{A}{1+B^m}$ limit is a piecewise step — the discontinuity comes from the branch switch at $B=1$, not from $u$ being discontinuous."
+  - path: "Correctly finds the discontinuity locus $\\sin^2(\\pi x)=\\tfrac34$ but uses the wrong-branch value $f=u=\\tfrac34$ instead of the boundary value $\\tfrac38$."
+    landed_on_option: "24"
+    diagnosis: "TRAP-EDGE: forgets that exactly on $B=1$ the limit is $A/2$, not $A$. Sum becomes $8\\cdot 4\\cdot \\tfrac34=24$."
+  - path: "Sums $c=\\sum 4^{-n}$ starting from $n=1$, getting $c=\\tfrac13$. Then $cu<1$ is automatic for all $u\\in[0,1]$, so $f=u$ everywhere, continuous: answer $0$."
+    landed_on_option: "0"
+    diagnosis: "Off-by-one on the geometric series (drops the $n=0$ term)."
+  - path: "Identifies the four discontinuity points but takes the limit value $0$ (from $cu>1$ side) instead of $\\tfrac38$, getting $8\\cdot 0=0$."
+    landed_on_option: "0"
+    diagnosis: "Reads $f$ at the boundary as the zero branch rather than the explicit boundary value $A/2$."
+  - path: "Counts only the points in $(0,1)$, i.e. $\\{\\tfrac13,\\tfrac23\\}$, missing the periodicity over $[1,2]$, and reports $8\\cdot 2\\cdot\\tfrac38=6$."
+    landed_on_option: "6"
+    diagnosis: "TRAP-PARTIAL: solves $\\sin(\\pi x)=\\tfrac{\\sqrt3}{2}$ only on one period of $\\sin$ rather than counting all roots of $\\sin^2(\\pi x)=\\tfrac34$ on $[0,2]$."
+
+review_notes: |
+  NV item fusing (i) geometric-series evaluation of $c$, (ii) the $\frac{A}{1+B^m}$ three-case limit, (iii) counting roots of $\sin^2(\pi x)=\tfrac34$ on $[0,2]$. New IDEA code LIMDISC (limit-induced discontinuity from $\frac{A}{1+B^m}$) and sub-idea GEOMSER (parameter from geometric series) proposed — neither exists in the supplied CAL.CON taxonomy. T3 because each step is standard but the layering (series → m-limit case split → boundary value → trig root count) is JEE-Advanced-typical.

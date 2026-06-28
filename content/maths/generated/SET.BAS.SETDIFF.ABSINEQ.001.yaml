@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: SET.BAS.SETDIFF.ABSINEQ.001
+
+fingerprint:
+  topic: SET
+  subtopic: BAS
+  idea: SETDIFF
+  sub_idea: ABSINEQ
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Consider the inequality
+  $$\left|\dfrac{3|x|-2}{|x|-1}\right|\ge 2.$$
+  Which of the following statement(s) is/are TRUE?
+
+  - (A) Every $x$ with $|x|\ge 1$ solves it.
+  - (B) The inequality has no solution.
+  - (C) $x=0$ is a solution.
+  - (D) The solution set is $\{0\}\cup\{x:\ |x|\ge \tfrac{4}{5},\ |x|\ne 1\}$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  For an inequality of the form $|f(x)|\ge k$ with $k\ge 0$, square both sides (which is equivalence-preserving since both sides are non-negative), reduce to a polynomial inequality in $t=|x|$, and remember to exclude any value that makes the original denominator vanish.
+
+  ### Working
+  Put $t=|x|\ge 0$ with $t\ne 1$ (so that the denominator $|x|-1$ is non-zero). Both sides of the inequality are non-negative, so squaring is equivalent:
+  $$(3t-2)^{2}\ge 4(t-1)^{2}.$$
+  Expanding:
+  $$9t^{2}-12t+4\ \ge\ 4t^{2}-8t+4\iff 5t^{2}-4t\ge 0\iff t(5t-4)\ge 0.$$
+  Since $t\ge 0$, this gives $t=0$ or $t\ge \tfrac{4}{5}$. Combined with the excluded asymptote $t\ne 1$, the solution in $t$ is
+  $$\{0\}\cup\Big\{t\ge \tfrac{4}{5},\ t\ne 1\Big\}.$$
+  Folding back through $t=|x|$ gives exactly the set described in (D).
+
+  - At $x=0$: $\left|\tfrac{-2}{-1}\right|=2\ge 2$, so $x=0$ IS a solution. Hence (C) is correct, and (B) is wrong.
+  - At $x=\pm 1$: denominator vanishes, so these are NOT solutions even though $|x|\ge 1$. Hence (A) is wrong.
+
+  Quick numerical check: $t=\tfrac{4}{5}$ in, $t=\tfrac{1}{2}$ out, $t=2$ in.
+
+  Therefore the correct options are **(C), (D)**.
+
+wrong_paths:
+  - path: "Student squares both sides without tracking the domain $|x|\\ne 1$ and concludes that $|x|\\ge 1$ always works because $t(5t-4)\\ge 0$ is satisfied there."
+    landed_on_option: "A"
+    diagnosis: "Forgotten asymptote: $x=\\pm 1$ make the denominator zero, so they are excluded. TRAP-EDGE on excluded points of an absolute-value rational inequality."
+  - path: "Student tries to clear absolute value by case-splitting and mismanages signs, concluding no $t\\ge 0$ satisfies the squared inequality and the inequality has no solution."
+    landed_on_option: "B"
+    diagnosis: "Algebra slip in case-splitting; misses the boundary case $t=0$ and the branch $t\\ge 4/5$. Failure to check the easy candidate $x=0$ directly."
+  - path: "Student solves $5t^2 - 4t \\ge 0$ correctly to get $t\\ge 4/5$ but discards the $t=0$ branch as a 'trivial root' of the factorization."
+    landed_on_option: "C only (misses D)"
+    diagnosis: "Dropping the isolated solution $t=0$ from $t(5t-4)\\ge 0$ — partial answer that gets (C) but ignores that (D) explicitly records both pieces of the solution set."
+
+review_notes: |
+  Multi-correct absolute-value inequality with a rational expression. Two TRAP-EDGE features:
+  (i) the excluded asymptote $|x|=1$ defeats option (A);
+  (ii) the isolated point $t=0$ from the factorization $t(5t-4)\ge 0$ is easily lost.
+  Calibrated at T3: standard technique (square then factor), but bookkeeping on edge points and the |x| substitution makes it stickier than a routine inequality.

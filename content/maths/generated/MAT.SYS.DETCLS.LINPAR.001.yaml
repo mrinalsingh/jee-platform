@@ -1,0 +1,119 @@
+schema_version: 1
+
+question_code: MAT.SYS.DETCLS.LINPAR.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SYS
+  idea: DETCLS
+  sub_idea: LINPAR
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-NCERT
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 300   # ~5 min — det expansion, find vanishing k, rank test at k=1, Cramer at k=2
+  R2_seconds: 210   # ~3.5 min — pattern recognised; arithmetic still deliberate
+  R3_seconds: 150   # ~2.5 min — fluent
+  R4_seconds: 90    # ~1.5 min — exam pace
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q10"
+  parallel_form: false
+  generator: claude
+  created_on: 2026-06-09
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  For an integer parameter $k$ consider the linear system
+  $$
+  x + 3y + 2z = 5, \qquad 2x + 3y + kz = 8, \qquad x + 2y + z = 3,
+  $$
+  with coefficient matrix
+  $$
+  M(k) = \begin{pmatrix} 1 & 3 & 2 \\ 2 & 3 & k \\ 1 & 2 & 1 \end{pmatrix}.
+  $$
+  Which of the following are correct?
+
+  - (A) for every integer $k$ the system has a unique solution
+  - (B) at the value of $k$ for which $\det M(k) = 0$, the system has infinitely many solutions
+  - (C) for $k = 2$ the unique solution $(x, y, z)$ satisfies $x - y + z = 9$
+  - (D) $\det M(k) = k - 1$ for every $k$
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  The coefficient determinant is **linear** in $k$, so it vanishes at exactly one
+  value of $k$. Away from that value the system has a unique solution; at that value
+  one must compare the rank of the coefficient matrix with the rank of the augmented
+  matrix to decide between *inconsistent* and *infinitely many* — singular does
+  **not** automatically mean infinitely many solutions.
+
+  ### Compute the determinant (option D)
+  Cofactor-expand along the first row:
+  $$
+  \det M(k) = 1\cdot(3\cdot 1 - k\cdot 2) - 3\cdot(2\cdot 1 - k\cdot 1) + 2\cdot(2\cdot 2 - 3\cdot 1)
+  $$
+  $$
+  = (3 - 2k) - 3(2 - k) + 2(4 - 3) = 3 - 2k - 6 + 3k + 2 = k - 1.
+  $$
+  So $\det M(k) = k - 1$ for every $k$ — **(D) is correct.**
+
+  ### Uniqueness and the singular value (options A, B)
+  $\det M(k) = 0 \iff k = 1$, which is an **integer**. Hence at $k = 1$ uniqueness
+  fails, so the claim "unique for *every* integer $k$" is false — **(A) is false.**
+
+  At $k = 1$ the coefficient matrix
+  $\begin{pmatrix} 1 & 3 & 2 \\ 2 & 3 & 1 \\ 1 & 2 & 1 \end{pmatrix}$ has rank $2$
+  (rows are dependent: $R_1 + R_2 = 3R_3$ fails, but the determinant is $0$ with a
+  non-zero $2\times2$ minor). Row-reducing the augmented matrix with RHS $(5, 8, 3)$:
+  $R_2 - 2R_1$ and $R_3 - R_1$ give a row $0\,x + 0\,y + 0\,z = c$ with $c \neq 0$,
+  so the augmented matrix has rank $3 > 2 = \operatorname{rank}M(1)$. The system is
+  **inconsistent** — *no* solution, not infinitely many. **(B) is false.**
+
+  ### The $k = 2$ solution (option C)
+  At $k = 2$, $\det M(2) = 2 - 1 = 1 \neq 0$, so the solution is unique. By Cramer's
+  rule (or elimination) $(x, y, z) = (3, -2, 4)$. Check:
+  $x + 3y + 2z = 3 - 6 + 8 = 5$, $2x + 3y + 2z = 6 - 6 + 8 = 8$,
+  $x + 2y + z = 3 - 4 + 4 = 3$. ✓ Then
+  $$
+  x - y + z = 3 - (-2) + 4 = 9.
+  $$
+  **(C) is correct.**
+
+  ### Answer
+  **(C) and (D).** All methods used (cofactor expansion, rank/consistency test,
+  Cramer's rule) are within the JEE syllabus.
+
+wrong_paths:
+  - path: "Computes det M(k) = k - 1 correctly, sees it vanishes at the integer k = 1, and concludes 'singular coefficient matrix ⇒ the three planes meet in a line ⇒ infinitely many solutions' without checking the right-hand side. Picks (B)."
+    landed_on_option: "B (and likely also D); misses that the answer is C, D."
+    diagnosis: "TRAP-NCERT — the NCERT/textbook reflex that det = 0 means a non-trivial common solution applies only to homogeneous systems. Here the augmented rank (3) exceeds the coefficient rank (2), so the system is inconsistent, not under-determined."
+  - path: "Makes a sign slip in the cofactor expansion — e.g. writes -3·(2 - k) as -3·(2 + k) or drops the middle minus sign — and gets det M(k) = -k - 1 or 5 - k. Then det vanishes at a non-integer or a wrong k, so they reject (D) and may declare uniqueness for all integers, picking (A)."
+    landed_on_option: "A; rejects D."
+    diagnosis: "Arithmetic/sign error in the 3×3 determinant. The cofactor signs are +, -, + along the first row; the middle term is -3·(M_{12} minor) = -3(2 - k) = 3k - 6."
+  - path: "For k = 2 solves the system but transposes a sign in y, getting (x, y, z) = (3, 2, 4) instead of (3, -2, 4), then computes x - y + z = 3 - 2 + 4 = 5 ≠ 9 and rejects (C). Ends with only (D)."
+    landed_on_option: "D only; wrongly rejects C."
+    diagnosis: "Back-substitution sign error on y. A quick check of equation 3 (x + 2y + z = 3 needs 3 + 2y + 4 = 3 ⇒ y = -2) catches it; y = +2 violates the original equations."
+
+review_notes: |
+  - Inspired by 0609d Q10. Faithful transcription of stem, options, and key (C, D);
+    solution follows the sheet's Solutions.tex Q10 block (det = k - 1; k = 1 gives
+    inconsistency by rank mismatch; k = 2 ⇒ (3, -2, 4) ⇒ x - y + z = 9).
+  - Fingerprint: IDEA MAT.SYS.RANKCON already exists. SUB-IDEA LINPAR is NEW (linear-
+    in-parameter determinant → single root → inconsistency, as opposed to the sibling
+    DETFAC whose cubic factors (n-1)^2(n+2) and yields coincident planes). Taxonomy
+    must be extended with LINPAR before import.
+  - surface = SURF-PARAM (k is a genuine real/integer parameter to be solved over).
+    trap = TRAP-NCERT (the det = 0 ⇒ infinitely-many distractor B).
+  - T2: clean syllabus computation; the only discriminating step is recognising B as a
+    consistency edge case. Times are estimates pending empirical calibration.

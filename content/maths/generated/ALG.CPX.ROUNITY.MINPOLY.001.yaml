@@ -1,0 +1,81 @@
+schema_version: 1
+
+question_code: ALG.CPX.ROUNITY.MINPOLY.001
+
+fingerprint:
+  topic: ALG
+  subtopic: CPX
+  idea: ROUNITY
+  sub_idea: MINPOLY
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 270
+  R4_seconds: 210
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609b_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\omega = e^{2\pi i/7}$ and $S = \{\omega, \omega^{2}, \ldots, \omega^{6}\}$ be the set of non-trivial $7$th roots of unity. Which of the following statements is/are correct?
+
+  - (A) $\displaystyle\sum_{k=1}^{6}\omega^{k}=0$
+  - (B) $\displaystyle\sum_{k=1}^{6}\dfrac{1}{1-\omega^{k}}=3$
+  - (C) $\displaystyle\prod_{k=1}^{6}(1-\omega^{k})=7$
+  - (D) $\displaystyle\sum_{k=1}^{6}|1-\omega^{k}|^{2}=12$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C]
+
+solution: |
+  ### The IDEA
+  The non-trivial $7$th roots of unity are the roots of the minimal polynomial $P(x)=x^{6}+x^{5}+\cdots+x+1=\dfrac{x^{7}-1}{x-1}=\prod_{k=1}^{6}(x-\omega^{k})$. Symmetric expressions in the $\omega^{k}$ are read off by evaluating $P$ and its logarithmic derivative at $x=1$.
+
+  ### Working
+  Write $P(x)=\displaystyle\prod_{k=1}^{6}(x-\omega^{k})=x^{6}+x^{5}+x^{4}+x^{3}+x^{2}+x+1$.
+
+  **(A)** The sum of ALL seven $7$th roots of unity (including $1$) is $0$. Hence $\displaystyle\sum_{k=1}^{6}\omega^{k}=0-1=-1\neq 0$. **False.**
+
+  **(B)** Logarithmic differentiation: $\dfrac{P'(x)}{P(x)}=\displaystyle\sum_{k=1}^{6}\dfrac{1}{x-\omega^{k}}$. At $x=1$:
+  $$P(1)=7,\qquad P'(1)=6+5+4+3+2+1=21,$$
+  so $\displaystyle\sum_{k=1}^{6}\dfrac{1}{1-\omega^{k}}=\dfrac{P'(1)}{P(1)}=\dfrac{21}{7}=3$. **True.** (General fact: $\sum_{k=1}^{n-1}\frac{1}{1-\omega^{k}}=\frac{n-1}{2}$.)
+
+  **(C)** Directly, $\displaystyle\prod_{k=1}^{6}(1-\omega^{k})=P(1)=7$. **True.**
+
+  **(D)** Using $|1-\omega^{k}|^{2}=(1-\omega^{k})(1-\overline{\omega^{k}})=2-2\cos\dfrac{2\pi k}{7}$:
+  $$\sum_{k=1}^{6}|1-\omega^{k}|^{2}=12-2\sum_{k=1}^{6}\cos\tfrac{2\pi k}{7}=12-2(-1)=14\neq 12.$$
+  **False.**
+
+  Correct options: **(B), (C)**.
+
+wrong_paths:
+  - path: "Forgets to exclude $k=0$ and uses $\\sum_{\\text{all 7 roots}}\\omega^{k}=0$ directly, marking (A) true."
+    landed_on_option: "A"
+    diagnosis: "Off-by-one boundary slip: the identity 'sum of all $n$th roots of unity is $0$' includes $\\omega^{0}=1$; removing $1$ leaves $-1$, not $0$. Classic TRAP-PARTIAL — student applies a true global identity to a restricted index set."
+  - path: "Uses $\\sum_{k=1}^{6}\\cos\\frac{2\\pi k}{7}=0$ (the real part of $\\sum_{k=0}^{6}\\omega^{k}=0$ without subtracting the $k=0$ term), getting $\\sum|1-\\omega^{k}|^{2}=12$ and marking (D) true."
+    landed_on_option: "D"
+    diagnosis: "Same off-by-one as (A) but on the cosine side: $\\sum_{k=0}^{6}\\cos\\frac{2\\pi k}{7}=0$, so $\\sum_{k=1}^{6}\\cos\\frac{2\\pi k}{7}=-1$. Missing the $k=0$ contribution undercounts by $2$, landing on the planted distractor $12$ instead of $14$."
+  - path: "Computes $\\prod_{k=1}^{6}(1-\\omega^{k})$ by expanding using $|1-\\omega^{k}|$ as a magnitude product and gets $\\sqrt{7}$ or $7^{?}$, but accidentally still marks (C) correct; or mis-evaluates $P(1)$ as $6$ (counting only the lower-degree terms) and rejects (C)."
+    landed_on_option: "rejects C"
+    diagnosis: "Miscount of $P(1)$ — student writes $1+1+1+1+1+1=6$ forgetting the constant term, giving $6$ instead of $7$. Misses the identity $\\prod(x-\\omega^{k})\\big|_{x=1}=P(1)$."
+  - path: "Notes $\\omega^{k}$ runs over all non-trivial roots which sum to $-1$, then computes $\\sum\\frac{1}{1-\\omega^{k}}$ via partial fractions on $\\frac{1}{1-x^{7}}$ incorrectly and gets $\\frac{7-1}{2}=3$ correctly — but for the wrong reason; or applies $\\frac{n}{2}$ instead of $\\frac{n-1}{2}$ to get $7/2$, rejecting (B)."
+    landed_on_option: "rejects B"
+    diagnosis: "Misremembers the standard identity as $\\sum_{k=1}^{n-1}\\frac{1}{1-\\omega^{k}}=\\frac{n}{2}$ rather than $\\frac{n-1}{2}$, landing on $3.5$ and discarding the true option."
+
+review_notes: |
+  Standard JEE Advanced cyclotomic-identity item (7th roots of unity). Bar T3: requires logarithmic derivative trick or general $\sum 1/(1-\omega^k)$ identity for (B), and care with the off-by-one in (A) and (D). The two false options ((A) and (D)) share the same trap mechanism — confusing $\sum_{k=0}^{n-1}$ with $\sum_{k=1}^{n-1}$ — which is the intended TRAP-PARTIAL motif. New axis-3 code ROUNITY (roots-of-unity symmetric sums) and axis-4 code MINPOLY (minimal-polynomial / log-derivative at $x=1$) proposed; taxonomy needs extension under ALG.CPX which is currently unpopulated.

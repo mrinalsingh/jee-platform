@@ -1,0 +1,80 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.SIGNLOC.002
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: SIGNLOC
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 480
+  R2_seconds: 360
+  R3_seconds: 300
+  R4_seconds: 240
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Consider the quadratic $x^{2}-\dfrac{8a}{a+1}\,x+a^{2}=0$, where $a\neq -1$. Suppose its roots are real and both positive. Which of the following is/are correct?
+
+  - (A) The integer values of $a$ for which the roots are real and both positive are exactly $\{-5,-4,-3,-2,1,2,3\}$.
+  - (B) $a=-1$ is excluded because the coefficient $\dfrac{8a}{a+1}$ is undefined there.
+  - (C) The full real solution set for $a$ is $[-5,3]$.
+  - (D) $a=4$ gives real and positive roots.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  For a quadratic with real coefficients, real positive roots require three simultaneous conditions: non-negative discriminant, positive sum of roots, and positive product of roots. Translating each into the parameter $a$ and intersecting the three regions is the canonical "root location" technique.
+
+  ### Working
+  Write the quadratic as $x^{2}-Sx+P=0$ with $S=\dfrac{8a}{a+1}$ and $P=a^{2}$.
+
+  **(i) Discriminant $\ge 0$:** $S^{2}\ge 4P$, i.e. $\left(\dfrac{8a}{a+1}\right)^{2}\ge 4a^{2}$, i.e. $\dfrac{16}{(a+1)^{2}}\ge 1$ (when $a\neq 0$; $a=0$ gives the double root $0$ which is not positive, so it is discarded later anyway). So $(a+1)^{2}\le 16$, giving $a\in[-5,3]$ with $a\neq -1$.
+
+  **(ii) Sum $S>0$:** $\dfrac{8a}{a+1}>0\iff a>0$ or $a<-1$.
+
+  **(iii) Product $P>0$:** $a^{2}>0\iff a\neq 0$.
+
+  Intersecting (i), (ii), (iii): $a\in[-5,-1)\cup(0,3]$. The integer values are $\{-5,-4,-3,-2\}\cup\{1,2,3\}$, confirming **(A)**.
+
+  **(B)** is direct: at $a=-1$ the coefficient $\dfrac{8a}{a+1}$ has a zero denominator, so $a=-1$ must be excluded.
+
+  **(C)** is false: $[-5,3]$ is only the discriminant region. Test $a=-\tfrac12\in[-5,3]$: then $S=\dfrac{8(-1/2)}{1/2}=-8<0$, so the sum of roots is negative — both roots cannot be positive. The sign-of-sum condition further trims $[-5,3]$.
+
+  **(D)** is false: at $a=4$, $(a+1)^{2}=25>16$, so the discriminant is negative and the roots are complex.
+
+  Hence the correct options are **(A)** and **(B)**.
+
+wrong_paths:
+  - path: "Solver enforces only the discriminant $\\Delta\\ge 0$ and forgets that 'both positive' also requires $S>0$ and $P>0$. They obtain $a\\in[-5,3]$ as the full solution set."
+    landed_on_option: "C"
+    diagnosis: "Classic partial-condition trap (TRAP-PARTIAL) in root-location problems: the discriminant alone is not sufficient for 'both roots positive'; the sum and product conditions on Vieta's relations are essential."
+  - path: "Solver checks $a=4$ by computing the product $a^{2}=16>0$ and the sum $\\tfrac{32}{5}>0$, declares both positive, but skips the discriminant test."
+    landed_on_option: "D"
+    diagnosis: "Same partial-condition trap from the opposite side: sum and product are positive, but the discriminant $(a+1)^{2}\\le 16$ fails at $a=4$, so the roots are complex."
+  - path: "Solver intersects sum $>0$ with product $>0$ and gets $a<-1$ or $a>0$, then takes integers in $[-5,3]$ to be $\\{-5,-4,-3,-2,1,2,3\\}$ but mistakenly also includes $a=-1$ (forgetting the excluded value)."
+    landed_on_option: "A (only)"
+    diagnosis: "Forgets that $a=-1$ makes the linear coefficient undefined — the problem's domain restriction $a\\neq -1$ is precisely the content of (B)."
+
+review_notes: |
+  Standard JEE root-location item: 'real and both positive' triggers the Discriminant + Sum + Product trifecta. Distractor (C) is the high-frequency partial-condition trap (just the discriminant interval); (D) is the same trap flipped. Time budget reflects the multi-correct format and the parameter-management work; T3 seems right (hard standard but no exotic technique).

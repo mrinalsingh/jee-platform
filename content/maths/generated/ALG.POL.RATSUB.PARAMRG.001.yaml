@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: ALG.POL.RATSUB.PARAMRG.001
+
+fingerprint:
+  topic: ALG
+  subtopic: POL
+  idea: RATSUB
+  sub_idea: PARAMRG
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 420
+  R2_seconds: 300
+  R3_seconds: 210
+  R4_seconds: 150
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q5"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Consider the equation in $x$ (with real parameter $a$):
+  $$(x^{2}+x+2)^{2}-(a-3)(x^{2}+x+2)(x^{2}+x+1)+(a-4)(x^{2}+x+1)^{2}=0.$$
+
+  Which of the following is/are TRUE?
+
+  (A) A real root exists iff $a\in\left(5,\tfrac{19}{3}\right]$.
+
+  (B) For every $a\in\left(5,\tfrac{19}{3}\right)$ the equation has exactly $2$ distinct real roots; at $a=\tfrac{19}{3}$ it has exactly $1$ real root.
+
+  (C) At $a=\tfrac{19}{3}$ the equation has exactly $4$ distinct real roots.
+
+  (D) At $a=5$ the equation has exactly two real roots.
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B]
+
+solution: |
+  ### The IDEA
+  Both $x^{2}+x+2$ and $x^{2}+x+1$ are translates of the same quantity. Setting $u=x^{2}+x+1\ge\tfrac34$ and dividing by $u^{2}$ turns the equation into a quadratic in $t=(u+1)/u=1+1/u$. The accessible range of $t$ is bounded; this controls which $a$ admit a real $x$.
+
+  ### Working
+  Let $u=x^{2}+x+1=\left(x+\tfrac12\right)^{2}+\tfrac34\ge\tfrac34$, and $v=x^{2}+x+2=u+1$. Dividing the equation by $u^{2}$ and writing $t=v/u=1+1/u$ gives
+  $$t^{2}-(a-3)t+(a-4)=0 \;\Longleftrightarrow\; (t-1)(t-(a-4))=0.$$
+  Since $u\ge\tfrac34>0$, $t=1+1/u\in\left(1,\tfrac{7}{3}\right]$, so $t=1$ is unreachable. We need $t=a-4\in\left(1,\tfrac{7}{3}\right]$, i.e.\ $a\in\left(5,\tfrac{19}{3}\right]$. This gives (A).
+
+  For $a$ in that range, $t=a-4$ forces $u=\dfrac{1}{a-5}\in\left[\tfrac34,\infty\right)$. Now $x^{2}+x+1=c$ has discriminant $4c-3$, hence
+  - $c>\tfrac34$ $\Rightarrow$ $2$ distinct real roots;
+  - $c=\tfrac34$ $\Rightarrow$ exactly $1$ (double) real root, namely $x=-\tfrac12$.
+
+  At $a=\tfrac{19}{3}$ we get $c=\tfrac34$ — exactly $1$ real root; for $a\in(5,\tfrac{19}{3})$ we get $c>\tfrac34$ — exactly $2$ distinct real roots. This proves (B) and falsifies (C).
+
+  At $a=5$ we would need $t=1$, which is inaccessible, so there are $0$ real roots — (D) is false.
+
+  **Answer: (A), (B).**
+
+wrong_paths:
+  - path: "Student solves $(t-1)(t-(a-4))=0$ and keeps the root $t=1$, ignoring the strict bound $t>1$ coming from $u\\ge 3/4$."
+    landed_on_option: "C, D"
+    diagnosis: "Forgetting that $t=1+1/u$ never equals $1$ for finite $u$ lets the student count extra roots from $u\\to\\infty$. They double-count at $a=19/3$ (claiming 4 roots) and falsely admit roots at $a=5$."
+  - path: "Student forgets that $u=x^{2}+x+1=3/4$ is a double root of the quadratic in $x$, and counts it as two distinct roots."
+    landed_on_option: "C"
+    diagnosis: "At $a=19/3$, $c=3/4$ gives the perfect square $(x+1/2)^{2}=0$; treating it as $2$ distinct roots and adding the inaccessible $t=1$ branch yields a phantom count of $4$."
+  - path: "Student computes the discriminant of the quadratic in $t$ and stops there, declaring the equation always has real $t$ hence real $x$ for all $a$."
+    landed_on_option: "A (rejected), D"
+    diagnosis: "Confuses solvability for $t$ with solvability for $x$; missing the range constraint $t\\in(1,7/3]$ admits spurious $a$, including $a=5$."
+
+review_notes: |
+  Idea family: rational substitution $t=v/u$ collapses a degree-4 equation in $x$ into a quadratic in $t$, then back-solving requires honouring the *range* of $t$ induced by the quadratic $u(x)$. The trap is purely the boundary/inaccessibility of $t=1$, which makes (C) and (D) tempting. Proposed taxonomy extension: ALG.POL.RATSUB (rational substitution to reduce degree) with sub-idea PARAMRG (parameter range from accessible substitution image). If the reviewer prefers, this could also be filed under ALG.QUA.CMNRT with a new sub-idea, but the substitution-and-range principle is the cleanest fit.

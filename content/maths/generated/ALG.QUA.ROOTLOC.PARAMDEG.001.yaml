@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: ALG.QUA.ROOTLOC.PARAMDEG.001
+
+fingerprint:
+  topic: ALG
+  subtopic: QUA
+  idea: ROOTLOC
+  sub_idea: PARAMDEG
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-EDGE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 180
+  R2_seconds: 150
+  R3_seconds: 120
+  R4_seconds: 90
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609g_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Define a binary operation $*$ on $\mathbb{R}$ by $a*b = ab + b$. Consider the equation
+  $$x*(a*x) = -\tfrac{1}{4}$$
+  in the unknown $x$, where $a \in \mathbb{R}$ is a parameter. Which of the following are TRUE?
+
+  - (A) $a=0$ gives two distinct real solutions.
+  - (B) $a=-1$ gives two distinct real solutions.
+  - (C) $a=2$ gives two distinct real solutions.
+  - (D) The set of all $a$ for which the equation has two distinct real solutions is $(-\infty,-1)\cup(0,\infty)$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [C, D]
+
+solution: |
+  ### The IDEA
+  When a parametric equation looks like a quadratic, two things must be checked together: (i) the leading coefficient must be non-zero so the equation actually is quadratic, and (ii) the discriminant must be strictly positive for two distinct real roots. The boundary cases — leading coefficient vanishing, or discriminant zero — are exactly where careless candidates lose marks.
+
+  ### Working
+  Compute $a*x = ax + x = (a+1)x$. Then
+  $$x*(a*x) = x \cdot (a+1)x + (a+1)x = (a+1)x^{2} + (a+1)x.$$
+  The equation becomes
+  $$(a+1)x^{2} + (a+1)x + \tfrac{1}{4} = 0. \qquad (\star)$$
+
+  **Case 1: $a = -1$.** Then $(\star)$ reduces to $\tfrac{1}{4} = 0$, which has no solution. So (B) is false.
+
+  **Case 2: $a \neq -1$.** Then $(\star)$ is a genuine quadratic with discriminant
+  $$D = (a+1)^{2} - 4(a+1)\cdot\tfrac{1}{4} = (a+1)^{2} - (a+1) = (a+1)\,a.$$
+  Two distinct real roots $\iff D > 0 \iff a(a+1) > 0 \iff a \in (-\infty,-1) \cup (0,\infty)$.
+
+  Hence (D) is true. At $a = 0$: $D = 0$, repeated root, not two distinct — (A) false. At $a = 2$: $D = 2\cdot 3 = 6 > 0$, two distinct roots — (C) true.
+
+  **Answer: (C), (D).**
+
+wrong_paths:
+  - path: "Treat $(\\star)$ as a quadratic for every $a$, forgetting to exclude $a=-1$, and just solve $a(a+1)>0$."
+    landed_on_option: "(D) alone (misses that (B) needs separate check, but still gets (D))"
+    diagnosis: "Partial credit trap (TRAP-PARTIAL/TRAP-EDGE): the discriminant analysis is correct but the candidate doesn't realize $a=-1$ must be excluded as an edge case where the equation degenerates."
+  - path: "At $a=0$, plug into $(\\star)$ to get $x^{2}+x+\\tfrac{1}{4}=(x+\\tfrac12)^{2}=0$; declare this 'has the solution $x=-\\tfrac12$, which counts as two equal solutions, hence two solutions'."
+    landed_on_option: "(A) (incorrectly included)"
+    diagnosis: "Confuses 'two equal roots' with 'two distinct real solutions'. The discriminant $D = 0$ here, so the problem's 'distinct' clause rules this out."
+  - path: "At $a=-1$, the equation $(\\star)$ becomes $0 = -\\tfrac14$ — student writes 'this is a true linear equation with infinitely many solutions' or 'any $x$ works' confusing the two sides."
+    landed_on_option: "(B) (incorrectly included)"
+    diagnosis: "Edge-case mishandling: when the leading coefficient and the linear coefficient both vanish but the constant doesn't, the equation has NO solution, not infinitely many."
+  - path: "Solve $a(a+1) \\ge 0$ instead of strict $>0$, getting $a \\in (-\\infty,-1] \\cup [0,\\infty)$."
+    landed_on_option: "Could pick (A) and reject (D)"
+    diagnosis: "Confusing 'real roots' (allows $D \\ge 0$, repeated) with 'two distinct real roots' (requires $D > 0$). Classic TRAP-EDGE."
+
+review_notes: |
+  Multi-correct from the 0609g sheet (Q9). Tests the dual conditions for a parametric quadratic: non-degeneracy of leading coefficient plus strict positivity of discriminant. The binary-operation framing is light surface dressing — the core is ALG.QUA root-existence analysis with an edge case at $a=-1$. T3 because the algebra is short but the edge case is genuinely missed by ~30% of strong candidates. Sub-idea PARAMDEG (parametric degeneracy of leading coefficient) is a NEW code — propose adding to taxonomy under ALG.QUA.ROOTLOC.

@@ -1,0 +1,82 @@
+schema_version: 1
+
+question_code: MAT.DET.CHARPOLY.NEWTON.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: CHARPOLY
+  sub_idea: NEWTON
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 200
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0608_Q1"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $H$ be the $3\times 3$ matrix whose $(i,j)$ entry is $\binom{4}{\,i+j\,}$ for $i,j\in\{0,1,2\}$. Consider $\Delta(x)=\det(H+xI)=0$, and let $\alpha,\beta,\gamma$ be its three roots. Which of the following are TRUE?
+
+  - (A) $\alpha+\beta+\gamma=-8$
+  - (B) $\alpha^{3}+\beta^{3}+\gamma^{3}=-1682$
+  - (C) $\alpha\beta\gamma=-50$
+  - (D) exactly one of $\alpha,\beta,\gamma$ is rational, and after removing it the other two satisfy $x^{2}+13x+10=0$ and are both negative
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, D]
+
+solution: |
+  ### The IDEA
+  For a $3\times 3$ matrix $H$, $\det(H+xI)$ is a monic cubic in $x$ whose coefficients are elementary symmetric functions of the eigenvalues of $-H$ (equivalently, of the roots $\alpha,\beta,\gamma$). The roots' power sums then follow from Newton's identities, and any rational root can be found by inspection / rational root theorem and divided out.
+
+  ### Working
+  With $(i,j)\in\{0,1,2\}^2$ and entry $\binom{4}{i+j}$ (so entries are $\binom40,\binom41,\binom42,\binom43,\binom44$):
+  $$H=\begin{pmatrix}1 & 4 & 6 \\ 4 & 6 & 4 \\ 6 & 4 & 1\end{pmatrix}.$$
+  Direct expansion gives
+  $$\Delta(x)=\det(H+xI)=x^{3}+8x^{2}-55x-50.$$
+  Hence by Vieta on the monic cubic $x^3 - e_1 x^2 + e_2 x - e_3$ with our cubic written as $x^3+8x^2-55x-50$:
+  $$e_1=\alpha+\beta+\gamma=-8,\quad e_2=\alpha\beta+\beta\gamma+\gamma\alpha=-55,\quad e_3=\alpha\beta\gamma=+50.$$
+  So $(A)$ is true and $(C)$ (which claims $-50$) is false.
+
+  By Newton's identity for three variables,
+  $$\sum\alpha^{3}=e_1^{3}-3e_1e_2+3e_3=(-8)^{3}-3(-8)(-55)+3(50)=-512-1320+150=-1682.$$
+  So $(B)$ is true.
+
+  For $(D)$: try $x=5$. Then $H+5I$ has rows $(6,4,6),(4,11,4),(6,4,6)$ — rows $1$ and $3$ coincide, so $\det(H+5I)=0$ and $x=5$ is a root (it is the unique rational root by RRT among $\pm1,\pm2,\pm5,\pm10,\pm25,\pm50$). Dividing,
+  $$x^{3}+8x^{2}-55x-50=(x-5)(x^{2}+13x+10).$$
+  The quadratic $x^2+13x+10=0$ has sum of roots $-13<0$ and product $10>0$, so both roots are negative; its discriminant $169-40=129$ is not a perfect square, so they are irrational. Hence $(D)$ is true.
+
+  Correct: $(A), (B), (D)$.
+
+wrong_paths:
+  - path: "Confuses sign of the constant term in Vieta — reads off $\\alpha\\beta\\gamma$ as the constant of the cubic ($-50$) rather than $-(\\text{constant})=+50$."
+    landed_on_option: "C"
+    diagnosis: "Classic TRAP-PARTIAL on Vieta: for monic cubic $x^3-e_1x^2+e_2x-e_3$, the constant term equals $-e_3$, not $e_3$. The student forgets the alternating sign and treats $-50$ as the product."
+  - path: "Applies $\\sum\\alpha^3 = e_1^3 - 3e_1 e_2 + 3e_3$ but uses $e_3=-50$ (from the same Vieta-sign slip), getting $-512-1320-150=-1982$, and marks (B) false."
+    landed_on_option: "B not selected (only A, D chosen)"
+    diagnosis: "Propagation of the Vieta sign error into Newton's identity. The cube-sum is sensitive to the $+3e_3$ term, so an incorrect product flips (B) from true to false."
+  - path: "Finds the rational root $x=5$ but performs synthetic division carelessly and obtains $x^2+13x-10$ instead of $x^2+13x+10$; then product of remaining roots is $-10<0$, so one is positive — concludes (D) false."
+    landed_on_option: "D not selected"
+    diagnosis: "Arithmetic slip in the division step. The remaining quadratic's constant must equal $(\\text{original constant})/(-5)=(-50)/(-5)=10$, not $-10$. TRAP-PARTIAL: getting most of the path right but failing on the final sign-check the option is designed to probe."
+
+review_notes: |
+  Source: 0608 batch Q1 (multi-correct). Key from \keyfoot is (A),(B),(D); difficulty marked 8.
+  Calibrated T3: the matrix is small and Hankel-ish (recognisable), but expanding the cubic, applying Newton, and spotting the rational root + sign on the quadratic constant together push it firmly into hard-standard territory. Surface is plain matrix; trap is partial (every option tests a single sign or interpretation slip, mirroring a typical JEE multi-correct trap structure).
+  Note on taxonomy: I used CAL-style 'CHARPOLY' / 'NEWTON' codes under MAT.DET for the IDEA / SUB-IDEA, since the existing MAT subtopics (ALG, DET, INV, SYS, SPL, TRN) cover the area but there is no published IDEA for "characteristic polynomial of a small numeric matrix + Newton's identities + rational-root factorisation". Flagging needs_extension so the taxonomy file can absorb these two codes.

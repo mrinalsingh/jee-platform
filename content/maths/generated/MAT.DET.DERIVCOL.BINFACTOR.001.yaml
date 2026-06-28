@@ -1,0 +1,80 @@
+schema_version: 1
+question_code: MAT.DET.DERIVCOL.BINFACTOR.001
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: DERIVCOL
+  sub_idea: BINFACTOR
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-PARTIAL
+target_exam: JEE_ADVANCED
+authored_difficulty: T4
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 360
+  R3_seconds: 240
+  R4_seconds: 180
+source_metadata:
+  jee_authenticity_score: 9.6
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 9.6
+    reviewed_at: "2026-06-14"
+    notes: "binomial-derivative in det form; clean closed form"
+status: provisional
+provenance:
+  inspired_by: "0613b_Q4"
+  parallel_form: false
+  generator: "jee-mcq skill (Claude Code)"
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+statement: |
+  For a positive integer $n$, let
+  $$a_n=\sum_{k=0}^{n}\binom{n}{k},\quad b_n=\sum_{k=1}^{n}k\binom{n}{k},\quad c_n=\sum_{k=2}^{n}k(k-1)\binom{n}{k},$$
+  $$a'_n=\sum_{k=0}^{n}\binom{n}{k}2^{k},\quad b'_n=\sum_{k=1}^{n}k\binom{n}{k}2^{k-1},\quad c'_n=\sum_{k=2}^{n}k(k-1)\binom{n}{k}2^{k-2}.$$
+  Define
+  $$D(n)=\begin{vmatrix} a_n & b_n & c_n \\ a'_n & b'_n & c'_n \\ 1 & n & n(n-1) \end{vmatrix}.$$
+  Which of the following statements about $D(n)$ is/are TRUE?
+
+  (A) $D(n)<0$ for every integer $n\ge 2$.
+
+  (B) $D(2)=-4$.
+
+  (C) $D(n)$ is divisible by $n^{2}(n-1)$ for every integer $n\ge 2$.
+
+  (D) $\displaystyle\lim_{n\to\infty}\dfrac{D(n)}{D(n-1)}=1$.
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+solution: |
+  Set $f(x)=(1+x)^{n}=\sum_{k=0}^{n}\binom{n}{k}x^{k}$. Then $f(1)=a_n$, $f'(1)=b_n$, $f''(1)=c_n$, and $f(2)=a'_n$, $f'(2)=b'_n$, $f''(2)=c'_n$, giving the closed forms
+  $$a_n=2^{n},\ b_n=n\cdot 2^{n-1},\ c_n=n(n-1)\,2^{n-2};\qquad a'_n=3^{n},\ b'_n=n\cdot 3^{n-1},\ c'_n=n(n-1)\,3^{n-2}.$$
+
+  Pull $2^{n-2}$ out of Row 1, $3^{n-2}$ out of Row 2, $n$ out of Column 2, and $n(n-1)$ out of Column 3:
+  $$D(n)=2^{n-2}\cdot 3^{n-2}\cdot n\cdot n(n-1)\,\begin{vmatrix} 4 & 2 & 1 \\ 9 & 3 & 1 \\ 1 & 1 & 1 \end{vmatrix}.$$
+  The remaining $3\times 3$ determinant is $4(3-1)-2(9-1)+1(9-3)=8-16+6=-2$. Therefore
+  $$\boxed{\,D(n)=-2\cdot 6^{n-2}\cdot n^{2}(n-1).\,}$$
+
+  - (A) $-2\cdot 6^{n-2}\cdot n^{2}(n-1)<0$ for every $n\ge 2$. TRUE.
+  - (B) $D(2)=-2\cdot 6^{0}\cdot 4\cdot 1=-8\ne -4$. FALSE (the trap is dropping the leading factor of $2$).
+  - (C) $n^{2}(n-1)$ is an explicit factor in the closed form. TRUE.
+  - (D) $\dfrac{D(n)}{D(n-1)}=6\cdot\dfrac{n^{2}(n-1)}{(n-1)^{2}(n-2)}=\dfrac{6n^{2}}{(n-1)(n-2)}\to 6$, not $1$. FALSE.
+
+  Correct: A, C.
+wrong_paths:
+  - path: "Compute $D(2)$ as a brute-force $3\\times 3$ expansion and slip a sign or drop the leading $-2$, e.g. compute $-4$ instead of $-8$ and mark (B)."
+    landed_on_option: [B]
+    diagnosis: "Arithmetic error on the small case; the closed form gives $D(2)=-2\\cdot 6^{0}\\cdot 4\\cdot 1=-8$. Trap fires when the student verifies (B) by direct evaluation without first factoring."
+  - path: "Use $\\dfrac{D(n)}{D(n-1)}=\\dfrac{c\\cdot n^{2}(n-1)}{c\\cdot(n-1)^{2}(n-2)}$ but forget the $6^{n-2}/6^{n-3}=6$ factor, getting limit $1$ and marking (D)."
+    landed_on_option: [D]
+    diagnosis: "Polynomial-only thinking; the dominant geometric factor $6^{n-2}$ is the only thing that survives in the ratio and the polynomial part $\\to 1$. Student must track BOTH factors."
+  - path: "Treat the three rows as scalar multiples of $(1,n,n(n-1))$ and conclude $D(n)=0$ identically; mark none of the options."
+    landed_on_option: []
+    diagnosis: "Misreading row 3 as the limit of row 1 / row 2; rows 1 and 2 share the column-scaling structure but with different geometric bases ($2$ vs $3$), so they are NOT proportional to row 3."
+review_notes: |
+  Question fuses three JEE-standard ideas (binomial-derivative closed forms via $f(x)=(1+x)^n$, multilinear row/column factoring of a determinant, and asymptotic ratio analysis) into a single 4-correct stack. The clean factorisation $D(n)=-2\cdot 6^{n-2}\cdot n^{2}(n-1)$ makes (A) and (C) immediate once seen, while (B) and (D) are calibrated traps that punish brute-force evaluation and polynomial-only ratio thinking. Sub-idea: derivative-column structure with binomial-row factoring.

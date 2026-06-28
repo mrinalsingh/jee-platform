@@ -1,0 +1,79 @@
+schema_version: 1
+
+question_code: PRB.COMP.GEOCNT.GRIDPAIR.001
+
+fingerprint:
+  topic: PRB
+  subtopic: COMP
+  idea: GEOCNT
+  sub_idea: GRIDPAIR
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 300
+  R3_seconds: 240
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "Refined8p5_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Two of the $64$ unit squares of an ordinary $8\times 8$ chessboard (alternately coloured, $32$ of each colour) are chosen at random, all $\binom{64}{2}$ choices equally likely. For the resulting unordered pair,
+
+  - (A) the probability that the two squares share a common edge is $\dfrac{1}{18}$
+  - (B) the conditional probability that the two squares have exactly one common corner, given that they are of the same colour, is $\dfrac{49}{496}$
+  - (C) the probability that the two squares lie in one row or in one column is $\dfrac{2}{9}$
+  - (D) the probability that the two squares lie on a common line parallel to either of the two main diagonals of the board is $\dfrac{11}{72}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C]
+
+solution: |
+  ### The IDEA
+  On an $8\times 8$ grid, each geometric relation (edge-sharing, corner-sharing, same row/column, same diagonal direction) is counted by a clean combinatorial formula. The denominator is $\binom{64}{2}=2016$ for unconditional probabilities; for the conditional probability in (B) one restricts the sample space to same-colour pairs, of which there are $2\binom{32}{2}=992$.
+
+  ### Working
+  Total pairs: $\binom{64}{2}=2016$.
+
+  **(A) Edge-sharing pairs.** Horizontal adjacencies contribute $8\cdot 7=56$, and so do vertical adjacencies, giving $2\cdot 8\cdot 7=112$. Probability $=\dfrac{112}{2016}=\dfrac{1}{18}$. **True.**
+
+  **(B) Exactly one common corner, given same colour.** Two squares share exactly one corner iff they are diagonal neighbours. On an $8\times 8$ board there are $2\cdot 7\cdot 7=98$ such diagonal-neighbour pairs (NE/SW direction and NW/SE direction, each giving $7\times 7$ corner intersections). Diagonal neighbours are always of the same colour. Same-colour pairs number $2\binom{32}{2}=2\cdot 496=992$. Conditional probability $=\dfrac{98}{992}=\dfrac{49}{496}$. **True.**
+
+  **(C) Same row or same column.** A single row contributes $\binom{8}{2}=28$ pairs; eight rows give $8\cdot 28=224$. Columns contribute another $224$. Total $448$. Probability $=\dfrac{448}{2016}=\dfrac{2}{9}$. **True.**
+
+  **(D) Common line parallel to a main diagonal.** Lines parallel to a main diagonal have lengths $1,2,3,\ldots,7,8,7,\ldots,2,1$, so $\sum\binom{L}{2}$ over one family $=2\bigl(\binom{2}{2}+\binom{3}{2}+\cdots+\binom{7}{2}\bigr)+\binom{8}{2}=2(1+3+6+10+15+21)+28=2\cdot 56+28=140$. Two diagonal families give $2\cdot 140=280$. Probability $=\dfrac{280}{2016}=\dfrac{5}{36}=\dfrac{10}{72}\neq\dfrac{11}{72}$. **False.**
+
+  Correct options: **(A), (B), (C)**.
+
+wrong_paths:
+  - path: "For (B), forgets to condition on same colour and computes $98/2016$ instead of $98/992$, then declares (B) false because $98/2016\neq 49/496$."
+    landed_on_option: "Rejects (B); marks only (A), (C)."
+    diagnosis: "TRAP-PARTIAL: ignores the conditional-probability sample-space restriction. Diagonal-neighbour pairs are automatically same-colour, so the unconditional probability is $98/2016=7/144$, not $49/496$."
+  - path: "For (D), counts only the two main diagonals (length 8 each) giving $2\\binom{8}{2}=56$ pairs, getting $56/2016=1/36$, and accepts (D) as false but for the wrong reason; or, sums $\\binom{L}{2}$ once forgetting both families and gets $140/2016=5/72$, again rejecting (D)."
+    landed_on_option: "Rejects (D) — coincidentally correct but unreliable reasoning."
+    diagnosis: "Mis-enumeration of broken diagonals. The student misses that BOTH diagonal directions contribute and that the off-main diagonals carry significant weight."
+  - path: "For (C), counts only one row's worth ($\\binom{8}{2}=28$) and multiplies by $8$ but forgets columns, getting $224/2016=1/9$, so marks (C) false."
+    landed_on_option: "Rejects (C); marks only (A), (B)."
+    diagnosis: "TRAP-PARTIAL: enumeration omits the symmetric column contribution."
+  - path: "For (A), double-counts each edge (treats ordered pairs of adjacent squares) and gets $224/2016=1/9$, declaring (A) false."
+    landed_on_option: "Rejects (A); marks only (B), (C)."
+    diagnosis: "Confuses ordered vs unordered pairs against the unordered denominator $\\binom{64}{2}$."
+
+review_notes: |
+  Classic JEE-style multi-statement counting problem on the chessboard. Geometric subtlety in (B) — diagonal neighbours share exactly one corner and are automatically same-colour, so the conditional sample space must be enforced. (D) is the discriminator: easy to mis-count the off-main parallel diagonals.
+
+  Taxonomy: introduced PRB.COMP.GEOCNT (geometric counting in combinatorial probability) with sub-idea GRIDPAIR (pairs on a square grid). Reuse if more chessboard / lattice-pair problems are tagged.

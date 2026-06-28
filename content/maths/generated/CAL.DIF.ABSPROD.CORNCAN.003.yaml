@@ -1,0 +1,95 @@
+schema_version: 1
+
+question_code: CAL.DIF.ABSPROD.CORNCAN.003
+
+fingerprint:
+  topic: CAL
+  subtopic: DIF
+  idea: ABSPROD
+  sub_idea: CORNCAN
+  answer_type: MCQ-MC
+  surface: SURF-FUNC
+  trap: TRAP-PARTIAL
+
+target_exam: JEE_ADVANCED
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+source_metadata:
+  jee_authenticity_score: 8.5
+  rating_consensus_method: mean
+  rubric_version: "2026-06-14b"
+
+reviews:
+  - reviewer_role: jee_mcq_critic
+    T_rating: T4
+    jee_authenticity_score: 8.5
+    reviewed_at: "2026-06-14"
+    notes: "three corner-kill mechanisms incl sin-kill"
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0613d_Q3"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-14"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $f:\mathbb{R}\to\mathbb{R}$ be defined by
+  $$f(x) \;=\; (x^{3}-7x^{2}+14x-8)\,\bigl|\,x^{2}-5x+4\,\bigr| \;+\; |x-2|\,\sin(\pi x).$$
+  Which of the following statements is/are correct?
+
+  (A) $f$ is differentiable at $x=1$
+
+  (B) $f$ is non-differentiable at $x=2$
+
+  (C) $f$ is differentiable at $x=4$
+
+  (D) $f$ is non-differentiable at exactly two points of $[0,5]$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, C]
+
+solution: |
+  Factor $x^{2}-5x+4=(x-1)(x-4)$ and $x^{3}-7x^{2}+14x-8=(x-1)(x-2)(x-4)$. So the first term is $(x-1)(x-2)(x-4)\,|(x-1)(x-4)|$ and the candidate kinks are $x=1,2,4$.
+
+  **(A) At $x=1$.** Near $1$, $|(x-1)(x-4)|=|x-1|\cdot(4-x)$ (since $x-4<0$). The first term becomes
+  $$(x-1)(x-2)(x-4)\cdot|x-1|\cdot(4-x)=-(x-1)|x-1|\cdot(x-2)(x-4)^{2}.$$
+  Now $(x-1)|x-1|=\operatorname{sgn}(x-1)(x-1)^{2}$ has derivative $2|x-1|$, continuous at $1$. The other factor is smooth, and $|x-2|\sin(\pi x)$ is smooth near $x=1$ (its corner is at $2$, not $1$). Hence $f$ is differentiable at $x=1$. **TRUE.**
+
+  **(B) At $x=2$.** The first term is smooth near $2$: at $x=2$, $(x-1)(x-4)=(1)(-2)=-2\ne 0$, so $|(x-1)(x-4)|=-(x-1)(x-4)$ locally — smooth. For the second term, $\sin(2\pi)=0$ and the Taylor expansion gives $\sin(\pi x)=-\pi(x-2)+O((x-2)^{3})$ near $2$, so
+  $$|x-2|\sin(\pi x)=-\pi(x-2)|x-2|+O((x-2)^{3}|x-2|),$$
+  which is $C^{1}$ at $2$ (the derivative of $(x-2)|x-2|$ is $2|x-2|$, continuous). So $f$ is differentiable at $x=2$. **FALSE.**
+
+  **(C) At $x=4$.** Same mechanism as (A): the smooth factor $(x-4)$ has a simple zero killing the corner of $|(x-1)(x-4)|$. Near $4$, $|(x-1)(x-4)|=|x-4|\cdot(x-1)$, and the first term is
+  $$(x-1)(x-2)(x-4)\cdot|x-4|\cdot(x-1)=(x-4)|x-4|\cdot(x-1)^{2}(x-2),$$
+  which is $C^{1}$ at $4$. The second term $|x-2|\sin(\pi x)$ is smooth near $4$. So $f$ is differentiable at $x=4$. **TRUE.**
+
+  **(D)** By (A), (B), (C), $f$ is differentiable at each of $1,2,4$; elsewhere on $[0,5]$ all factors are smooth. So $f$ is differentiable at every point of $[0,5]$ — the non-differentiable set is empty, not of size two. **FALSE.**
+
+  **Answer:** (A), (C).
+
+wrong_paths:
+  - path: "Student sees $|x-2|$ has a corner at $x=2$ and assumes the product $|x-2|\\sin(\\pi x)$ inherits the corner; misses that $\\sin(2\\pi)=0$ vanishes to first order, multiplying the corner by a smooth factor with a simple zero (the sin-kill)."
+    landed_on_option: "(A), (B), (C)"
+    diagnosis: "Sin-zero kill missed: $|t|\\cdot\\sin(\\pi(t+2))=-\\pi t|t|+O(t^{3}|t|)$ near $t=x-2=0$, which is $C^{1}$. The kink of $|x-2|$ is killed by the simple zero of $\\sin(\\pi x)$ at $x=2$."
+  - path: "Student lists corner-candidates $\\{1,2,4\\}$ from the two absolute-value blocks and announces non-differentiability at exactly two of them (intending $x=2$ and one of $x=1,4$), picking (D)."
+    landed_on_option: "(D) only"
+    diagnosis: "Identifies kink candidates correctly but never tests whether the smooth prefactor kills each corner. All three candidates are killed (two by the $(x-1)(x-4)$ prefactor of the cubic, one by the $\\sin(\\pi x)$ zero), so the count is $0$, not $2$."
+  - path: "Student correctly kills the kink at $x=1$ via the cubic-prefactor zero but does NOT realise the SAME mechanism kills $x=4$ — concluding (A) only and that $f$ has a kink at $x=4$."
+    landed_on_option: "(A) only"
+    diagnosis: "Asymmetric handling of the two roots of $x^{2}-5x+4$: both $1$ and $4$ are simple zeros of the cubic $(x-1)(x-2)(x-4)$ multiplying the absolute value, so both kinks are killed identically. Missing (C) drops half the credit."
+
+review_notes: |
+  Fuses three corner-kill mechanisms in a single function. (i) At $x=1$ and (ii) at $x=4$, the cubic prefactor $(x-1)(x-2)(x-4)$ has a simple zero exactly at the kink of $|(x-1)(x-4)|$, killing the corner via the $(x-m)|x-m|$ identity. (iii) At $x=2$, the second term carries the $|x-2|$ corner but $\sin(\pi x)$ vanishes to first order at $x=2$, so $|x-2|\sin(\pi x)\in C^{1}$ — a "sin-kill" cousin of the polynomial corner-kill. (D) traps students who only count visual kinks. T4 because the sin-kill mechanism (which is a derivative-vanishing kill rather than a polynomial-vanishing kill) is the genuinely non-standard insight; once seen it is one-line, but recognising it cold is the JEE Advanced bar. Sub-idea CORNCAN reused (third instance in this fingerprint).

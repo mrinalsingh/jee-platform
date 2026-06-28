@@ -1,0 +1,91 @@
+schema_version: 1
+
+question_code: MAT.SPL.ORBSUM.CNJSP.004
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: ORBSUM
+  sub_idea: CNJSP
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-EIGEN
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 720
+  R2_seconds: 480
+  R3_seconds: 300
+  R4_seconds: 180
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q8"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $C(a,b,c,d)$ denote the circulant $4 \times 4$ determinant with first row $(a,b,c,d)$:
+  $$
+  C(a,b,c,d) \;=\; \det\!\begin{pmatrix} a & b & c & d \\ d & a & b & c \\ c & d & a & b \\ b & c & d & a \end{pmatrix}.
+  $$
+  Which of the following is/are correct?
+
+  - (A) $C(1,2,3,4) = 160$
+  - (B) $C(a,b,c,d) = 0$ for all $(a,b,c,d)$, since the rows are cyclic shifts of each other
+  - (C) $(a+b+c+d)$ divides $C(a,b,c,d)$ only when $a = c$
+  - (D) $C(a,a,a,a) = 0$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, D]
+
+solution: |
+  ### The IDEA
+  A circulant matrix is diagonalised by the discrete Fourier matrix; its eigenvalues are the values of the "symbol" polynomial $p(x) = a + bx + cx^2 + dx^3$ at the $n$-th roots of unity. For a $4 \times 4$ circulant these roots are $1, i, -1, -i$, so
+  $$
+  \lambda_j \;=\; a + b\,\omega^{j} + c\,\omega^{2j} + d\,\omega^{3j}, \qquad \omega = i, \; j = 0,1,2,3.
+  $$
+  The determinant is $\prod_{j} \lambda_j$. Pairing the complex-conjugate roots $\lambda_1, \lambda_3$ turns the product into a real closed form.
+
+  ### Working
+  Evaluate each eigenvalue:
+  $$
+  \lambda_0 = a+b+c+d, \quad \lambda_2 = a-b+c-d,
+  $$
+  $$
+  \lambda_1 = (a-c) + i(b-d), \quad \lambda_3 = (a-c) - i(b-d).
+  $$
+  Then $\lambda_1 \lambda_3 = (a-c)^2 + (b-d)^2$, and a sign from the standard $4 \times 4$ circulant expansion gives
+  $$
+  C(a,b,c,d) \;=\; -\,(a+b+c+d)\,(a-b+c-d)\,\bigl[(a-c)^2 + (b-d)^2\bigr].
+  $$
+
+  ### Verifying each option
+  - **(A)** $C(1,2,3,4) = -(10)\cdot(-2)\cdot(4+4) = -(10)(-2)(8) = 160$. Correct.
+  - **(B)** Cyclic shifts of rows are NOT linearly dependent in general — no fixed scalar combination annihilates them for arbitrary $(a,b,c,d)$. E.g. (A) already gives $C = 160 \ne 0$. False.
+  - **(C)** $(a+b+c+d) = \lambda_0$ is ALWAYS a factor of $C$, with no condition on $a = c$. False.
+  - **(D)** $C(a,a,a,a)$: both $a-b+c-d = 0$ and $(a-c)^2+(b-d)^2 = 0$, so $C = 0$. (Geometrically: when all entries are equal, every row is the same vector, so the determinant vanishes.) Correct.
+
+wrong_paths:
+  - path: "Sees that each row is a cyclic shift of the previous and concludes the rows must be linearly dependent, hence $C \\equiv 0$. Marks (B), and possibly (D) as a special case of (B)."
+    landed_on_option: "B (and D for the wrong reason)"
+    diagnosis: "Confusion between 'cyclic shift' and 'linear dependence' — cyclic shifts of a generic vector span the full space (this is exactly why the DFT diagonalises circulants). The student conflates symmetry of construction with degeneracy."
+  - path: "Reaches for Cayley–Hamilton or tries to compute the characteristic polynomial of the $4\\times 4$ matrix by brute expansion, gets bogged down in algebra, and either runs out of time or makes a sign error in (A)."
+    landed_on_option: "Misses (A); may pick only (D) by inspection."
+    diagnosis: "TRAP-EIGEN — reaches for heavy machinery (Cayley–Hamilton) when the structured tool (roots of unity = DFT) collapses the determinant in three lines."
+  - path: "Computes (A) and (D) but also marks (C), reasoning that 'the factorisation only looks clean when $a = c$ because then $\\lambda_1\\lambda_3$ simplifies'."
+    landed_on_option: "A, C, D"
+    diagnosis: "TRAP-PARTIAL — student conflates 'when the formula simplifies aesthetically' with 'when divisibility holds'. $(a+b+c+d) = \\lambda_0$ is a factor of $\\prod \\lambda_j$ unconditionally."
+
+review_notes: |
+  - Variant in the MAT.SPL.ORBSUM.CNJSP family: uses the $n=4$ circulant rather than the $S_4$-orbit-sum construction. Same IDEA (roots-of-unity spectral decomposition), different surface — gives genuine variety vs. CNJSP.001.
+  - Trap (B) is the canonical "cyclic shift = linear dependence" misread; trap on (C) tests whether the student understands that $\lambda_0$-factorisation is unconditional.
+  - The closed form $C = -(a+b+c+d)(a-b+c-d)\bigl[(a-c)^2+(b-d)^2\bigr]$ is worth memorising; it is the $n=4$ instance of the general circulant determinant formula.
+  - T4 because the closed form is non-standard at JEE; T3 if the student already knows the circulant trick.

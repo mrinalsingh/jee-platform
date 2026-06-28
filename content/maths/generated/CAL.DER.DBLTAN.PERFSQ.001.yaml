@@ -1,0 +1,75 @@
+schema_version: 1
+
+question_code: CAL.DER.DBLTAN.PERFSQ.001
+
+fingerprint:
+  topic: CAL
+  subtopic: DER
+  idea: DBLTAN
+  sub_idea: PERFSQ
+  answer_type: MCQ-MC
+  surface: SURF-GEOM
+  trap: TRAP-NONE
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{C}:y=x^{4}-2x^{2}-x$ and let $\ell$ be a double tangent to $\mathcal{C}$ (a line tangent to $\mathcal{C}$ at two distinct points). Which of the following is/are TRUE?
+
+  - (A) $y=-x-1$ is a double tangent to $\mathcal{C}$
+  - (B) The points of tangency are $(-1,0)$ and $(1,-2)$
+  - (C) $(x^{4}-2x^{2}-x)-(-x-1)=(x^{2}-1)^{2}$
+  - (D) $x^{4}-2x^{2}-x\ge -x-1$ for all $x\in\mathbb{R}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  A line $y=mx+c$ is a double tangent to a quartic $y=P(x)$ iff $P(x)-(mx+c)$ is the square of a quadratic. Matching coefficients with $(x^{2}+bx+d)^{2}$ pins down $m$ and $c$ uniquely; the contact abscissae are the roots of that quadratic.
+
+  ### Working
+  We seek $m,c$ such that
+  $$x^{4}-2x^{2}-x-(mx+c)=(x^{2}+bx+d)^{2}=x^{4}+2bx^{3}+(b^{2}+2d)x^{2}+2bd\,x+d^{2}.$$
+  Matching $x^{3}$: $2b=0\Rightarrow b=0$. Matching $x^{2}$: $b^{2}+2d=-2\Rightarrow d=-1$. Matching $x^{1}$: $2bd=-(1+m)\Rightarrow 0=-(1+m)\Rightarrow m=-1$. Matching $x^{0}$: $d^{2}=-c\Rightarrow c=-1$.
+
+  Hence the (unique) double tangent is $y=-x-1$, proving (A), and
+  $$\bigl(x^{4}-2x^{2}-x\bigr)-(-x-1)=x^{4}-2x^{2}+1=(x^{2}-1)^{2},$$
+  proving (C). Being a perfect square, this expression is $\ge 0$ for every real $x$, proving (D). The contact points satisfy $x^{2}-1=0$, i.e. $x=\pm 1$, giving the points $(-1,f(-1))=(-1,0)$ and $(1,f(1))=(1,-2)$, proving (B).
+
+  All four statements are correct.
+
+wrong_paths:
+  - path: "Student differentiates and tries to find a tangent line at a single point, then checks if it touches the curve elsewhere; gets bogged down in cubic equations and rejects (A) as 'not a tangent at a single specific point'."
+    landed_on_option: "Marks only (C) and (D); misses (A) and (B)."
+    diagnosis: "Failure to recognize the double-tangent condition as a polynomial identity (perfect square). They confuse 'tangent line' (single contact) with 'double tangent' (two contacts), missing the structural shortcut."
+  - path: "Student matches coefficients but drops the constant-term equation, getting $m=-1$ but leaves $c$ undetermined and concludes only (C) is structural."
+    landed_on_option: "Marks (C) only."
+    diagnosis: "Partial coefficient matching — TRAP-PARTIAL flavour: the student stops as soon as they've identified the form $(x^{2}-1)^{2}$ without verifying $c=-1$ gives a valid line, hence rejects (A), (B), (D)."
+  - path: "Student expands $(x^{2}-1)^{2}$ correctly but then writes $x^{4}-2x^{2}+1\\ge 0$ and 'subtracts $-x-1$ to both sides' incorrectly, getting $x^{4}-2x^{2}-x\\ge -x-1-?$ and rejects (D)."
+    landed_on_option: "Marks (A), (B), (C); misses (D)."
+    diagnosis: "Algebraic-rearrangement slip: not realizing $P(x)-(-x-1)\\ge 0$ is exactly equivalent to (D) since the difference is a perfect square."
+  - path: "Student finds contact points by setting $f'(x)=-1$ (slope of line) and solves $4x^{3}-4x-1=-1\\Rightarrow 4x^{3}-4x=0\\Rightarrow x=0,\\pm1$, then picks $x=0$ as one tangency point getting $(0,0)$."
+    landed_on_option: "Marks (A), (C), (D); rejects (B) (claims a third contact point at $x=0$)."
+    diagnosis: "Confuses 'slope equals $-1$' (necessary at contact) with 'all such points are contacts of the double tangent.' At $x=0$ the slope is $-1$ but the line $y=-x$ (not $y=-x-1$) is tangent there; the true double-tangent contacts are exactly the double roots of $(x^{2}-1)^{2}$, i.e. $x=\\pm 1$."
+
+review_notes: |
+  Classic JEE/STEP double-tangent identity problem. The perfect-square trick is the canonical method (no calculus needed beyond recognizing the structure). Answer is "all four" which is unusual but legitimate — all four statements describe consistent pieces of the same configuration. Difficulty T3: the idea is sharp but standard once seen; first-time solvers will likely miss (A) by attacking with derivatives. New IDEA code DBLTAN (double tangent to quartic) and SUB-IDEA PERFSQ (perfect-square identity method) proposed — no existing code captures this.

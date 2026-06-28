@@ -1,0 +1,87 @@
+schema_version: 1
+
+question_code: MAT.SPL.ORTHCOL.SCLORTH.001
+
+fingerprint:
+  topic: MAT
+  subtopic: SPL
+  idea: ORTHCOL
+  sub_idea: SCLORTH
+  answer_type: MCQ-MC
+  surface: SURF-PARAM
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T2
+
+authored_time_by_round:
+  R1_seconds: 300   # ~5 min — must notice the columns are orthogonal & equal-norm, then run four short checks
+  R2_seconds: 210   # ~3.5 min — orthogonality spotted quickly; arithmetic for each option
+  R3_seconds: 150   # ~2.5 min — fluent with the PᵀP=9I cascade
+  R4_seconds: 100   # ~1.7 min — exam pace, one-line per option
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609d_Q11"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-09"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathbf a=(1,2,2)$, $\mathbf b=(2,1,-2)$, $\mathbf c=(-2,2,-1)$, and let $P$ be the $3\times 3$ matrix whose columns are $\mathbf a,\mathbf b,\mathbf c$ (in that order). Which of the following are correct?
+
+  - (A) $P^{\mathsf T}P=PP^{\mathsf T}=9I$
+  - (B) the unique solution of $P\mathbf x=(9,9,9)^{\mathsf T}$ is $\mathbf x=(5,1,-1)^{\mathsf T}$
+  - (C) the adjugate of $P$ equals $3P^{\mathsf T}$
+  - (D) the determinant of the Gram matrix $\big(\mathbf x_i\cdot\mathbf x_j\big)$, with $(\mathbf x_1,\mathbf x_2,\mathbf x_3)=(\mathbf a,\mathbf b,\mathbf c)$, equals $729$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  The three columns are **mutually orthogonal with equal norm**:
+  $$\mathbf a\cdot\mathbf b=2+2-4=0,\quad \mathbf b\cdot\mathbf c=-4+2+2=0,\quad \mathbf a\cdot\mathbf c=-2+4-2=0,$$
+  $$|\mathbf a|^2=|\mathbf b|^2=|\mathbf c|^2=1+4+4=9.$$
+  So $P$ is a **scaled-orthogonal** matrix: every fact below cascades from $P^{\mathsf T}P=9I$.
+
+  ### (A)
+  The $(i,j)$ entry of $P^{\mathsf T}P$ is $\mathbf{(col}_i)\cdot\mathbf{(col}_j)$, which is $9$ on the diagonal and $0$ off it, so $P^{\mathsf T}P=9I$. Since $P$ is square, $P^{\mathsf T}P=9I$ forces $P^{-1}=\tfrac19P^{\mathsf T}$ and hence $PP^{\mathsf T}=9I$ as well. **True.**
+
+  ### (B)
+  From $P^{-1}=\tfrac19P^{\mathsf T}$,
+  $$\mathbf x=P^{-1}(9,9,9)^{\mathsf T}=\tfrac19 P^{\mathsf T}(9,9,9)^{\mathsf T}=\big(\mathbf a\cdot(1,1,1),\ \mathbf b\cdot(1,1,1),\ \mathbf c\cdot(1,1,1)\big)^{\mathsf T}.$$
+  These dot products are $\mathbf a\cdot(1,1,1)=5$, $\mathbf b\cdot(1,1,1)=1$, $\mathbf c\cdot(1,1,1)=-1$, giving $\mathbf x=(5,1,-1)^{\mathsf T}$. (Direct check: $P(5,1,-1)^{\mathsf T}=5\mathbf a+1\mathbf b-1\mathbf c=(9,9,9)^{\mathsf T}$.) Uniqueness holds since $\det P\ne 0$. **True.**
+
+  ### (C)
+  $\det P=\pm\,3^3=\pm 27$; expanding (or noting the columns form a right-handed orthogonal triple) gives $\det P=27$. Then
+  $$\operatorname{adj}P=(\det P)\,P^{-1}=27\cdot\tfrac19 P^{\mathsf T}=3\,P^{\mathsf T}.$$
+  **True.**
+
+  ### (D)
+  The Gram matrix is exactly $G=P^{\mathsf T}P=9I$, so
+  $$\det G=(\det P)^2=27^2=729\qquad(\text{equivalently }9^3=729).$$
+  **True.**
+
+  All four options hold; the key is **A, B, C, D**. Only JEE-syllabus tools (dot products, orthogonal matrices, adjugate–inverse relation, Gram = $P^{\mathsf T}P$) are used.
+
+wrong_paths:
+  - path: "Computes adj P = (det P)·Pᵀ = 27Pᵀ, forgetting the k⁻² = 1/9 factor in P⁻¹ = (1/9)Pᵀ (or writing adj P = (1/9)Pᵀ by confusing adj with the inverse). Concludes (C) is false because the stated coefficient is 3, not 27."
+    landed_on_option: "Drops C; selects A, B, D."
+    diagnosis: "TRAP-PARTIAL — the adjugate factor is exactly det P · k⁻² = 27/9 = 3. Slipping the scale on either det P or P⁻¹ derails only option C, which partial marking rewards."
+  - path: "Solves Px=(9,9,9)ᵀ as x = P·(9,9,9)ᵀ / 9 (using P instead of Pᵀ), or omits the 1/9 entirely and gets x = Pᵀ(9,9,9)ᵀ = (45,9,-9)ᵀ. Either way (5,1,-1)ᵀ is not reproduced."
+    landed_on_option: "Drops B; selects A, C, D."
+    diagnosis: "Confusing P with Pᵀ in P⁻¹ = (1/9)Pᵀ, or dropping the k⁻² factor — the same two baits as in (C), here isolated on option B."
+  - path: "Checks only orthogonality and concludes PᵀP = I (forgetting the columns have norm 3, not 1), so claims (A) should read PᵀP = I and marks (A) false; likewise computes det(Gram) = 1, rejecting (D)."
+    landed_on_option: "Drops A and D; selects B, C (or nothing)."
+    diagnosis: "Treating the matrix as orthogonal (norm 1) rather than scaled-orthogonal (norm 3): the scale k = 3 enters every fact as k² = 9 or k^{2n} = 729."
+
+review_notes: |
+  - **New fingerprint** (not a parallel form of any existing item): requires extending MAT.SPL with IDEA ORTHCOL and SUB-IDEA SCLORTH — the only existing IDEA there (ORBSUM) is about orbit-sums of permutation conjugation and does not fit. See extension_note.
+  - The vectors are the classic JEE orthogonal triple with common norm 3, so det P = 27. All four options are TRUE by design; the discrimination comes entirely from whether the student carries the scale k² = 9 and the factor det P · k⁻² = 3 correctly, and from not confusing P with Pᵀ. This is what makes TRAP-PARTIAL the right tag for a 4-true MCQ-MC under partial marking.
+  - Could be hardened to T3 by replacing the explicit numeric vectors with a parametric orthogonal triple, or by adding a false 5th-style option (e.g. "adj P = 27Pᵀ") — but as written it is a clean T2 cascade.
+  - SURF-PARAM chosen because the matrix is built from literal vector unknowns and the options probe algebraic facts about P (not a figure, set, or passage).

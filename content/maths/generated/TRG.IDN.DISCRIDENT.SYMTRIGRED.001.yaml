@@ -1,0 +1,84 @@
+schema_version: 1
+
+question_code: TRG.IDN.DISCRIDENT.SYMTRIGRED.001
+
+fingerprint:
+  topic: TRG
+  subtopic: IDN
+  idea: DISCRIDENT
+  sub_idea: SYMTRIGRED
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 240
+  R2_seconds: 180
+  R3_seconds: 150
+  R4_seconds: 120
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609k_Q6"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $T_k=\tan(k\pi/7)$ for $k=1,2,3$. Which of the following statement(s) is/are correct?
+
+  **(A)** $\sum_{k=1}^{3} T_k^2 = 14$
+
+  **(B)** $\sum_{k=1}^{3} T_k^2 = 21$
+
+  **(C)** $T_1 T_2 T_3 = \sqrt{7}$
+
+  **(D)** $\sum_{k=1}^{3} \cot^2(k\pi/7) = 5$
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  ### The IDEA
+  Build a polynomial whose roots are the $T_k^2$, then read off the required symmetric functions from Vieta. The key device is the expansion of $\tan 7\theta$ as a rational function of $t=\tan\theta$.
+
+  ### Working
+  From $(\cos\theta + i\sin\theta)^7$, taking imaginary parts and dividing by $\cos^7\theta$,
+  $$\tan 7\theta = \frac{7t - 35t^3 + 21t^5 - t^7}{1 - 21t^2 + 35t^4 - 7t^6}, \qquad t=\tan\theta.$$
+  For $\theta = k\pi/7$ with $k=1,\dots,6$ we have $\tan 7\theta = 0$ while $\cos 7\theta = -1 \ne 0$. So $t = \tan(k\pi/7)$ are roots of the numerator (excluding $t=0$):
+  $$t^6 - 21 t^4 + 35 t^2 - 7 = 0.$$
+  (The numerator was $t(7 - 35t^2 + 21t^4 - t^6)$; dividing by $t$ and multiplying by $-1$ gives the above.)
+
+  Since $T_{7-k} = \tan((7-k)\pi/7) = -\tan(k\pi/7) = -T_k$, the six roots come in $\pm$ pairs, and $x = T_k^2$ ($k=1,2,3$) satisfies
+  $$x^3 - 21 x^2 + 35 x - 7 = 0.$$
+  By Vieta:
+  - $\sum T_k^2 = 21$ — option **(B)** correct, **(A)** false.
+  - $\sum_{i<j} T_i^2 T_j^2 = 35$.
+  - $T_1^2 T_2^2 T_3^2 = 7$. On $(0,\pi/2)$ every $T_k > 0$, so $T_1 T_2 T_3 = +\sqrt{7}$ — option **(C)** correct.
+
+  For (D):
+  $$\sum \cot^2(k\pi/7) = \sum \frac{1}{T_k^2} = \frac{\sum_{i<j} T_i^2 T_j^2}{T_1^2 T_2^2 T_3^2} = \frac{35}{7} = 5.$$
+  Option **(D)** correct.
+
+  **Answer: (B), (C), (D).**
+
+wrong_paths:
+  - path: "Reads coefficients off the degree-6 polynomial $t^6 - 21 t^4 + 35 t^2 - 7 = 0$ and takes $\\sum T_k^2 = -(-21) = 21$ but counts each $T_k^2$ twice (one for $+T_k$, one for $-T_k$), getting $14$ as the 'distinct' sum."
+    landed_on_option: "A"
+    diagnosis: "Confuses the sum of squares over the six roots (which would be $2 \\cdot 21 = 42$) with the sum over the three distinct squares, and misallocates the factor; common after forgetting the $T_{7-k} = -T_k$ pairing."
+  - path: "Takes the product $T_1 T_2 T_3 T_4 T_5 T_6 = -(-7) = 7$ from the degree-6 polynomial, then claims $T_1 T_2 T_3 = \\sqrt{7}$ without checking the sign on $(0,\\pi/2)$ — but also misses (D)."
+    landed_on_option: "C only"
+    diagnosis: "Partial-credit trap: student gets (C) by luck (right magnitude, right sign) but never builds the reduced cubic, so cannot compute $\\sum \\cot^2$ via Vieta and skips (D)."
+  - path: "After getting the cubic $x^3 - 21 x^2 + 35 x - 7 = 0$, computes $\\sum 1/x_k$ as $-(\\text{linear coef})/(\\text{constant}) = -35/(-7) = 5$ but mis-signs to $-5$, rejecting (D)."
+    landed_on_option: "B, C"
+    diagnosis: "Sign error in Vieta for reciprocal sum; or forgets that $\\sum 1/x_k = e_2/e_3$ for a monic cubic and instead uses $e_1/e_3 = 3$, missing (D)."
+
+review_notes: |
+  IDEA tag: classified as TRG.IDN.DISCRIDENT.SYMTRIGRED — the principle is "build a polynomial whose roots are trig values, then extract symmetric functions via Vieta." This is a recurrent JEE Advanced technique (cf. classical $\tan(\pi/7), \tan(2\pi/7), \tan(3\pi/7)$ problems and analogous $\cos(2\pi/n)$ products). A cleaner dedicated code might be TRG.IDN.VIETATRIG.ROOTSYM or TRG.IDN.CHEBYPOLY — flagged for potential taxonomy extension. T4 because the derivation of the degree-6 polynomial via complex-binomial expansion is non-standard at JEE Main level but is a known JEE Advanced setpiece; the $T_{7-k} = -T_k$ pairing to reduce to a cubic is the key clever step.

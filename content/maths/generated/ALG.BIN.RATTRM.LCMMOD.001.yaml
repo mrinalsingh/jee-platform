@@ -1,0 +1,83 @@
+schema_version: 1
+
+question_code: ALG.BIN.RATTRM.LCMMOD.001
+
+fingerprint:
+  topic: ALG
+  subtopic: BIN
+  idea: RATTRM
+  sub_idea: LCMMOD
+  answer_type: MCQ-MC
+  surface: SURF-PLAIN
+  trap: TRAP-PARTIAL
+
+authored_difficulty: T3
+
+authored_time_by_round:
+  R1_seconds: 360
+  R2_seconds: 270
+  R3_seconds: 210
+  R4_seconds: 165
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609i_Q2"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Consider the binomial expansion of $\left(3^{1/4}+5^{1/6}\right)^{36}$, with general term
+  $T_{r+1}=\binom{36}{r}\,3^{(36-r)/4}\,5^{r/6}$, $0\le r\le 36$. Which of the following are TRUE?
+
+  - (A) The largest rational term occurs at $r=24$.
+  - (B) The number of rational terms in the expansion is $4$.
+  - (C) The sum of all rational terms equals $43\,933\,887\,305\,308$.
+  - (D) $\displaystyle\sum_{r:\,T_{r+1}\in\mathbb{Q}} r \;=\; 72$.
+
+answer:
+  type: MCQ-MC
+  correct_options: [B, C, D]
+
+solution: |
+  $T_{r+1}=\binom{36}{r}3^{(36-r)/4}5^{r/6}$ is rational iff both exponents are integers, i.e.
+  $4\mid(36-r)$ and $6\mid r$. Since $36\equiv 0\pmod 4$, the first is $4\mid r$. Together with
+  $6\mid r$ this is $\mathrm{lcm}(4,6)=12\mid r$. With $0\le r\le 36$ this gives
+  $r\in\{0,12,24,36\}$.
+
+  Hence there are $\mathbf{4}$ rational terms (B), and
+  $$\sum_{r\text{ rational}} r \;=\; 0+12+24+36 \;=\; 72,$$
+  giving (D).
+
+  The four rational terms are
+  $$T_{1}=3^{9}=19683,\qquad T_{13}=\binom{36}{12}3^{6}\cdot 5^{2}=22\,811\,826\,082\,500,$$
+  $$T_{25}=\binom{36}{24}3^{3}\cdot 5^{4}=21\,122\,061\,187\,500,\qquad T_{37}=5^{6}=15625.$$
+  Their sum is $43\,933\,887\,305\,308$, giving (C).
+
+  For (A): compare $T_{13}$ ($r=12$) with $T_{25}$ ($r=24$). Since
+  $T_{13}=22\,811\,826\,082\,500 > 21\,122\,061\,187\,500 = T_{25}$, the largest rational term is at
+  $r=12$, not $r=24$. So (A) is FALSE.
+
+  Correct options: $(B),(C),(D)$.
+
+wrong_paths:
+  - path: "Solver enforces only $6\\mid r$ (the harder-looking condition) and forgets $4\\mid(36-r)$, getting $r\\in\\{0,6,12,18,24,30,36\\}$: 7 rational terms with $\\sum r=126$. Both (B) and (D) come out wrong; only (C) might survive if they recompute — usually picks (A) by inspection of large binomial coefficient near middle."
+    landed_on_option: "A"
+    diagnosis: "Drops one divisibility constraint (PARTIAL condition)."
+  - path: "Solver correctly finds rational $r\\in\\{0,12,24,36\\}$ but estimates the largest by 'binomial coefficient is biggest near the middle' so picks $r=24$ (closer to $36/2=18$ than $r=12$? actually $r=12$ is closer — but the canonical trap is to pick the middle-most rational index without comparing the powers of 3 vs 5)."
+    landed_on_option: "A, B, D"
+    diagnosis: "Skips the actual numerical comparison $T_{13}$ vs $T_{25}$ (EIGEN-style heuristic)."
+  - path: "Solver finds 4 rational terms but mis-sums the indices as $12+24+36=72$ (forgets $r=0$), still gets 72 by luck; computes the sum of rational terms with arithmetic slip on $\\binom{36}{12}$ vs $\\binom{36}{24}$ (they are equal!) and gets a wrong total, rejecting (C)."
+    landed_on_option: "B, D"
+    diagnosis: "Arithmetic slip on huge binomial coefficients (LENGTH)."
+
+review_notes: |
+  Multi-correct binomial-expansion rational-terms problem with an LCM divisibility step and a numerical
+  comparison trap on (A). Idea code RATTRM (rational terms in binomial expansion) and sub-idea LCMMOD
+  (LCM of two modular constraints) are new — flagged for taxonomy extension. Difficulty T3: routine
+  divisibility setup but (A) requires actual comparison of $T_{13}$ and $T_{25}$, which discriminates
+  careless solvers. R1 360s is realistic given the arithmetic for (C).

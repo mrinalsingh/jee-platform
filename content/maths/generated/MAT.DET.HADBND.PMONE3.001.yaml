@@ -1,0 +1,81 @@
+schema_version: 1
+
+question_code: MAT.DET.HADBND.PMONE3.001
+
+fingerprint:
+  topic: MAT
+  subtopic: DET
+  idea: HADBND
+  sub_idea: PMONE3
+  answer_type: MCQ-MC
+  surface: SURF-SET
+  trap: TRAP-EDGE
+
+authored_difficulty: T4
+
+authored_time_by_round:
+  R1_seconds: 540
+  R2_seconds: 420
+  R3_seconds: 330
+  R4_seconds: 270
+
+status: provisional
+
+provenance:
+  type: generated
+  inspired_by: "0609j_Q9"
+  parallel_form: false
+  generator: claude
+  created_on: "2026-06-10"
+  human_reviewer: null
+  approved_at: null
+
+statement: |
+  Let $\mathcal{M}$ be the set of all $3\times 3$ matrices with entries in $\{-1,+1\}$, so $|\mathcal{M}|=2^{9}=512$. Which of the following statements is/are TRUE?
+
+  (A) $\displaystyle\max_{M\in\mathcal{M}}\det M=4$
+
+  (B) $\{\det M : M\in\mathcal{M}\}=\{-4,0,4\}$
+
+  (C) $|\{M\in\mathcal{M} : \det M=4\}|=96$
+
+  (D) The Hadamard bound $(\sqrt n)^{n}$ at $n=3$ equals $\sqrt{27}$
+
+answer:
+  type: MCQ-MC
+  correct_options: [A, B, C, D]
+
+solution: |
+  ### The IDEA
+  Three ingredients combine: (i) the **Hadamard bound** $|\det M|\le \prod_i \|c_i\|$ where $c_i$ are the columns; for $\pm 1$ entries each column has norm $\sqrt 3$, forcing $|\det M|\le \sqrt{27}\approx 5.196$. (ii) A **divisibility argument** — replacing row 1 by row 1 + row 2 leaves $\det M$ unchanged but produces a row in $\{-2,0,2\}$, so $\det M$ is divisible by $2$; pushing the idea (or computing directly) shows $4 \mid \det M$. (iii) These two constraints together pin the value set to $\{-4,0,4\}$, and the count of maximisers is finite, computed by enumeration.
+
+  ### Working
+  **(D) Hadamard bound.** Each of the three columns lies in $\{-1,+1\}^3$ so $\|c_i\|=\sqrt 3$. Hadamard's inequality gives
+  $$|\det M|\le \|c_1\|\,\|c_2\|\,\|c_3\|=(\sqrt 3)^3=\sqrt{27}\approx 5.196.$$
+  So (D) is correct.
+
+  **(B) Value set.** Apply the row operation $R_1\to R_1+R_2$; the determinant is unchanged, and the new first row has entries in $\{-2,0,2\}$. Factor a $2$ out of $R_1$, leaving an integer matrix whose first row has entries in $\{-1,0,1\}$. Hence $2\mid \det M$. Repeating with $R_1\to R_1+R_3$ on the original (or expanding cases) shows $4\mid \det M$. Combined with $|\det M|\le 5.196$, the only feasible values are $\det M\in\{-4,0,4\}$. All three are attained (e.g.\ $\det\begin{pmatrix}1&1&1\\1&-1&1\\1&1&-1\end{pmatrix}=4$). So (B) is correct.
+
+  **(A) Maximum.** From (B), $\max \det M = 4$. So (A) is correct.
+
+  **(C) Count of maximisers.** Enumerating all $512$ sign matrices gives
+  $$|\{\det=0\}|=320,\quad |\{\det=4\}|=96,\quad |\{\det=-4\}|=96.$$
+  (Sketch: a matrix attains $\det=4$ iff some row-sign flips make its rows pairwise "near-orthogonal" in the $\pm 1$ sense — equivalently, two of the eight sign patterns of $(r_1,r_2,r_3)$ avoid linear dependence mod $2$.) So (C) is correct.
+
+  All four options hold. Answer: **(A), (B), (C), (D)**.
+
+wrong_paths:
+  - path: "Computes Hadamard bound as $3^3=27$ instead of $(\\sqrt 3)^3=\\sqrt{27}$, then rejects (D) because '27' is not $\\sqrt{27}$."
+    landed_on_option: "A, B, C"
+    diagnosis: "Misreads the Hadamard bound formula; the bound is the product of column norms, not the product of column-norm-squareds."
+  - path: "Uses Hadamard bound $\\sqrt{27}\\approx 5.2$ and observes $\\det M$ is an integer, concludes max could be $5$ — guesses (A) false."
+    landed_on_option: "B, C, D"
+    diagnosis: "Misses the divisibility-by-$4$ refinement; without it $5$ looks attainable, so the parity/row-op argument is the crucial second step."
+  - path: "Accepts Hadamard and parity but trusts a rough symmetry argument that $|\\{\\det=4\\}|=|\\mathcal M|/8=64$ rather than enumerating."
+    landed_on_option: "A, B, D"
+    diagnosis: "Wrong symmetry count: orbits under row/column sign flips are not all of size 8, and the correct enumeration gives 96, not 64."
+
+review_notes: |
+  - Taxonomy: introduced new IDEA `HADBND` (Hadamard bound + divisibility on $\pm 1$ matrices) and SUB-IDEA `PMONE3` (specialisation to $n=3$ with $\pm 1$ entries) under MAT.DET. Both are sub-6 chars and capture the principle precisely (Hadamard bound combined with row-op divisibility) — please confirm the codes or rename.
+  - T4 difficulty: requires three independent ideas (Hadamard, mod-4 divisibility, enumeration). Time budgets reflect that R3/R4 solvers will short-circuit the divisibility argument by remembering the canonical $\{-4,0,4\}$ result.
+  - The count $96$ in (C) is a hard-to-derive fact; a strict reading would mark it T5, but it can be reached by careful casework on the $2^3=8$ sign-flip orbits of the rows.
